@@ -22,13 +22,13 @@ export function SellerNav() {
   }
 
   return (
-    <aside className="w-60 shrink-0 border-r min-h-screen flex flex-col">
-      <div className="p-6 border-b">
+    <aside className="w-60 shrink-0 border-r border-border min-h-screen flex flex-col bg-card">
+      <div className="p-6 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center">
-            <span className="text-white font-bold text-xs">F</span>
+            <span className="text-primary-foreground font-black text-xs">F</span>
           </div>
-          <span className="font-bold">Fuselage</span>
+          <span className="font-bold text-sm">Fuselage</span>
         </Link>
         <div className="mt-1 text-xs text-muted-foreground">Exporter portal</div>
       </div>
@@ -38,10 +38,10 @@ export function SellerNav() {
             key={href}
             href={href}
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
               pathname.startsWith(href)
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
             <Icon className="h-4 w-4" />
@@ -49,10 +49,10 @@ export function SellerNav() {
           </Link>
         ))}
       </nav>
-      <div className="p-4 border-t">
+      <div className="p-4 border-t border-border">
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground w-full transition-colors"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground w-full transition-colors"
         >
           <LogOut className="h-4 w-4" />
           Sign out

@@ -22,12 +22,12 @@ export function BuyerNav() {
   }
 
   return (
-    <header className="border-b px-6 py-3 flex items-center justify-between">
+    <header className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md px-6 py-3 flex items-center justify-between">
       <Link href="/" className="flex items-center gap-2">
         <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center">
-          <span className="text-white font-bold text-xs">F</span>
+          <span className="text-primary-foreground font-black text-xs">F</span>
         </div>
-        <span className="font-bold">Fuselage</span>
+        <span className="font-bold text-sm">Fuselage</span>
       </Link>
       <nav className="flex items-center gap-1">
         {nav.map(({ href, label, icon: Icon }) => (
@@ -35,10 +35,10 @@ export function BuyerNav() {
             key={href}
             href={href}
             className={cn(
-              "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors",
+              "flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors",
               pathname.startsWith(href)
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
             <Icon className="h-4 w-4" />
@@ -47,7 +47,7 @@ export function BuyerNav() {
         ))}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ml-2"
+          className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors ml-2"
         >
           <LogOut className="h-4 w-4" />
           Sign out
