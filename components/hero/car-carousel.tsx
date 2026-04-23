@@ -28,7 +28,7 @@ export function CarCarousel() {
   const car = CARS[index];
 
   return (
-    <div className="relative w-full h-full" style={{ minHeight: "100vh" }}>
+    <div className="relative w-full h-full rounded-2xl overflow-hidden" style={{ minHeight: "90vh" }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={car.id}

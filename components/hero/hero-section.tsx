@@ -129,7 +129,7 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="flex-1 min-w-0 relative"
+          className="flex-1 min-w-0 relative py-[5vh] pr-[3vw]"
         >
           <CarCarousel />
         </motion.div>
