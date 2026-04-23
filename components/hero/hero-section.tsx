@@ -1,15 +1,14 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, MapPin, Car, Bike } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, MapPin, Car } from "lucide-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.12, duration: 0.6, ease: "easeOut" as const },
+    transition: { delay: i * 0.12, duration: 0.65, ease: "easeOut" as const },
   }),
 };
 
@@ -18,85 +17,96 @@ const fadeRight = {
   show: {
     opacity: 1,
     x: 0,
-    transition: { delay: 0.3, duration: 0.8, ease: "easeOut" as const },
+    transition: { delay: 0.25, duration: 0.8, ease: "easeOut" as const },
   },
 };
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+    <section className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#050206" }}>
 
-      {/* ── Nav ── */}
+      {/* Nav */}
       <nav className="relative z-50 flex items-center justify-between px-8 md:px-14 pt-8">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-black text-sm">F</span>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#9A8174" }}>
+            <span className="font-black text-sm" style={{ color: "#FBFFF4" }}>F</span>
           </div>
-          <span className="font-bold text-lg tracking-tight">Fuselage</span>
+          <span className="font-bold text-lg tracking-tight" style={{ color: "#FBFFF4" }}>Fuselage</span>
         </div>
 
-        <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          {["Browse", "How it works", "Destinations"].map((item) => (
-            <Link key={item} href="#" className="hover:text-foreground transition-colors">
-              {item}
+        <div className="hidden md:flex items-center gap-8 text-sm" style={{ color: "#9A8174" }}>
+          {[
+            { label: "Browse", href: "/browse" },
+            { label: "How it works", href: "#how-it-works" },
+            { label: "Destinations", href: "#ports" },
+          ].map(({ label, href }) => (
+            <Link key={label} href={href} className="hover:opacity-100 opacity-70 transition-opacity" style={{ color: "#FBFFF4" }}>
+              {label}
             </Link>
           ))}
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="text-muted-foreground" asChild>
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button size="sm" className="font-semibold" asChild>
-            <Link href="/register">Sign up</Link>
-          </Button>
+          <Link
+            href="/login"
+            className="text-sm px-4 py-2 rounded-lg transition-colors"
+            style={{ color: "#9A8174" }}
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/register"
+            className="text-sm px-5 py-2 rounded-lg font-semibold transition-opacity hover:opacity-90"
+            style={{ backgroundColor: "#9A8174", color: "#FBFFF4" }}
+          >
+            Sign up
+          </Link>
         </div>
       </nav>
 
-      {/* ── Main split layout ── */}
+      {/* Main split */}
       <div className="relative flex-1 flex items-center px-8 md:px-14 py-12 gap-10">
 
         {/* LEFT — text */}
         <div className="relative z-10 flex-1 max-w-xl">
 
-          {/* Tag */}
           <motion.div
             custom={0}
             variants={fadeUp}
             initial="hidden"
             animate="show"
-            className="inline-flex items-center gap-2 border border-primary/30 bg-primary/5 rounded-full px-4 py-1.5 text-xs text-primary font-medium mb-6"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium mb-6 border"
+            style={{ borderColor: "#9A8174", color: "#9A8174", backgroundColor: "rgba(154,129,116,0.08)" }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "#9A8174" }} />
             UAE Export × African Markets
           </motion.div>
 
-          {/* Headline */}
           <motion.h1
             custom={1}
             variants={fadeUp}
             initial="hidden"
             animate="show"
-            className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[1] mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[1.02] mb-6"
+            style={{ color: "#FBFFF4" }}
           >
             Looking to import a{" "}
-            <span className="text-primary">premium vehicle</span>{" "}
+            <span style={{ color: "#9A8174" }}>premium vehicle</span>{" "}
             from UAE?
           </motion.h1>
 
-          {/* Subtext */}
           <motion.p
             custom={2}
             variants={fadeUp}
             initial="hidden"
             animate="show"
-            className="text-muted-foreground text-base md:text-lg leading-relaxed mb-8 max-w-md"
+            className="text-base md:text-lg leading-relaxed mb-8 max-w-md"
+            style={{ color: "rgba(251,255,244,0.55)" }}
           >
             Connect directly with verified UAE import/export companies.
             Browse luxury cars and high-end bikes — tracked from Dubai to your port.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div
             custom={3}
             variants={fadeUp}
@@ -104,28 +114,31 @@ export function HeroSection() {
             animate="show"
             className="flex flex-wrap gap-3 mb-12"
           >
-            <Button size="lg" className="font-semibold px-7 gap-2 h-12" asChild>
-              <Link href="/browse">
-                Browse inventory <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="px-7 h-12 border-border hover:border-primary/40 hover:text-primary"
-              asChild
+            <Link
+              href="/browse"
+              className="inline-flex items-center gap-2 text-sm font-semibold px-7 h-12 rounded-xl transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#9A8174", color: "#FBFFF4" }}
             >
-              <Link href="/register?role=seller">List as exporter</Link>
-            </Button>
+              Browse inventory <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/register?role=seller"
+              className="inline-flex items-center gap-2 text-sm font-semibold px-7 h-12 rounded-xl border transition-colors"
+              style={{ borderColor: "#3B3B3B", color: "#FBFFF4" }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "#9A8174")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "#3B3B3B")}
+            >
+              List as exporter
+            </Link>
           </motion.div>
 
-          {/* Stats row */}
+          {/* Stats */}
           <motion.div
             custom={4}
             variants={fadeUp}
             initial="hidden"
             animate="show"
-            className="flex items-center gap-8"
+            className="flex items-center gap-10"
           >
             {[
               { value: "UAE only", label: "Verified exporters" },
@@ -133,39 +146,42 @@ export function HeroSection() {
               { value: "100%", label: "VIN tracked" },
             ].map(({ value, label }) => (
               <div key={label}>
-                <div className="text-xl font-black text-primary">{value}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
+                <div className="text-xl font-black" style={{ color: "#9A8174" }}>{value}</div>
+                <div className="text-xs mt-0.5" style={{ color: "rgba(251,255,244,0.4)" }}>{label}</div>
               </div>
             ))}
           </motion.div>
         </div>
 
-        {/* RIGHT — car image */}
+        {/* RIGHT — car placeholder */}
         <div className="relative flex-1 flex items-center justify-center min-h-[420px]">
 
-          {/* Gold blob shape behind the car */}
+          {/* Taupe blob behind car */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-[480px] h-[380px] bg-primary/15 rounded-[60px] rotate-6"
+            transition={{ delay: 0.15, duration: 0.9, ease: "easeOut" }}
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-[460px] h-[360px] rounded-[60px] rotate-6"
+            style={{ backgroundColor: "rgba(154,129,116,0.12)" }}
           />
 
-          {/* Smaller accent circle */}
+          {/* Accent rings */}
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="absolute right-8 top-16 w-20 h-20 rounded-full border border-primary/20 bg-primary/5"
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="absolute right-6 top-14 w-16 h-16 rounded-full border"
+            style={{ borderColor: "rgba(154,129,116,0.2)" }}
           />
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.65, duration: 0.6 }}
-            className="absolute left-8 bottom-12 w-12 h-12 rounded-full border border-primary/15 bg-primary/5"
+            transition={{ delay: 0.65, duration: 0.5 }}
+            className="absolute left-6 bottom-10 w-10 h-10 rounded-full border"
+            style={{ borderColor: "rgba(154,129,116,0.15)" }}
           />
 
-          {/* Floating car placeholder */}
+          {/* Car */}
           <motion.div
             variants={fadeRight}
             initial="hidden"
@@ -174,91 +190,93 @@ export function HeroSection() {
           >
             <motion.div
               animate={{ y: [0, -12, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
             >
-              {/* Placeholder car graphic */}
-              <div className="w-full aspect-[16/9] rounded-2xl bg-gradient-to-br from-secondary to-card border border-border flex flex-col items-center justify-center gap-4 relative overflow-hidden">
-
-                {/* Grid lines for depth */}
-                <div className="absolute inset-0 opacity-10"
+              {/* Placeholder */}
+              <div
+                className="w-full aspect-[16/9] rounded-2xl flex flex-col items-center justify-center gap-4 relative overflow-hidden border"
+                style={{ backgroundColor: "#0D0B0E", borderColor: "#3B3B3B" }}
+              >
+                {/* Subtle grid */}
+                <div className="absolute inset-0 opacity-[0.06]"
                   style={{
-                    backgroundImage: "linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)",
+                    backgroundImage: `linear-gradient(#9A8174 1px, transparent 1px), linear-gradient(90deg, #9A8174 1px, transparent 1px)`,
                     backgroundSize: "40px 40px",
                   }}
                 />
+                {/* Ground line */}
+                <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(154,129,116,0.4), transparent)" }} />
 
-                {/* Ground reflection line */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-
-                {/* Car icon */}
                 <div className="relative z-10 flex flex-col items-center gap-3">
-                  <Car className="h-24 w-24 text-primary/40" strokeWidth={0.8} />
-                  <div className="text-xs text-muted-foreground font-medium tracking-widest uppercase">
+                  <Car className="h-24 w-24" style={{ color: "rgba(154,129,116,0.3)" }} strokeWidth={0.8} />
+                  <span className="text-xs font-medium tracking-widest uppercase" style={{ color: "rgba(251,255,244,0.3)" }}>
                     Your vehicle here
-                  </div>
-                  <div className="text-[10px] text-muted-foreground/50">
-                    Replace with a real photo
-                  </div>
+                  </span>
                 </div>
 
                 {/* Corner accents */}
-                <div className="absolute top-3 left-3 w-6 h-6 border-l border-t border-primary/30 rounded-tl-md" />
-                <div className="absolute top-3 right-3 w-6 h-6 border-r border-t border-primary/30 rounded-tr-md" />
-                <div className="absolute bottom-3 left-3 w-6 h-6 border-l border-b border-primary/30 rounded-bl-md" />
-                <div className="absolute bottom-3 right-3 w-6 h-6 border-r border-b border-primary/30 rounded-br-md" />
+                {[
+                  "top-3 left-3 border-l border-t rounded-tl-md",
+                  "top-3 right-3 border-r border-t rounded-tr-md",
+                  "bottom-3 left-3 border-l border-b rounded-bl-md",
+                  "bottom-3 right-3 border-r border-b rounded-br-md",
+                ].map((cls) => (
+                  <div key={cls} className={`absolute w-5 h-5 ${cls}`} style={{ borderColor: "rgba(154,129,116,0.35)" }} />
+                ))}
               </div>
 
-              {/* Drop shadow beneath car */}
-              <div className="mx-auto mt-3 w-4/5 h-4 bg-primary/10 blur-xl rounded-full" />
+              {/* Shadow */}
+              <div className="mx-auto mt-3 w-3/4 h-3 rounded-full blur-xl" style={{ backgroundColor: "rgba(154,129,116,0.12)" }} />
             </motion.div>
 
-            {/* Floating badge — exporter verified */}
+            {/* Badge — Verified */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8, x: 20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ delay: 0.9, duration: 0.5 }}
-              className="absolute -top-4 -right-4 bg-card border border-border rounded-xl px-3 py-2 shadow-xl flex items-center gap-2"
+              className="absolute -top-4 -right-4 rounded-xl px-3 py-2 shadow-2xl flex items-center gap-2 border"
+              style={{ backgroundColor: "#0D0B0E", borderColor: "#3B3B3B" }}
             >
-              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xs">✓</span>
+              <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(154,129,116,0.15)" }}>
+                <span className="text-xs" style={{ color: "#9A8174" }}>✓</span>
               </div>
               <div>
-                <div className="text-xs font-semibold">Verified Exporter</div>
-                <div className="text-[10px] text-muted-foreground">UAE Trade License</div>
+                <div className="text-xs font-semibold" style={{ color: "#FBFFF4" }}>Verified Exporter</div>
+                <div className="text-[10px]" style={{ color: "rgba(251,255,244,0.4)" }}>UAE Trade License</div>
               </div>
             </motion.div>
 
-            {/* Floating badge — destination */}
+            {/* Badge — Ports */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8, x: -20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ delay: 1.1, duration: 0.5 }}
-              className="absolute -bottom-4 -left-4 bg-card border border-border rounded-xl px-3 py-2 shadow-xl flex items-center gap-2"
+              className="absolute -bottom-4 -left-4 rounded-xl px-3 py-2 shadow-2xl flex items-center gap-2 border"
+              style={{ backgroundColor: "#0D0B0E", borderColor: "#3B3B3B" }}
             >
-              <MapPin className="h-4 w-4 text-primary" />
+              <MapPin className="h-4 w-4 shrink-0" style={{ color: "#9A8174" }} />
               <div>
-                <div className="text-xs font-semibold">Ships to 15+ ports</div>
-                <div className="text-[10px] text-muted-foreground">Lagos · Mombasa · Durban</div>
+                <div className="text-xs font-semibold" style={{ color: "#FBFFF4" }}>Ships to 15+ ports</div>
+                <div className="text-[10px]" style={{ color: "rgba(251,255,244,0.4)" }}>Lagos · Mombasa · Durban</div>
               </div>
             </motion.div>
           </motion.div>
         </div>
       </div>
 
-      {/* ── Bottom search bar ── */}
+      {/* Bottom search bar */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ delay: 0.8, duration: 0.6, ease: "easeOut" }}
         className="relative z-10 mx-8 md:mx-14 mb-10"
       >
-        <div className="bg-card border border-border rounded-2xl px-6 py-4 flex flex-wrap md:flex-nowrap items-center gap-4">
-          {/* Type */}
+        <div className="rounded-2xl px-6 py-4 flex flex-wrap md:flex-nowrap items-center gap-4 border" style={{ backgroundColor: "#0D0B0E", borderColor: "#3B3B3B" }}>
           <div className="flex items-center gap-3 flex-1 min-w-[140px]">
-            <Car className="h-4 w-4 text-primary shrink-0" />
+            <Car className="h-4 w-4 shrink-0" style={{ color: "#9A8174" }} />
             <div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Type</div>
-              <select className="bg-transparent text-sm font-medium text-foreground outline-none cursor-pointer mt-0.5">
+              <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(251,255,244,0.4)" }}>Type</div>
+              <select className="text-sm font-medium outline-none cursor-pointer mt-0.5" style={{ backgroundColor: "transparent", color: "#FBFFF4" }}>
                 <option value="">All vehicles</option>
                 <option value="car">Cars</option>
                 <option value="bike">Bikes</option>
@@ -266,30 +284,28 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="w-px h-8 bg-border hidden md:block" />
+          <div className="w-px h-8 hidden md:block" style={{ backgroundColor: "#3B3B3B" }} />
 
-          {/* Destination */}
           <div className="flex items-center gap-3 flex-1 min-w-[160px]">
-            <MapPin className="h-4 w-4 text-primary shrink-0" />
+            <MapPin className="h-4 w-4 shrink-0" style={{ color: "#9A8174" }} />
             <div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Destination</div>
-              <select className="bg-transparent text-sm font-medium text-foreground outline-none cursor-pointer mt-0.5">
+              <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(251,255,244,0.4)" }}>Destination</div>
+              <select className="text-sm font-medium outline-none cursor-pointer mt-0.5" style={{ backgroundColor: "transparent", color: "#FBFFF4" }}>
                 <option value="">Any country</option>
-                {["Nigeria","Kenya","Ghana","South Africa","Ethiopia","Tanzania","Uganda","Egypt","Morocco","Senegal"].map(c => (
+                {["Nigeria","Kenya","Ghana","South Africa","Ethiopia","Tanzania","Egypt","Morocco","Senegal","Ivory Coast"].map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          <div className="w-px h-8 bg-border hidden md:block" />
+          <div className="w-px h-8 hidden md:block" style={{ backgroundColor: "#3B3B3B" }} />
 
-          {/* Budget */}
           <div className="flex items-center gap-3 flex-1 min-w-[160px]">
-            <span className="text-primary text-sm font-bold shrink-0">$</span>
+            <span className="text-sm font-bold shrink-0" style={{ color: "#9A8174" }}>$</span>
             <div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Max budget (USD)</div>
-              <select className="bg-transparent text-sm font-medium text-foreground outline-none cursor-pointer mt-0.5">
+              <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(251,255,244,0.4)" }}>Max budget (USD)</div>
+              <select className="text-sm font-medium outline-none cursor-pointer mt-0.5" style={{ backgroundColor: "transparent", color: "#FBFFF4" }}>
                 <option value="">Any price</option>
                 <option value="50000">Up to $50,000</option>
                 <option value="100000">Up to $100,000</option>
@@ -301,28 +317,27 @@ export function HeroSection() {
 
           <Link
             href="/browse"
-            className="shrink-0 bg-primary text-primary-foreground font-semibold text-sm px-7 py-3 rounded-xl hover:bg-primary/90 transition-colors"
+            className="shrink-0 text-sm font-semibold px-8 py-3 rounded-xl transition-opacity hover:opacity-90"
+            style={{ backgroundColor: "#9A8174", color: "#FBFFF4" }}
           >
             Search
           </Link>
         </div>
       </motion.div>
 
-      {/* ── Partner/brand logos bar ── */}
+      {/* UAE ports strip */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 0.6 }}
-        className="px-8 md:px-14 pb-10"
+        className="px-8 md:px-14 pb-10 flex flex-wrap items-center gap-6 md:gap-10"
       >
-        <div className="flex flex-wrap items-center gap-6 md:gap-10">
-          <span className="text-xs text-muted-foreground/50 uppercase tracking-widest">Ships from</span>
-          {["Jebel Ali", "Sharjah Port", "Port Rashid", "Abu Dhabi Port"].map((port) => (
-            <span key={port} className="text-sm text-muted-foreground/40 font-semibold tracking-wide">
-              {port}
-            </span>
-          ))}
-        </div>
+        <span className="text-xs uppercase tracking-widest" style={{ color: "rgba(251,255,244,0.25)" }}>Ships from</span>
+        {["Jebel Ali", "Sharjah Port", "Port Rashid", "Abu Dhabi Port"].map((port) => (
+          <span key={port} className="text-sm font-semibold tracking-wide" style={{ color: "rgba(251,255,244,0.25)" }}>
+            {port}
+          </span>
+        ))}
       </motion.div>
 
     </section>
