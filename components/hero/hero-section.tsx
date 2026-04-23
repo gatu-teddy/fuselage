@@ -53,10 +53,10 @@ export function HeroSection() {
       </nav>
 
       {/* Main split */}
-      <div className="relative flex-1 flex items-center px-8 md:px-14 py-12 gap-12">
+      <div className="relative flex-1 flex items-stretch gap-0">
 
         {/* LEFT — text */}
-        <div className="relative z-10 w-full max-w-lg shrink-0">
+        <div className="relative z-10 w-full max-w-xl shrink-0 flex flex-col justify-center px-8 md:px-14 py-12">
 
           <motion.div
             custom={0} variants={fadeUp} initial="hidden" animate="show"
@@ -124,13 +124,12 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* RIGHT — horizontal scrolling car carousel */}
+        {/* RIGHT — full-bleed image slideshow */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="flex-1 min-w-0 flex items-center"
-          style={{ minHeight: 340 }}
+          className="flex-1 min-w-0 relative"
         >
           <CarCarousel />
         </motion.div>
