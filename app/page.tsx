@@ -25,23 +25,29 @@ const c = {
   muted:       "#64748B",   // Muted / placeholder text
 };
 
-// ─── Stitch image assets ─────────────────────────────────────────────────────
+// ─── Stitch image assets (full URLs) ─────────────────────────────────────────
 const STITCH = {
   // Landing page hero — Porsche 911 being loaded into shipping container
   heroBg:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuCGaHS6gz6dJxeezM-JE2FjaLCXTZc8RZreIKQCImymQpCf51rhwcOhLgfUrOL8bpo6TU0IFRA-UmJW14RMT7C937Xh7V5kelCiD5Qc8D3n_LhCPHZ0J2GIP2vYVheCW4a3_il8_DbQoSABp21z2KjegIBn9xG42ON_-kdwwyQgWpG3PxN2c3k3mZIiE9l9cdLtFqb6bev6qjKAcGtx3_G2JdPJuN1S_HdKJ5MDe_QpTS3qNPedRgUlKq6O0SMAfOjUI0O8vQTz47s",
-  // Mercedes-AMG G63 — white, Dubai desert (Vetted Marketplace screen)
+  // Mercedes-AMG G63 — white, Dubai desert
   g63:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDwIeFdGZKiF_5ElpeZR65A-cloxXDBLwrgjR737hUL_qwSr2VkHo4lDQjo9hUTOT4jLA",
-  // Silver Porsche 911 Carrera on coastal road
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDwIeFdGZKiF_5ElpeZR65A-cloxXDBLwrgjR737hUL_qwSr2VkHo4lDQjo9hUTOT4jLAuK8khxFII0Y6ArWvo5f_1J8ACmGPbjlIz07OH4m6m9c3LN_fKBIWUX5IQHZZUS00iAnF2UpIafNr3TXGF_p2Y-jRXqM_VFC2yQ4enj6ZRwBAy0erlN7_e-H_J0PjNcL3VUq1p_4GBTkVIrlioT9cWqmyxnZ31LDXOqduw7aOzGGzjwkjye_GXzLuREdDVluwRaEUadM5Y",
+  // Silver Porsche 911 Carrera on coastal road at dusk
   porsche911:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAuHkVfg0VUaZSNsKiLEIeD8yMNnSVXcjBYGPiPukKpxmqQbVFWB3tN9Qw0FRmp-5djgb",
-  // Black BMW M5
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAuHkVfg0VUaZSNsKiLEIeD8yMNnSVXcjBYGPiPukKpxmqQbVFWB3tN9Qw0FRmp-5djgbBqTie2C91uZ9a01MtI5aeMbn3nhGlZ1SM2Dg33HGEcKR1V2kcVRWnH1lJIzIAjcBbNj_IeYZSf2U_T60hzHfdEERIEKwk0TCdQU8OaBjB842ts4fHX0pGtwFqHUrGHtysQq1SmnUNn_zeRu2-63nx4UsO99BISyyzrOTItMYMALTN0PF90gMUnnX-Cz2Mjmdo7cruBAiY",
+  // Black BMW M5 — minimalist concrete showroom
   bmwM5:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuBPSPgXddMyCczflpuV_PXhTfMIzpJNRUJ5-lhrceZ94TEczZ3-DIMsOH74dq8DXetMGH",
-  // Ferrari F8 Tributo red
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBPSPgXddMyCczflpuV_PXhTfMIzpJNRUJ5-lhrceZ94TEczZ3-DIMsOH74dq8DXetMGHSHX0ZiJ3EMI7XJW8tQTYOxlFp6rfZFP5RUkj8IZThSMOY1maC4FoLcymlbT8W6Mf6sibbEhEPkU2jhjBe7Y7XZ3LPx9boudLx4ZL10jg25UdU6NPWCwwSF8AaowzFXrQ4bQSF45y4LCAEhpcP3nHp4xouXS_akGVI-ZxZocKBXDgRWh_MhauW001NWA7njdpwergrcTe4",
+  // Ferrari F8 Tributo — red, cobblestone street
   ferrari:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAmUhwT_Qkg--4MYWFkrfdFh_QbGTMUMWjTwZ9WVhjZtnkLgIOi85cSu9W-vkwky_dcyf",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAmUhwT_Qkg--4MYWFkrfdFh_QbGTMUMWjTwZ9WVhjZtnkLgIOi85cSu9W-vkwky_dcyfIEwjqLCm45Er6qyeX3QBMGhTu5YilYoU7CKeYet43h7ZOoRlIynVUSEsN7-EBQpW16Tfioz2pxSYyR6w_Fer9AN5VnkkjcuiVCQHtt9ACExiap-eWMPLQG12Y0zKIPsQLzovFtliN4xzkkFRbSmFNlsN94DICFJy35EzJAvgU35uaiSqJ8avYiaJAOxnW3f04N9y5MI98",
+  // Dark blue Porsche Taycan Turbo S — Tokyo charging station
+  taycan:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAR32qU3CxpLdqDlBJllf-_HfAH7Ep47oAB884bg0pJKitMNAehj1VE6fbLSL1nsrQ4SQrpoMAj-4N9xP_xxpVr1aL1_lnekVH-atRs9WltfpVIMbxhwsQq_NXbEhGEQ6f94AiGsBjRUz55CaApaSOOaIFWlfTlsG1HIHhE9JZK01AUlPMEUxVACmrPpiFkYrRd8FbY8vrvZGS81jDyomtWLi3aTPUwXxMqfcbuJDT4Zu6a99ydzz7BDDn6FCl9jdSVXRCCpI9jbwA",
+  // Gray BMW M4 — suspension bridge, Hong Kong
+  bmwM4:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAhuA6ULhT-NFhGxYBCcqHtfhY_qNsR-atHHz6efPB5Zg-bTNsRwAeQMBBeLYjnuUYUl4jh0ksxpj2NUGt0pkvwTGzvvlDY0i_mplSKvv5NqgQ6RJ9OUkjNxAz78YjmsijgOq1b51e-pWKAm-p14JeNH8PAmB6o9EYgm2K_FTOl-VhEuPQZ9MSspFa5L0NHydbkE5HLiiN5hXAwQSJ0pTMlfjWAfi6u_Z5qN3vFwneXVlPtHGgcmUycK6oTyi9JibBhkQ6KQTMCRBs",
 };
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -200,10 +206,10 @@ export default function LandingPage() {
           />
         </div>
 
-        <div className="relative max-w-[1280px] mx-auto px-8 md:px-16 py-20 md:py-28 flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
+        <div className="relative max-w-[1280px] mx-auto px-8 md:px-16 py-24 md:py-36">
 
-          {/* Left — copy */}
-          <div className="flex-1 min-w-0">
+          {/* Copy — full width, left-aligned */}
+          <div className="max-w-2xl">
             <div
               style={{ backgroundColor: c.greenBg, color: c.greenText }}
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6"
@@ -250,66 +256,6 @@ export default function LandingPage() {
                   <div style={{ color: "rgba(255,255,255,0.45)" }} className="text-xs mt-0.5">{label}</div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Right — in-transit vehicle card */}
-          <div className="w-full lg:w-[400px] shrink-0">
-            <div style={{ backgroundColor: c.surface, borderRadius: "0.5rem" }} className="p-6 shadow-2xl">
-              {/* G63 image from Stitch */}
-              <div className="relative aspect-video rounded-md overflow-hidden mb-5">
-                <Image
-                  src={STITCH.g63}
-                  alt="Mercedes-AMG G63 — white, Dubai desert"
-                  fill
-                  className="object-cover"
-                  sizes="400px"
-                />
-              </div>
-
-              {/* Title row */}
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div>
-                  <h3 style={{ color: c.primary }} className="font-semibold text-base leading-snug">
-                    2023 Mercedes-Benz G63 AMG
-                  </h3>
-                  <p style={{ color: c.muted }} className="text-xs mt-0.5">VIN: WDC4636251X123456</p>
-                </div>
-                <span
-                  style={{ backgroundColor: c.greenBg, color: c.greenText, whiteSpace: "nowrap" }}
-                  className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                >
-                  In Transit
-                </span>
-              </div>
-
-              {/* Shipment stepper */}
-              <div style={{ borderTop: `1px solid ${c.border}` }} className="pt-4 space-y-3">
-                <p style={{ color: c.muted }} className="text-xs font-semibold uppercase tracking-widest mb-3">
-                  Shipment Status
-                </p>
-                {transitSteps.map(({ label, done, active }) => (
-                  <div key={label} className="flex items-center gap-3">
-                    <div
-                      style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        flexShrink: 0,
-                        backgroundColor: done ? c.green : active ? c.primary : c.border,
-                      }}
-                    />
-                    <span
-                      style={{ color: done || active ? c.body : c.muted }}
-                      className="text-xs flex-1"
-                    >
-                      {label}
-                    </span>
-                    {done   && <CheckCircle2 style={{ color: c.green }}   className="h-3.5 w-3.5 shrink-0" />}
-                    {active && <Clock        style={{ color: c.primary }} className="h-3.5 w-3.5 shrink-0" />}
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -399,27 +345,16 @@ export default function LandingPage() {
             }}
             className="p-8 grid md:grid-cols-2 gap-8"
           >
-            {/* Vehicle image */}
-            <div className="relative aspect-video rounded-md overflow-hidden mb-5 md:hidden">
-              <Image
-                src={STITCH.g63}
-                alt="Mercedes-AMG G63"
-                fill
-                className="object-cover"
-                sizes="600px"
-              />
-            </div>
-
             {/* Vehicle info */}
             <div>
-              {/* G63 image — desktop, above badges */}
-              <div className="relative aspect-video rounded-md overflow-hidden mb-5 hidden md:block">
+              {/* G63 — Stitch image */}
+              <div className="relative w-full rounded-md overflow-hidden mb-5" style={{ aspectRatio: "16/9" }}>
                 <Image
                   src={STITCH.g63}
                   alt="Mercedes-AMG G63 — white, Dubai desert"
                   fill
                   className="object-cover"
-                  sizes="600px"
+                  sizes="(max-width: 768px) 100vw, 600px"
                 />
               </div>
               <div className="flex items-center gap-3 mb-4">
