@@ -232,16 +232,16 @@ export function BrowseFilters({ currentParams }: Props) {
         <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
           Price Range (USD)
         </p>
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4" style={{ width: "100%" }}>
           <input
             type="number"
             placeholder="Min"
             value={min}
             onChange={(e) => setMin(e.target.value)}
             style={{
-              flex: 1, height: "36px", fontSize: "14px", outline: "none",
+              width: 0, flex: 1, minWidth: 0, height: "36px", fontSize: "13px", outline: "none",
               border: `1px solid ${c.border}`, borderRadius: "6px",
-              color: c.body, backgroundColor: c.surface, paddingLeft: "10px",
+              color: c.body, backgroundColor: c.surface, paddingLeft: "8px",
             }}
           />
           <input
@@ -250,9 +250,9 @@ export function BrowseFilters({ currentParams }: Props) {
             value={max}
             onChange={(e) => setMax(e.target.value)}
             style={{
-              flex: 1, height: "36px", fontSize: "14px", outline: "none",
+              width: 0, flex: 1, minWidth: 0, height: "36px", fontSize: "13px", outline: "none",
               border: `1px solid ${c.border}`, borderRadius: "6px",
-              color: c.body, backgroundColor: c.surface, paddingLeft: "10px",
+              color: c.body, backgroundColor: c.surface, paddingLeft: "8px",
             }}
           />
         </div>
