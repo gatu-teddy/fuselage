@@ -2,18 +2,30 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+
+const c = {
+  primary:   "#0F172A",
+  green:     "#10B981",
+  greenBg:   "#D1FAE5",
+  greenText: "#065F46",
+  bg:        "#F8FAFC",
+  surface:   "#FFFFFF",
+  border:    "#E2E8F0",
+  muted:     "#64748B",
+  body:      "#334155",
+  error:     "#EF4444",
+  errorBg:   "#FEF2F2",
+};
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw]     = useState(false);
+  const [error, setError]       = useState("");
+  const [loading, setLoading]   = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -33,60 +45,111 @@ export default function LoginPage() {
       .single();
 
     const role = profile?.role;
-    if (role === "seller") router.push("/seller/dashboard");
-    else if (role === "admin") router.push("/admin/applications");
-    else router.push("/browse");
+    if (role === "seller")      router.push("/seller/dashboard");
+    else if (role === "admin")  router.push("/admin/applications");
+    else                        router.push("/browse");
   }
 
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
-      </div>
+  const inputStyle: React.CSSProperties = {
+    width: "100%", height: "44px",
+    border: `1px solid ${c.border}`, borderRadius: "8px",
+    padding: "0 12px", fontSize: "15px", outline: "none",
+    color: c.primary, backgroundColor: c.surface,
+    fontFamily: "Inter, sans-serif",
+    boxSizing: "border-box",
+  };
 
-      <div className="relative w-full max-w-md">
+  return (
+    <div
+      style={{ backgroundColor: c.bg, fontFamily: "Inter, sans-serif", minHeight: "100vh" }}
+      className="flex items-center justify-center px-4"
+    >
+      <div style={{ width: "100%", maxWidth: "420px" }}>
+
+        {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-black">F</span>
+          <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+            <div style={{ backgroundColor: c.primary, width: "36px", height: "36px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: "15px" }}>F</span>
             </div>
-            <span className="font-bold text-xl">Fuselage</span>
+            <span style={{ color: c.primary, fontWeight: 800, fontSize: "20px", letterSpacing: "-0.5px" }}>Fuselage</span>
           </Link>
+          <p style={{ color: c.muted, fontSize: "14px", marginTop: "8px" }}>Sign in to your account</p>
         </div>
 
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-xl">Sign in</CardTitle>
-            <CardDescription>Access your Fuselage account</CardDescription>
-          </CardHeader>
-          <form onSubmit={handleLogin}>
-            <CardContent className="space-y-4">
-              {error && (
-                <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
-                  {error}
-                </div>
-              )}
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        {/* Card */}
+        <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "12px", padding: "32px" }}>
+
+          {/* Error */}
+          {error && (
+            <div style={{ backgroundColor: c.errorBg, border: `1px solid ${c.error}30`, borderRadius: "8px", padding: "10px 14px", marginBottom: "20px" }}>
+              <p style={{ color: c.error, fontSize: "13px" }}>{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+            {/* Email */}
+            <div>
+              <label style={{ color: c.primary, fontSize: "13px", fontWeight: 600, display: "block", marginBottom: "6px" }}>
+                Email address
+              </label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={inputStyle}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label style={{ color: c.primary, fontSize: "13px", fontWeight: 600, display: "block", marginBottom: "6px" }}>
+                Password
+              </label>
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showPw ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  style={{ ...inputStyle, paddingRight: "44px" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(!showPw)}
+                  style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, color: c.muted }}
+                >
+                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Signing in…" : "Sign in"}
-              </Button>
-              <p className="text-sm text-muted-foreground text-center">
-                No account?{" "}
-                <Link href="/register" className="text-primary font-medium hover:underline">Register</Link>
-              </p>
-            </CardFooter>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                backgroundColor: loading ? c.muted : c.primary,
+                color: "#fff", width: "100%", height: "44px",
+                borderRadius: "8px", border: "none", cursor: loading ? "not-allowed" : "pointer",
+                fontSize: "15px", fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                transition: "opacity 0.15s",
+              }}
+            >
+              {loading ? "Signing in…" : <>Sign in <ArrowRight className="h-4 w-4" /></>}
+            </button>
           </form>
-        </Card>
+
+          <p style={{ color: c.muted, fontSize: "13px", textAlign: "center", marginTop: "20px" }}>
+            No account?{" "}
+            <Link href="/register" style={{ color: c.green, fontWeight: 600, textDecoration: "none" }}>
+              Create one
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
