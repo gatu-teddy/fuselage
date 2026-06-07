@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Shield,
   FileCheck,
@@ -7,8 +8,6 @@ import {
   Clock,
   MapPin,
   ArrowRight,
-  ChevronRight,
-  Star,
   Globe,
 } from "lucide-react";
 
@@ -24,6 +23,25 @@ const c = {
   surface:     "#FFFFFF",   // Card / elevated surface
   border:      "#E2E8F0",   // Default border
   muted:       "#64748B",   // Muted / placeholder text
+};
+
+// ─── Stitch image assets ─────────────────────────────────────────────────────
+const STITCH = {
+  // Landing page hero — Porsche 911 being loaded into shipping container
+  heroBg:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCGaHS6gz6dJxeezM-JE2FjaLCXTZc8RZreIKQCImymQpCf51rhwcOhLgfUrOL8bpo6TU0IFRA-UmJW14RMT7C937Xh7V5kelCiD5Qc8D3n_LhCPHZ0J2GIP2vYVheCW4a3_il8_DbQoSABp21z2KjegIBn9xG42ON_-kdwwyQgWpG3PxN2c3k3mZIiE9l9cdLtFqb6bev6qjKAcGtx3_G2JdPJuN1S_HdKJ5MDe_QpTS3qNPedRgUlKq6O0SMAfOjUI0O8vQTz47s",
+  // Mercedes-AMG G63 — white, Dubai desert (Vetted Marketplace screen)
+  g63:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDwIeFdGZKiF_5ElpeZR65A-cloxXDBLwrgjR737hUL_qwSr2VkHo4lDQjo9hUTOT4jLA",
+  // Silver Porsche 911 Carrera on coastal road
+  porsche911:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAuHkVfg0VUaZSNsKiLEIeD8yMNnSVXcjBYGPiPukKpxmqQbVFWB3tN9Qw0FRmp-5djgb",
+  // Black BMW M5
+  bmwM5:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBPSPgXddMyCczflpuV_PXhTfMIzpJNRUJ5-lhrceZ94TEczZ3-DIMsOH74dq8DXetMGH",
+  // Ferrari F8 Tributo red
+  ferrari:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAmUhwT_Qkg--4MYWFkrfdFh_QbGTMUMWjTwZ9WVhjZtnkLgIOi85cSu9W-vkwky_dcyf",
 };
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -156,16 +174,31 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ────────────────────────────────────────────────────────────── */}
-      <section style={{ backgroundColor: c.primary }} className="relative overflow-hidden">
-        {/* subtle grid texture */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
+      <section className="relative overflow-hidden min-h-[640px]">
+        {/* Full-bleed Stitch background image */}
+        <div className="absolute inset-0">
+          <Image
+            src={STITCH.heroBg}
+            alt="Premium luxury vehicle in transit"
+            fill
+            className="object-cover object-center"
+            priority
+            sizes="100vw"
+          />
+          {/* Dark gradient — left-heavy so text stays readable */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(15,23,42,0.97) 0%, rgba(15,23,42,0.85) 45%, rgba(15,23,42,0.5) 70%, rgba(15,23,42,0.2) 100%)",
+            }}
+          />
+          {/* Bottom fade to surface */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-24"
+            style={{ background: `linear-gradient(to bottom, transparent, ${c.bg})` }}
+          />
+        </div>
 
         <div className="relative max-w-[1280px] mx-auto px-8 md:px-16 py-20 md:py-28 flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
 
@@ -223,12 +256,15 @@ export default function LandingPage() {
           {/* Right — in-transit vehicle card */}
           <div className="w-full lg:w-[400px] shrink-0">
             <div style={{ backgroundColor: c.surface, borderRadius: "0.5rem" }} className="p-6 shadow-2xl">
-              {/* Placeholder image */}
-              <div
-                style={{ backgroundColor: c.bgDim, borderRadius: "0.375rem" }}
-                className="aspect-video flex items-center justify-center mb-5"
-              >
-                <span style={{ color: c.muted }} className="text-sm font-medium">Vehicle Image</span>
+              {/* G63 image from Stitch */}
+              <div className="relative aspect-video rounded-md overflow-hidden mb-5">
+                <Image
+                  src={STITCH.g63}
+                  alt="Mercedes-AMG G63 — white, Dubai desert"
+                  fill
+                  className="object-cover"
+                  sizes="400px"
+                />
               </div>
 
               {/* Title row */}
@@ -363,8 +399,29 @@ export default function LandingPage() {
             }}
             className="p-8 grid md:grid-cols-2 gap-8"
           >
+            {/* Vehicle image */}
+            <div className="relative aspect-video rounded-md overflow-hidden mb-5 md:hidden">
+              <Image
+                src={STITCH.g63}
+                alt="Mercedes-AMG G63"
+                fill
+                className="object-cover"
+                sizes="600px"
+              />
+            </div>
+
             {/* Vehicle info */}
             <div>
+              {/* G63 image — desktop, above badges */}
+              <div className="relative aspect-video rounded-md overflow-hidden mb-5 hidden md:block">
+                <Image
+                  src={STITCH.g63}
+                  alt="Mercedes-AMG G63 — white, Dubai desert"
+                  fill
+                  className="object-cover"
+                  sizes="600px"
+                />
+              </div>
               <div className="flex items-center gap-3 mb-4">
                 <span
                   style={{ backgroundColor: c.greenBg, color: c.greenText }}
