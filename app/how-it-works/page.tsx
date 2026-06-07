@@ -10,6 +10,10 @@ import {
   Search,
   Video,
   Package,
+  Lock,
+  UserCheck,
+  ClipboardCheck,
+  ShieldCheck,
 } from "lucide-react";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
@@ -40,6 +44,12 @@ const img = {
   // Step 04 — Porsche 911 being loaded into shipping container
   shipping:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuCGaHS6gz6dJxeezM-JE2FjaLCXTZc8RZreIKQCImymQpCf51rhwcOhLgfUrOL8bpo6TU0IFRA-UmJW14RMT7C937Xh7V5kelCiD5Qc8D3n_LhCPHZ0J2GIP2vYVheCW4a3_il8_DbQoSABp21z2KjegIBn9xG42ON_-kdwwyQgWpG3PxN2c3k3mZIiE9l9cdLtFqb6bev6qjKAcGtx3_G2JdPJuN1S_HdKJ5MDe_QpTS3qNPedRgUlKq6O0SMAfOjUI0O8vQTz47s",
+  // Security section — dark Atlantic shipping route map
+  atlanticMap:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuA3RCvVB9KWdOWUlooqQyuM_O7rlwpdu-mfagKdUaQUD3ordCamGg4VHmxJDmOvJ6wsk6512pr9J0--q2axmB0CcUrDMJBEpEvYHE7Z_NjahR3FusrfWlRkwINsN1VtnHX6AAq5uM5rGLq3Fv3c2xCWPDn6As0NMJKOSJxYM6mDFmIQW21N8I7L4AIpG0PcdOYhIfeopiyrCQTKkrWyLQo25ZXlbBvu1KY_v0_wRnPuP7AXWc5IsJpiR7ggv1mNZfsbNfYUBN2iFI4",
+  // Security section — Porsche 911 Carrera on coastal road at dusk
+  porsche911:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAuHkVfg0VUaZSNsKiLEIeD8yMNnSVXcjBYGPiPukKpxmqQbVFWB3tN9Qw0FRmp-5djgbBqTie2C91uZ9a01MtI5aeMbn3nhGlZ1SM2Dg33HGEcKR1V2kcVRWnH1lJIzIAjcBbNj_IeYZSf2U_T60hzHfdEERIEKwk0TCdQU8OaBjB842ts4fHX0pGtwFqHUrGHtysQq1SmnUNn_zeRu2-63nx4UsO99BISyyzrOTItMYMALTN0PF90gMUnnX-Cz2Mjmdo7cruBAiY",
 };
 
 // ─── Step data ────────────────────────────────────────────────────────────────
@@ -305,6 +315,129 @@ export default function HowItWorksPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── SECURITY SECTION ────────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: c.bg, borderTop: `1px solid ${c.border}` }} className="py-20">
+        <div className="max-w-[1280px] mx-auto px-8 md:px-16">
+
+          {/* Header */}
+          <div className="text-center mb-14">
+            <p style={{ color: c.green }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+              Our Security Process
+            </p>
+            <h2 style={{ color: c.primary, letterSpacing: "-0.01em" }} className="text-4xl font-bold mb-3">
+              Multi-Layer Protection at Every Stage
+            </h2>
+            <p style={{ color: c.muted }} className="text-lg max-w-xl mx-auto leading-relaxed">
+              Every vehicle undergoes rigorous multi-layer verification before export eligibility is granted. No shortcuts, no exceptions.
+            </p>
+          </div>
+
+          {/* Image + pillars */}
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-16">
+            <div className="relative w-full rounded-md overflow-hidden" style={{ aspectRatio: "4/3" }}>
+              <Image
+                src={img.atlanticMap}
+                alt="Shipping route tracking across the Atlantic Ocean"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 600px"
+              />
+            </div>
+            <div className="grid grid-cols-1 gap-5">
+              {[
+                {
+                  icon: UserCheck,
+                  title: "Seller Identity Verification",
+                  body: "Every exporter submits their UAE trade licence. We manually verify each business before they can list a single vehicle. No anonymous sellers.",
+                },
+                {
+                  icon: ClipboardCheck,
+                  title: "Vehicle Provenance Check",
+                  body: "Title history, VIN authenticity, and ownership chain are verified independently before a listing goes live. You see the VIN before you inquire.",
+                },
+                {
+                  icon: ShieldCheck,
+                  title: "Export Compliance Review",
+                  body: "Our legal team reviews all export documentation against UAE regulations and the destination country's import requirements before transit is approved.",
+                },
+                {
+                  icon: Lock,
+                  title: "End-to-End Deal Logging",
+                  body: "Every message, document upload, status update, and payment confirmation is permanently logged on-platform. Full audit trail, always.",
+                },
+              ].map(({ icon: Icon, title, body }) => (
+                <div
+                  key={title}
+                  style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "0.5rem" }}
+                  className="flex gap-4 p-5"
+                >
+                  <div
+                    style={{ backgroundColor: c.greenBg, width: "40px", height: "40px", borderRadius: "0.375rem", flexShrink: 0 }}
+                    className="flex items-center justify-center"
+                  >
+                    <Icon style={{ color: c.green }} className="h-4.5 w-4.5" />
+                  </div>
+                  <div>
+                    <p style={{ color: c.primary }} className="font-semibold text-sm mb-1">{title}</p>
+                    <p style={{ color: c.muted }} className="text-xs leading-relaxed">{body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Second visual — Porsche on coastal road + security guarantee strip */}
+          <div
+            style={{
+              backgroundColor: c.primary,
+              borderRadius: "0.75rem",
+              overflow: "hidden",
+            }}
+            className="grid md:grid-cols-2"
+          >
+            <div className="relative" style={{ minHeight: "320px" }}>
+              <Image
+                src={img.porsche911}
+                alt="Silver Porsche 911 Carrera — verified and ready for export"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 640px"
+              />
+              {/* Subtle gradient so text on right doesn't bleed */}
+              <div
+                className="absolute inset-0 hidden md:block"
+                style={{ background: "linear-gradient(to right, transparent 60%, rgba(15,23,42,0.6) 100%)" }}
+              />
+            </div>
+            <div className="p-10 flex flex-col justify-center">
+              <p style={{ color: c.green }} className="text-xs font-semibold uppercase tracking-widest mb-4">
+                Our Guarantee
+              </p>
+              <h3 className="text-2xl font-bold text-white mb-4" style={{ letterSpacing: "-0.01em" }}>
+                If it doesn't pass, it doesn't ship.
+              </h3>
+              <p style={{ color: "rgba(255,255,255,0.6)" }} className="text-sm leading-relaxed mb-6">
+                Any vehicle that fails our 200-point inspection or whose documentation cannot be fully authenticated is immediately delisted. Buyers are notified and the deal is cancelled at no cost.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "Failed inspections result in immediate delisting",
+                  "Document discrepancies halt transit automatically",
+                  "All exporters carry a verified deal history",
+                  "Every shipment is fully insured in transit",
+                ].map((point) => (
+                  <li key={point} className="flex items-start gap-2.5">
+                    <CheckCircle2 style={{ color: c.green }} className="h-4 w-4 mt-0.5 shrink-0" />
+                    <span style={{ color: "rgba(255,255,255,0.75)" }} className="text-sm">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
         </div>
       </section>
 
