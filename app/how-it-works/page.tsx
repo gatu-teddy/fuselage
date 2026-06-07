@@ -27,8 +27,20 @@ const c = {
 };
 
 // ─── Stitch images ────────────────────────────────────────────────────────────
-const eliteVehicleSelection =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuDqHBwPHygOTZpaQqCpzgXkG3gAXV6OX758Jg7wCXcN9gHoS0JgexJmKlpAWq5MapbIWndR3u2-KpAbZ_jxQHaLGFZmv1f6G5z8LcAW9aFEK2a87vux28gDCeQp61DzN9dftwbGZzh21xHh42KOHF3Ao7MkF7cUk9jZMr_jxDq0H33sS0R5pPhyNhx4nSaRCqBagnWo_o7b0X_D0GtoHtb7M8P6g3-0Q6vw3WjL55udo6zyDNQ0ENfdX8Priqc1cLYNK41l58EOY7U";
+const img = {
+  // Step 01 — BMW M5 in minimalist concrete showroom
+  bmwM5:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBPSPgXddMyCczflpuV_PXhTfMIzpJNRUJ5-lhrceZ94TEczZ3-DIMsOH74dq8DXetMGHSHX0ZiJ3EMI7XJW8tQTYOxlFp6rfZFP5RUkj8IZThSMOY1maC4FoLcymlbT8W6Mf6sibbEhEPkU2jhjBe7Y7XZ3LPx9boudLx4ZL10jg25UdU6NPWCwwSF8AaowzFXrQ4bQSF45y4LCAEhpcP3nHp4xouXS_akGVI-ZxZocKBXDgRWh_MhauW001NWA7njdpwergrcTe4",
+  // Step 02 — Elite vehicle selection & inspection
+  eliteVehicleSelection:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDqHBwPHygOTZpaQqCpzgXkG3gAXV6OX758Jg7wCXcN9gHoS0JgexJmKlpAWq5MapbIWndR3u2-KpAbZ_jxQHaLGFZmv1f6G5z8LcAW9aFEK2a87vux28gDCeQp61DzN9dftwbGZzh21xHh42KOHF3Ao7MkF7cUk9jZMr_jxDq0H33sS0R5pPhyNhx4nSaRCqBagnWo_o7b0X_D0GtoHtb7M8P6g3-0Q6vw3WjL55udo6zyDNQ0ENfdX8Priqc1cLYNK41l58EOY7U",
+  // Step 03 — Logistics map interface
+  logisticsMap:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAlYxiq6lCJ5BNgvKq-v2mC_EERTK60IkZXlYvT5rw7mibD362LOEWswuFBmoY2hbG3ViMcfke11tHd3c0MJht5reuIExAWTrftsHVIL1vnvwtv67DU3EN6eJFK-z8T4W0G5LuxseCu1y4KndYmu8KBDoxSAvn_MMs69pO2TA_b1EI0ICKxjFL1hkgwFBiJfOF7kAj8N-xmaj39c72P9J2X_AP4gI35FzVi7w0kEKd8QJhTF9WpvV2x69V76ShM6Os-OMO2namzmpA",
+  // Step 04 — Porsche 911 being loaded into shipping container
+  shipping:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCGaHS6gz6dJxeezM-JE2FjaLCXTZc8RZreIKQCImymQpCf51rhwcOhLgfUrOL8bpo6TU0IFRA-UmJW14RMT7C937Xh7V5kelCiD5Qc8D3n_LhCPHZ0J2GIP2vYVheCW4a3_il8_DbQoSABp21z2KjegIBn9xG42ON_-kdwwyQgWpG3PxN2c3k3mZIiE9l9cdLtFqb6bev6qjKAcGtx3_G2JdPJuN1S_HdKJ5MDe_QpTS3qNPedRgUlKq6O0SMAfOjUI0O8vQTz47s",
+};
 
 // ─── Step data ────────────────────────────────────────────────────────────────
 const steps = [
@@ -42,7 +54,8 @@ const steps = [
       { icon: Shield,    label: "Title Pre-Screened" },
       { icon: FileCheck, label: "VIN on Every Listing" },
     ],
-    image: null,
+    image: img.bmwM5,
+    imageAlt: "Curated luxury vehicle — BMW M5 in minimalist showroom",
   },
   {
     n: "02",
@@ -50,11 +63,11 @@ const steps = [
     headline: "200-Point Physical Inspection by Certified Agents",
     body: "Our local agents carry out a mandatory 200-point physical inspection at the vehicle's location before export eligibility is granted. You receive a high-definition video report, direct mechanical diagnosis, and a certified condition certificate.",
     highlights: [
-      { icon: Shield, label: "200-Point Inspection" },
-      { icon: Video,  label: "HD Video Report" },
+      { icon: Shield,       label: "200-Point Inspection" },
+      { icon: Video,        label: "HD Video Report" },
       { icon: CheckCircle2, label: "Certified Condition Report" },
     ],
-    image: eliteVehicleSelection,
+    image: img.eliteVehicleSelection,
     imageAlt: "Elite vehicle selection and inspection process",
   },
   {
@@ -63,11 +76,12 @@ const steps = [
     headline: "Secure Legal Document Exchange",
     body: "Our platform manages the entire exchange of legal documents and title deeds. Every piece of paperwork — export licence, bill of lading, customs declaration, title deed — is verified and authenticated by our compliance team before ownership is formally transferred.",
     highlights: [
-      { icon: FileCheck, label: "Title & Ownership Verified" },
-      { icon: Shield,    label: "Export Paperwork Audited" },
+      { icon: FileCheck,    label: "Title & Ownership Verified" },
+      { icon: Shield,       label: "Export Paperwork Audited" },
       { icon: CheckCircle2, label: "Legal Compliance Sign-off" },
     ],
-    image: null,
+    image: img.logisticsMap,
+    imageAlt: "Logistics tracking and document management interface",
   },
   {
     n: "04",
@@ -75,11 +89,12 @@ const steps = [
     headline: "Insured Global Logistics, Door-to-Door",
     body: "Insured global logistics managed by Tier-1 shipping partners including Maersk, MSC, and CMA CGM. We handle all customs documentation, export duties, port fees, and coordinate door-to-door delivery to 15+ African ports. Track your vehicle in real time throughout.",
     highlights: [
-      { icon: Truck,  label: "Tier-1 Shipping Partners" },
-      { icon: Globe,  label: "15+ African Ports" },
+      { icon: Truck,   label: "Tier-1 Shipping Partners" },
+      { icon: Globe,   label: "15+ African Ports" },
       { icon: Package, label: "Real-Time GPS Tracking" },
     ],
-    image: null,
+    image: img.shipping,
+    imageAlt: "Luxury vehicle being loaded into shipping container",
   },
 ];
 
@@ -187,7 +202,7 @@ export default function HowItWorksPage() {
       {/* ── STEPS ───────────────────────────────────────────────────────────── */}
       <section style={{ backgroundColor: c.bg }} className="py-20">
         <div className="max-w-[1280px] mx-auto px-8 md:px-16 space-y-6">
-          {steps.map(({ n, phase, headline, body, highlights, image, imageAlt }, idx) => (
+          {steps.map(({ n, phase, headline, body, highlights, image, imageAlt = phase }, idx) => (
             <div
               key={n}
               style={{
@@ -228,32 +243,17 @@ export default function HowItWorksPage() {
                 </ul>
               </div>
 
-              {/* Image or decorative panel */}
-              <div className={idx % 2 === 1 && image ? "md:order-1" : ""}>
-                {image ? (
-                  <div className="relative w-full rounded-md overflow-hidden" style={{ aspectRatio: "4/3" }}>
-                    <Image
-                      src={image}
-                      alt={imageAlt ?? phase}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 600px"
-                    />
-                  </div>
-                ) : (
-                  <div
-                    style={{ backgroundColor: c.bgDim, borderRadius: "0.5rem", minHeight: "240px" }}
-                    className="flex flex-col items-center justify-center gap-4 p-8"
-                  >
-                    <div
-                      style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "0.5rem" }}
-                      className="w-16 h-16 flex items-center justify-center"
-                    >
-                      <span style={{ color: c.primary }} className="text-3xl font-black">{n}</span>
-                    </div>
-                    <p style={{ color: c.muted }} className="text-sm text-center font-medium">{phase}</p>
-                  </div>
-                )}
+              {/* Image */}
+              <div className={idx % 2 === 1 ? "md:order-1" : ""}>
+                <div className="relative w-full rounded-md overflow-hidden" style={{ aspectRatio: "4/3" }}>
+                  <Image
+                    src={image}
+                    alt={imageAlt ?? phase}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 600px"
+                  />
+                </div>
               </div>
             </div>
           ))}
