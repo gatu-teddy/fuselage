@@ -92,12 +92,12 @@ export default function LoginPage() {
         <div style={{ position: "relative", zIndex: 1 }}>
           {/* Logo */}
           <div style={{ marginBottom: "48px" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
               <div style={{ backgroundColor: c.green, width: "32px", height: "32px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "14px" }}>F</span>
               </div>
               <span style={{ color: "#fff", fontWeight: 800, fontSize: "18px", letterSpacing: "-0.5px" }}>Fuselage</span>
-            </div>
+            </Link>
           </div>
 
           <h2 style={{ color: "#fff", fontSize: "28px", fontWeight: 800, lineHeight: 1.2, marginBottom: "16px", letterSpacing: "-0.5px" }}>
@@ -247,13 +247,13 @@ export default function LoginPage() {
         {/* Footer */}
         <footer style={{ borderTop: `1px solid ${c.border}`, backgroundColor: c.surface, padding: "18px 32px" }}>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
               <div style={{ backgroundColor: c.primary, width: "20px", height: "20px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "10px" }}>F</span>
               </div>
               <span style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>Fuselage</span>
               <span style={{ color: c.muted, fontSize: "13px" }}>© 2026</span>
-            </div>
+            </Link>
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
               {[
                 { label: "Privacy", href: "/privacy" },

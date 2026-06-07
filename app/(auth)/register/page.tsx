@@ -220,13 +220,13 @@ function RegisterForm() {
         {/* Footer */}
         <footer style={{ borderTop: `1px solid ${c.border}`, backgroundColor: c.surface, padding: "18px 32px" }}>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
               <div style={{ backgroundColor: c.primary, width: "20px", height: "20px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "10px" }}>F</span>
               </div>
               <span style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>Fuselage</span>
               <span style={{ color: c.muted, fontSize: "13px" }}>© 2026</span>
-            </div>
+            </Link>
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
               {[
                 { label: "Privacy", href: "/privacy" },
