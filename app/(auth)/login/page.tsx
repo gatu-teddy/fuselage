@@ -119,14 +119,15 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ── Right panel — form ────────────────────────────────────────────── */}
+      {/* ── Right panel — form + footer ──────────────────────────────────── */}
       <div
         style={{
           flex: 1, backgroundColor: c.bg,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          padding: "40px 24px",
+          display: "flex", flexDirection: "column",
         }}
       >
+        {/* Form area */}
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 24px" }}>
         <div style={{ width: "100%", maxWidth: "400px" }}>
 
           {/* Mobile logo */}
@@ -241,6 +242,34 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
+        </div>
+
+        {/* Footer */}
+        <footer style={{ borderTop: `1px solid ${c.border}`, backgroundColor: c.surface, padding: "18px 32px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div style={{ backgroundColor: c.primary, width: "20px", height: "20px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ color: "#fff", fontWeight: 900, fontSize: "10px" }}>F</span>
+              </div>
+              <span style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>Fuselage</span>
+              <span style={{ color: c.muted, fontSize: "13px" }}>© 2026</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+              {[
+                { label: "Privacy", href: "/privacy" },
+                { label: "Terms",   href: "/terms" },
+                { label: "Contact", href: "/contact" },
+                { label: "Browse",  href: "/browse" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href} style={{ color: c.muted, fontSize: "13px", textDecoration: "none" }}
+                  className="hover:text-[#0F172A] transition-colors">
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <span style={{ color: c.muted, fontSize: "12px" }}>logistics@fuselage.io</span>
+          </div>
+        </footer>
       </div>
     </div>
   );
