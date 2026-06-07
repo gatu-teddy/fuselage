@@ -146,7 +146,7 @@ export default function LandingPage() {
             {[
               { label: "Browse",           href: "/browse" },
               { label: "Vetting Process",  href: "#services" },
-              { label: "How It Works",     href: "#process" },
+              { label: "How It Works",     href: "/how-it-works" },
               { label: "Destinations",     href: "#destinations" },
             ].map(({ label, href }) => (
               <Link
@@ -456,58 +456,70 @@ export default function LandingPage() {
         className="py-20"
       >
         <div className="max-w-[1280px] mx-auto px-8 md:px-16">
-          <div className="mb-14">
-            <p style={{ color: c.green }} className="text-xs font-semibold uppercase tracking-widest mb-3">
-              Process
-            </p>
-            <h2 style={{ color: c.primary, letterSpacing: "-0.01em" }} className="text-4xl font-bold mb-2">
-              How It Works
-            </h2>
-            <p style={{ color: c.muted }} className="text-lg">Simple, transparent, and fully tracked.</p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
+            <div>
+              <p style={{ color: c.green }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+                Process
+              </p>
+              <h2 style={{ color: c.primary, letterSpacing: "-0.01em" }} className="text-4xl font-bold mb-2">
+                Cross-Border Trust
+              </h2>
+              <p style={{ color: c.muted }} className="text-lg max-w-lg">
+                Your global car purchase, secured. A rigorous 4-step process designed for absolute transparency.
+              </p>
+            </div>
+            <Link
+              href="/how-it-works"
+              style={{ color: c.green, borderColor: c.green }}
+              className="inline-flex items-center gap-2 text-sm font-semibold px-6 h-10 rounded border whitespace-nowrap hover:opacity-80 transition-opacity"
+            >
+              See full process <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-16">
-            {/* Buyers */}
-            <div>
+          <div className="grid md:grid-cols-4 gap-6">
+            {[
+              {
+                n: "01",
+                title: "Selection",
+                body: "Browse our curated inventory of high-performance and luxury vehicles, each pre-vetted for title authenticity and provenance.",
+                badge: "Vetted Inventory Only",
+              },
+              {
+                n: "02",
+                title: "Verification",
+                body: "Our local agents perform a mandatory 200-point physical inspection. You receive an HD video report and direct mechanical diagnosis.",
+                badge: "200-Point Inspection",
+              },
+              {
+                n: "03",
+                title: "Document & Title Transfer",
+                body: "Our platform manages the secure exchange of legal documents and title deeds, verified and authenticated before ownership is transferred.",
+                badge: "Fully Authenticated",
+              },
+              {
+                n: "04",
+                title: "Delivery",
+                body: "Insured global logistics managed by Tier-1 shipping partners. We handle customs documentation, export duties, and door-to-door delivery.",
+                badge: "Door-to-Door",
+              },
+            ].map(({ n, title, body, badge }) => (
               <div
-                style={{ backgroundColor: c.greenBg, color: c.greenText, borderRadius: "9999px" }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold mb-8"
+                key={n}
+                style={{ border: `1px solid ${c.border}`, borderRadius: "0.5rem" }}
+                className="p-6 relative"
               >
-                For Buyers
+                <div style={{ color: c.border }} className="text-5xl font-black mb-4 leading-none select-none">{n}</div>
+                <h3 style={{ color: c.primary }} className="font-semibold text-base mb-2">{title}</h3>
+                <p style={{ color: c.body }} className="text-sm leading-relaxed mb-4">{body}</p>
+                <span
+                  style={{ backgroundColor: c.greenBg, color: c.greenText }}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full"
+                >
+                  <CheckCircle2 className="h-3 w-3" /> {badge}
+                </span>
               </div>
-              <div className="space-y-8">
-                {buyerSteps.map(({ n, title, body }) => (
-                  <div key={n} className="flex gap-5">
-                    <div style={{ color: c.primary }} className="font-black text-2xl w-10 shrink-0">{n}</div>
-                    <div>
-                      <p style={{ color: c.primary }} className="font-semibold mb-1">{title}</p>
-                      <p style={{ color: c.body }} className="text-sm leading-relaxed">{body}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Exporters */}
-            <div>
-              <div
-                style={{ border: `1px solid ${c.border}`, color: c.muted, borderRadius: "9999px" }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold mb-8"
-              >
-                For Exporters
-              </div>
-              <div className="space-y-8">
-                {sellerSteps.map(({ n, title, body }) => (
-                  <div key={n} className="flex gap-5">
-                    <div style={{ color: c.muted }} className="font-black text-2xl w-10 shrink-0">{n}</div>
-                    <div>
-                      <p style={{ color: c.primary }} className="font-semibold mb-1">{title}</p>
-                      <p style={{ color: c.body }} className="text-sm leading-relaxed">{body}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
