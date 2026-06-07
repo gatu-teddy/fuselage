@@ -1,4 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
+
+// Cache this page for 60 s — no auth needed, safe to reuse across visitors
+export const revalidate = 60;
 import Link from "next/link";
 import Image from "next/image";
 import { Shield, MapPin, Clock, CheckCircle2, ArrowRight, Star } from "lucide-react";
@@ -75,7 +78,7 @@ export default async function BrowsePage({
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   ) {
     try {
-      const supabase = await createClient();
+      const supabase = createPublicClient();
 
       let query = supabase
         .from("listings")
