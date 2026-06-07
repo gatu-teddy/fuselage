@@ -1,11 +1,20 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { VEHICLE_MAKES, AFRICAN_COUNTRIES } from "@/lib/types";
 import { useState } from "react";
+import { Search, X } from "lucide-react";
+import { VEHICLE_MAKES, AFRICAN_COUNTRIES } from "@/lib/types";
+
+const c = {
+  primary:   "#0F172A",
+  green:     "#10B981",
+  greenBg:   "#D1FAE5",
+  greenText: "#065F46",
+  body:      "#334155",
+  bg:        "#F8FAFC",
+  surface:   "#FFFFFF",
+  border:    "#E2E8F0",
+  muted:     "#64748B",
+};
 
 interface Props {
   currentParams: {
@@ -18,109 +27,242 @@ interface Props {
   };
 }
 
+const availabilityOptions = [
+  { value: "in_stock",  label: "At Port / In Stock" },
+  { value: "en_route",  label: "In Transit" },
+  { value: "pre_order", label: "Pre-Order" },
+];
+
 export function BrowseFilters({ currentParams }: Props) {
   const router = useRouter();
-  const [type, setType] = useState(currentParams.type ?? "");
-  const [make, setMake] = useState(currentParams.make ?? "");
+  const [type, setType]               = useState(currentParams.type ?? "");
+  const [make, setMake]               = useState(currentParams.make ?? "");
+  const [makeSearch, setMakeSearch]   = useState(currentParams.make ?? "");
   const [availability, setAvailability] = useState(currentParams.availability ?? "");
-  const [port, setPort] = useState(currentParams.port ?? "");
-  const [min, setMin] = useState(currentParams.min ?? "");
-  const [max, setMax] = useState(currentParams.max ?? "");
+  const [port, setPort]               = useState(currentParams.port ?? "");
+  const [min, setMin]                 = useState(currentParams.min ?? "");
+  const [max, setMax]                 = useState(currentParams.max ?? "");
 
-  function apply() {
+  const makes = type === "bike" ? VEHICLE_MAKES.bike : VEHICLE_MAKES.car;
+  const filteredMakes = makes.filter((m) =>
+    m.toLowerCase().includes(makeSearch.toLowerCase())
+  );
+
+  function apply(overrides?: Record<string, string>) {
     const params = new URLSearchParams();
-    if (type) params.set("type", type);
-    if (make) params.set("make", make);
-    if (availability) params.set("availability", availability);
-    if (port) params.set("port", port);
-    if (min) params.set("min", min);
-    if (max) params.set("max", max);
+    const vals = { type, make, availability, port, min, max, ...overrides };
+    if (vals.type)         params.set("type", vals.type);
+    if (vals.make)         params.set("make", vals.make);
+    if (vals.availability) params.set("availability", vals.availability);
+    if (vals.port)         params.set("port", vals.port);
+    if (vals.min)          params.set("min", vals.min);
+    if (vals.max)          params.set("max", vals.max);
     router.push(`/browse?${params.toString()}`);
   }
 
   function clear() {
-    setType(""); setMake(""); setAvailability(""); setPort(""); setMin(""); setMax("");
+    setType(""); setMake(""); setMakeSearch(""); setAvailability("");
+    setPort(""); setMin(""); setMax("");
     router.push("/browse");
   }
 
-  const makes = type === "bike" ? VEHICLE_MAKES.bike : VEHICLE_MAKES.car;
+  const hasFilters = type || make || availability || port || min || max;
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h2 className="text-sm font-semibold mb-3">Filters</h2>
+    <div style={{ fontFamily: "Inter, sans-serif" }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <span style={{ color: c.primary }} className="text-sm font-bold">Filters</span>
+        {hasFilters && (
+          <button
+            onClick={clear}
+            style={{ color: c.muted }}
+            className="text-xs flex items-center gap-1 hover:opacity-70 transition-opacity"
+          >
+            <X className="h-3 w-3" /> Clear all
+          </button>
+        )}
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs">Vehicle type</Label>
-        <Select value={type || "all"} onValueChange={(v) => { setType(v === "all" ? "" : v); setMake(""); }}>
-          <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
-            <SelectItem value="car">Cars</SelectItem>
-            <SelectItem value="bike">Bikes</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs">Make</Label>
-        <Select value={make || "all"} onValueChange={(v) => setMake(v === "all" ? "" : v)}>
-          <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All makes</SelectItem>
-            {makes.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs">Availability</Label>
-        <Select value={availability || "all"} onValueChange={(v) => setAvailability(v === "all" ? "" : v)}>
-          <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Any</SelectItem>
-            <SelectItem value="in_stock">In stock</SelectItem>
-            <SelectItem value="en_route">En route</SelectItem>
-            <SelectItem value="pre_order">Pre-order</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs">Ships to</Label>
-        <Select value={port || "all"} onValueChange={(v) => setPort(v === "all" ? "" : v)}>
-          <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Any country</SelectItem>
-            {AFRICAN_COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs">Price range (USD)</Label>
-        <div className="flex gap-2">
-          <Input
-            className="h-8 text-sm"
-            placeholder="Min"
-            type="number"
-            value={min}
-            onChange={(e) => setMin(e.target.value)}
-          />
-          <Input
-            className="h-8 text-sm"
-            placeholder="Max"
-            type="number"
-            value={max}
-            onChange={(e) => setMax(e.target.value)}
-          />
+      {/* ── Vetting Status ─────────────────────────────────────────────── */}
+      <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
+        <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+          Vetting Status
+        </p>
+        <div className="space-y-2.5">
+          {[
+            { value: "car",  label: "Elite Vetted (Cars)" },
+            { value: "bike", label: "Vetted (Bikes)" },
+          ].map(({ value, label }) => (
+            <label key={value} className="flex items-center gap-2.5 cursor-pointer group">
+              <div
+                onClick={() => {
+                  const next = type === value ? "" : value;
+                  setType(next);
+                  setMake("");
+                  setMakeSearch("");
+                  apply({ type: next, make: "" });
+                }}
+                style={{
+                  width: "16px", height: "16px", borderRadius: "4px", flexShrink: 0,
+                  border: `2px solid ${type === value ? c.green : c.border}`,
+                  backgroundColor: type === value ? c.green : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer",
+                }}
+              >
+                {type === value && (
+                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                    <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+              <span style={{ color: c.body }} className="text-sm">{label}</span>
+            </label>
+          ))}
         </div>
       </div>
 
-      <div className="space-y-2 pt-2">
-        <Button size="sm" className="w-full" onClick={apply}>Apply filters</Button>
-        <Button size="sm" variant="ghost" className="w-full" onClick={clear}>Clear all</Button>
+      {/* ── Logistics Status ───────────────────────────────────────────── */}
+      <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
+        <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+          Logistics Status
+        </p>
+        <div className="space-y-2.5">
+          {availabilityOptions.map(({ value, label }) => (
+            <label key={value} className="flex items-center gap-2.5 cursor-pointer">
+              <div
+                onClick={() => {
+                  const next = availability === value ? "" : value;
+                  setAvailability(next);
+                  apply({ availability: next });
+                }}
+                style={{
+                  width: "16px", height: "16px", borderRadius: "4px", flexShrink: 0,
+                  border: `2px solid ${availability === value ? c.green : c.border}`,
+                  backgroundColor: availability === value ? c.green : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer",
+                }}
+              >
+                {availability === value && (
+                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                    <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+              <span style={{ color: c.body }} className="text-sm">{label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Make / Model ───────────────────────────────────────────────── */}
+      <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
+        <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+          Make / Model
+        </p>
+        <div className="relative mb-3">
+          <Search style={{ color: c.muted }} className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5" />
+          <input
+            type="text"
+            placeholder="Search brands..."
+            value={makeSearch}
+            onChange={(e) => setMakeSearch(e.target.value)}
+            style={{
+              width: "100%", paddingLeft: "32px", paddingRight: "12px",
+              height: "36px", fontSize: "14px", outline: "none",
+              border: `1px solid ${c.border}`, borderRadius: "6px",
+              color: c.body, backgroundColor: c.surface,
+            }}
+          />
+        </div>
+        <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+          {filteredMakes.slice(0, 12).map((m) => (
+            <label key={m} className="flex items-center gap-2.5 cursor-pointer">
+              <div
+                onClick={() => {
+                  const next = make === m ? "" : m;
+                  setMake(next);
+                  apply({ make: next });
+                }}
+                style={{
+                  width: "16px", height: "16px", borderRadius: "4px", flexShrink: 0,
+                  border: `2px solid ${make === m ? c.green : c.border}`,
+                  backgroundColor: make === m ? c.green : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer",
+                }}
+              >
+                {make === m && (
+                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                    <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+              <span style={{ color: c.body }} className="text-sm">{m}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Region ─────────────────────────────────────────────────────── */}
+      <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
+        <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+          Region
+        </p>
+        <select
+          value={port || ""}
+          onChange={(e) => { setPort(e.target.value); apply({ port: e.target.value }); }}
+          style={{
+            width: "100%", height: "36px", fontSize: "14px", outline: "none",
+            border: `1px solid ${c.border}`, borderRadius: "6px",
+            color: c.body, backgroundColor: c.surface, paddingLeft: "10px",
+          }}
+        >
+          <option value="">All Regions</option>
+          {AFRICAN_COUNTRIES.map((country) => (
+            <option key={country} value={country}>{country}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* ── Price Range ────────────────────────────────────────────────── */}
+      <div className="pb-5 mb-5">
+        <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+          Price Range (USD)
+        </p>
+        <div className="flex gap-2 mb-4">
+          <input
+            type="number"
+            placeholder="Min"
+            value={min}
+            onChange={(e) => setMin(e.target.value)}
+            style={{
+              flex: 1, height: "36px", fontSize: "14px", outline: "none",
+              border: `1px solid ${c.border}`, borderRadius: "6px",
+              color: c.body, backgroundColor: c.surface, paddingLeft: "10px",
+            }}
+          />
+          <input
+            type="number"
+            placeholder="Max"
+            value={max}
+            onChange={(e) => setMax(e.target.value)}
+            style={{
+              flex: 1, height: "36px", fontSize: "14px", outline: "none",
+              border: `1px solid ${c.border}`, borderRadius: "6px",
+              color: c.body, backgroundColor: c.surface, paddingLeft: "10px",
+            }}
+          />
+        </div>
+        <button
+          onClick={() => apply()}
+          style={{ backgroundColor: c.primary, color: "#fff", width: "100%", height: "38px", borderRadius: "6px", fontSize: "13px", fontWeight: 600 }}
+          className="hover:opacity-90 transition-opacity"
+        >
+          Apply Filters
+        </button>
       </div>
     </div>
   );
