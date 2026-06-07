@@ -66,23 +66,37 @@ export default async function BrowsePage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const supabase = await createClient();
 
-  let query = supabase
-    .from("listings")
-    .select(
-      "*, images:listing_images(url, is_primary), seller:seller_profiles(company_name, city, status)"
-    )
-    .eq("status", "active");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let listings: any[] | null = null;
 
-  if (params.type)         query = query.eq("type", params.type);
-  if (params.make)         query = query.eq("make", params.make);
-  if (params.availability) query = query.eq("availability", params.availability);
-  if (params.min)          query = query.gte("price_usd", params.min);
-  if (params.max)          query = query.lte("price_usd", params.max);
-  if (params.port)         query = query.contains("destination_ports", [params.port]);
+  if (
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    try {
+      const supabase = await createClient();
 
-  const { data: listings } = await query.order("created_at", { ascending: false });
+      let query = supabase
+        .from("listings")
+        .select(
+          "*, images:listing_images(url, is_primary), seller:seller_profiles(company_name, city, status)"
+        )
+        .eq("status", "active");
+
+      if (params.type)         query = query.eq("type", params.type);
+      if (params.make)         query = query.eq("make", params.make);
+      if (params.availability) query = query.eq("availability", params.availability);
+      if (params.min)          query = query.gte("price_usd", params.min);
+      if (params.max)          query = query.lte("price_usd", params.max);
+      if (params.port)         query = query.contains("destination_ports", [params.port]);
+
+      const { data } = await query.order("created_at", { ascending: false });
+      listings = data;
+    } catch {
+      listings = [];
+    }
+  }
 
   return (
     <div style={{ backgroundColor: c.bg, fontFamily: "Inter, sans-serif" }} className="min-h-screen">
