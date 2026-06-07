@@ -165,7 +165,7 @@ export default function HowItWorksPage() {
             backgroundSize: "40px 40px",
           }}
         />
-        <div className="relative max-w-[1280px] mx-auto px-8 md:px-16">
+        <div className="relative max-w-[1280px] mx-auto px-8 md:px-16 text-center flex flex-col items-center">
           <div
             style={{ backgroundColor: c.greenBg, color: c.greenText }}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6"
@@ -174,7 +174,7 @@ export default function HowItWorksPage() {
             Cross-Border Trust
           </div>
           <h1
-            className="text-4xl md:text-5xl font-bold text-white leading-tight mb-5 max-w-2xl"
+            className="text-4xl md:text-5xl font-bold text-white leading-tight mb-5"
             style={{ letterSpacing: "-0.02em" }}
           >
             Your Global Car Purchase,{" "}
@@ -185,7 +185,7 @@ export default function HowItWorksPage() {
           </p>
 
           {/* Step pills */}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             {["01 Selection", "02 Verification", "03 Document & Title", "04 Delivery"].map((s) => (
               <div
                 key={s}
