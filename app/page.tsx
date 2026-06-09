@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Globe,
 } from "lucide-react";
+import { MobileNavLinks } from "@/components/layouts/mobile-nav-links";
 
 // ─── Stitch design tokens ───────────────────────────────────────────────────
 const c = {
@@ -134,7 +135,7 @@ export default function LandingPage() {
         style={{ backgroundColor: "rgba(255,255,255,0.97)", borderBottom: `1px solid ${c.border}` }}
         className="sticky top-0 z-50 backdrop-blur-sm"
       >
-        <div className="max-w-[1280px] mx-auto px-8 md:px-16 h-16 flex items-center justify-between">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-16 h-16 flex items-center justify-between relative">
           <div className="flex items-center gap-2.5">
             <div style={{ backgroundColor: c.primary }} className="w-7 h-7 rounded flex items-center justify-center">
               <span className="text-white font-black text-xs">F</span>
@@ -142,6 +143,7 @@ export default function LandingPage() {
             <span style={{ color: c.primary }} className="font-bold text-lg tracking-tight">Fuselage</span>
           </div>
 
+          {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-7">
             {[
               { label: "Browse",           href: "/browse" },
@@ -160,7 +162,8 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Desktop CTA buttons */}
+          <div className="hidden md:flex items-center gap-3">
             <Link
               href="/login"
               style={{ color: c.body }}
@@ -176,6 +179,9 @@ export default function LandingPage() {
               Get Started
             </Link>
           </div>
+
+          {/* Mobile hamburger */}
+          <MobileNavLinks />
         </div>
       </nav>
 
@@ -206,7 +212,7 @@ export default function LandingPage() {
           />
         </div>
 
-        <div className="relative max-w-[1280px] mx-auto px-8 md:px-16 py-24 md:py-36">
+        <div className="relative max-w-[1280px] mx-auto px-5 md:px-16 py-16 md:py-36">
 
           {/* Copy — full width, left-aligned */}
           <div className="max-w-2xl">

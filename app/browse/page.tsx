@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Shield, MapPin, Clock, CheckCircle2, ArrowRight, Star } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { BrowseFilters } from "@/components/listings/browse-filters";
+import { MobileNavLinks } from "@/components/layouts/mobile-nav-links";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const c = {
@@ -109,7 +110,7 @@ export default async function BrowsePage({
         style={{ backgroundColor: "rgba(255,255,255,0.97)", borderBottom: `1px solid ${c.border}` }}
         className="sticky top-0 z-50 backdrop-blur-sm"
       >
-        <div className="max-w-[1280px] mx-auto px-8 md:px-16 h-16 flex items-center justify-between">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-16 h-16 flex items-center justify-between relative">
           <Link href="/" className="flex items-center gap-2.5">
             <div style={{ backgroundColor: c.primary }} className="w-7 h-7 rounded flex items-center justify-center">
               <span className="text-white font-black text-xs">F</span>
@@ -117,6 +118,7 @@ export default async function BrowsePage({
             <span style={{ color: c.primary }} className="font-bold text-lg tracking-tight">Fuselage</span>
           </Link>
 
+          {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-7">
             {[
               { label: "Browse",          href: "/browse",        active: true },
@@ -135,7 +137,8 @@ export default async function BrowsePage({
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center gap-3">
             <Link href="/login" style={{ color: c.body }} className="text-sm font-medium px-4 py-2 hover:opacity-70 transition-opacity">
               Sign In
             </Link>
@@ -143,15 +146,19 @@ export default async function BrowsePage({
               Get Started
             </Link>
           </div>
+
+          {/* Mobile hamburger */}
+          <MobileNavLinks />
         </div>
       </nav>
 
       {/* ── PAGE BODY ───────────────────────────────────────────────────── */}
-      <div className="max-w-[1280px] mx-auto px-8 md:px-16 py-10">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-16 py-6 md:py-10">
         <div className="flex items-start gap-8">
 
-          {/* ── Filters sidebar ─────────────────────────────────────────── */}
+          {/* ── Filters sidebar — desktop only ──────────────────────────── */}
           <aside
+            className="hidden md:block"
             style={{
               width: "240px",
               flexShrink: 0,
@@ -168,21 +175,25 @@ export default async function BrowsePage({
           <div className="flex-1 min-w-0">
 
             {/* Header row */}
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 style={{ color: c.primary }} className="text-2xl font-bold tracking-tight">
+            <div className="flex items-center justify-between mb-4 md:mb-6 gap-3">
+              <div className="min-w-0">
+                <h1 style={{ color: c.primary }} className="text-xl md:text-2xl font-bold tracking-tight">
                   Vetted Marketplace
                 </h1>
                 <p style={{ color: c.muted }} className="text-sm mt-0.5">
                   Showing {listings?.length ?? 0} high-performance international listings
                 </p>
               </div>
-              <div
-                style={{ border: `1px solid ${c.border}`, borderRadius: "6px", backgroundColor: c.surface }}
-                className="flex items-center gap-2 px-3 h-9"
-              >
-                <span style={{ color: c.muted }} className="text-xs">Sort by:</span>
-                <span style={{ color: c.primary }} className="text-xs font-semibold">Newest First</span>
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Mobile filter button */}
+                <BrowseFilters currentParams={params} mobileOnly />
+                <div
+                  style={{ border: `1px solid ${c.border}`, borderRadius: "6px", backgroundColor: c.surface }}
+                  className="hidden md:flex items-center gap-2 px-3 h-9"
+                >
+                  <span style={{ color: c.muted }} className="text-xs">Sort by:</span>
+                  <span style={{ color: c.primary }} className="text-xs font-semibold">Newest First</span>
+                </div>
               </div>
             </div>
 
@@ -204,7 +215,7 @@ export default async function BrowsePage({
             )}
 
             {/* Card grid */}
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
               {listings?.map((listing) => {
                 const images = listing.images as { url: string; is_primary: boolean }[];
                 const primaryImage = images?.find((i) => i.is_primary)?.url ?? images?.[0]?.url;
