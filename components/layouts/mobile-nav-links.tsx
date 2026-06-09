@@ -38,14 +38,21 @@ export function MobileNavLinks() {
 
       {/* Full-width dropdown — mobile only */}
       {open && (
-        <div
-          className="md:hidden absolute top-16 left-0 right-0 z-50"
-          style={{
-            backgroundColor: "#fff",
-            borderBottom: `1px solid ${c.border}`,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-          }}
-        >
+        <>
+          {/* Backdrop — tapping outside closes the menu */}
+          <div
+            className="md:hidden fixed inset-0 z-40"
+            style={{ backgroundColor: "transparent" }}
+            onClick={() => setOpen(false)}
+          />
+          <div
+            className="md:hidden absolute top-16 left-0 right-0 z-50"
+            style={{
+              backgroundColor: "#fff",
+              borderBottom: `1px solid ${c.border}`,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+            }}
+          >
           <nav style={{ padding: "12px 0" }}>
             {navLinks.map(({ label, href }) => (
               <Link
@@ -103,6 +110,7 @@ export function MobileNavLinks() {
             </div>
           </nav>
         </div>
+        </>
       )}
     </>
   );
