@@ -1,15 +1,19 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Car, ClipboardList, LogOut } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { LayoutDashboard, Car, TrendingUp, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const nav = [
-  { href: "/seller/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/seller/listings", label: "Listings", icon: Car },
-  { href: "/seller/deals", label: "Deals", icon: ClipboardList },
+  { href: "/seller/dashboard", label: "Dashboard",  icon: LayoutDashboard },
+  { href: "/seller/listings",  label: "Listings",   icon: Car },
+  { href: "/seller/sales",     label: "Sales",      icon: TrendingUp },
 ];
+
+const c = {
+  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5",
+  surface: "#FFFFFF", border: "#E2E8F0", muted: "#64748B", bg: "#F8FAFC",
+};
 
 export function SellerNav() {
   const pathname = usePathname();
@@ -22,39 +26,52 @@ export function SellerNav() {
   }
 
   return (
-    <aside className="w-60 shrink-0 border-r border-border min-h-screen flex flex-col bg-card">
-      <div className="p-6 border-b border-border">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center">
-            <span className="text-primary-foreground font-black text-xs">F</span>
+    <aside
+      style={{ width: "220px", flexShrink: 0, borderRight: `1px solid ${c.border}`, minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: c.surface, fontFamily: "Inter, sans-serif" }}
+    >
+      {/* Logo */}
+      <div style={{ padding: "24px 20px", borderBottom: `1px solid ${c.border}` }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+          <div style={{ backgroundColor: c.primary, width: "28px", height: "28px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: "#fff", fontWeight: 900, fontSize: "12px" }}>F</span>
           </div>
-          <span className="font-bold text-sm">Fuselage</span>
+          <span style={{ color: c.primary, fontWeight: 800, fontSize: "15px", letterSpacing: "-0.3px" }}>Fuselage</span>
         </Link>
-        <div className="mt-1 text-xs text-muted-foreground">Exporter portal</div>
+        <p style={{ color: c.muted, fontSize: "11px", marginTop: "4px", marginLeft: "36px" }}>Exporter portal</p>
       </div>
-      <nav className="flex-1 p-4 space-y-1">
-        {nav.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-              pathname.startsWith(href)
-                ? "bg-primary text-primary-foreground font-medium"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            {label}
-          </Link>
-        ))}
+
+      {/* Nav links */}
+      <nav style={{ flex: 1, padding: "16px 12px" }}>
+        {nav.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href || (href !== "/seller/dashboard" && pathname.startsWith(href));
+          return (
+            <Link
+              key={href}
+              href={href}
+              style={{
+                display: "flex", alignItems: "center", gap: "10px",
+                padding: "9px 12px", borderRadius: "8px", marginBottom: "2px",
+                textDecoration: "none", fontSize: "14px", fontWeight: active ? 600 : 500,
+                backgroundColor: active ? c.primary : "transparent",
+                color: active ? "#fff" : c.muted,
+                transition: "all 0.15s",
+              }}
+            >
+              <Icon style={{ width: "16px", height: "16px" }} />
+              {label}
+            </Link>
+          );
+        })}
       </nav>
-      <div className="p-4 border-t border-border">
+
+      {/* Sign out */}
+      <div style={{ padding: "16px 12px", borderTop: `1px solid ${c.border}` }}>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground w-full transition-colors"
+          style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 12px", borderRadius: "8px", width: "100%", border: "none", backgroundColor: "transparent", cursor: "pointer", fontSize: "14px", fontWeight: 500, color: c.muted }}
+          className="hover:bg-[#F8FAFC] transition-colors"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut style={{ width: "16px", height: "16px" }} />
           Sign out
         </button>
       </div>

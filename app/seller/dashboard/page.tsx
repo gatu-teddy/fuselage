@@ -1,12 +1,26 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Car, ClipboardList, Plus, AlertTriangle, CheckCircle, Clock } from "lucide-react";
+import { Car, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight } from "lucide-react";
 import { formatUSD, formatDate } from "@/lib/utils";
-import { DEAL_STATUS_LABELS, DEAL_STATUS_COLORS } from "@/lib/types";
+import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
+
+const c = {
+  primary:   "#0F172A",
+  green:     "#10B981",
+  greenBg:   "#D1FAE5",
+  greenText: "#065F46",
+  bg:        "#F8FAFC",
+  bgDim:     "#F1F5F9",
+  surface:   "#FFFFFF",
+  border:    "#E2E8F0",
+  muted:     "#64748B",
+  body:      "#334155",
+  amber:     "#F59E0B",
+  amberBg:   "#FEF3C7",
+  blue:      "#3B82F6",
+  blueBg:    "#DBEAFE",
+};
 
 export default async function SellerDashboardPage() {
   const supabase = await createClient();
@@ -15,162 +29,219 @@ export default async function SellerDashboardPage() {
 
   const [{ data: sellerProfile }, { data: listings }, { data: deals }] = await Promise.all([
     supabase.from("seller_profiles").select("*, profile:profiles(*)").eq("id", user.id).single(),
-    supabase.from("listings").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }).limit(5),
-    supabase.from("deals").select("*, listing:listings(make,model,year), buyer:profiles(full_name,country)").eq("seller_id", user.id).order("created_at", { ascending: false }).limit(5),
+    supabase.from("listings").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
+    supabase.from("deals").select("*, listing:listings(make,model,year), buyer:profiles(full_name,country)")
+      .eq("seller_id", user.id).order("created_at", { ascending: false }),
   ]);
 
   if (!sellerProfile) redirect("/seller/onboarding");
 
-  const activeListings = listings?.filter((l) => l.status === "active").length ?? 0;
-  const totalDeals = deals?.length ?? 0;
-  const pendingDeals = deals?.filter((d) => !["completed", "cancelled"].includes(d.status)).length ?? 0;
+  // ── Metrics ────────────────────────────────────────────────────────────────
+  const activeListings   = listings?.filter((l) => l.status === "active").length ?? 0;
+  const totalDeals       = deals?.length ?? 0;
+  const activeSales      = deals?.filter((d) => !["completed", "cancelled"].includes(d.status)) ?? [];
+  const completedSales   = deals?.filter((d) => d.status === "completed") ?? [];
+  const pipelineValue    = activeSales.reduce((sum, d) => sum + (Number(d.agreed_price_usd) || 0), 0);
+  const totalRevenue     = completedSales.reduce((sum, d) => sum + (Number(d.agreed_price_usd) || 0), 0);
 
+  // Most active listing (most deals)
+  const dealsByListing = deals?.reduce((acc, d) => {
+    const id = d.listing_id as string;
+    acc[id] = (acc[id] ?? 0) + 1;
+    return acc;
+  }, {} as Record<string, number>) ?? {};
+  const topListingId = Object.entries(dealsByListing).sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0];
+  const topListing   = listings?.find((l) => l.id === topListingId);
+  const topListingDeals = topListingId ? dealsByListing[topListingId] : 0;
+
+  // Recent 5 listings & sales
+  const recentListings = listings?.slice(0, 5) ?? [];
+  const recentDeals    = deals?.slice(0, 5) ?? [];
+
+  // Status badge info
   const statusInfo = {
-    pending: { label: "Pending verification", color: "warning", icon: Clock },
-    verified: { label: "Verified exporter", color: "success", icon: CheckCircle },
-    rejected: { label: "Application rejected", color: "destructive", icon: AlertTriangle },
-    suspended: { label: "Account suspended", color: "destructive", icon: AlertTriangle },
-  }[sellerProfile.status as string] ?? { label: sellerProfile.status, color: "outline", icon: Clock };
+    pending:   { label: "Pending verification", color: c.amber,   bg: c.amberBg,  icon: Clock },
+    verified:  { label: "Verified exporter",    color: c.green,   bg: c.greenBg,  icon: CheckCircle },
+    rejected:  { label: "Application rejected", color: "#EF4444", bg: "#FEE2E2",  icon: AlertTriangle },
+    suspended: { label: "Account suspended",    color: "#EF4444", bg: "#FEE2E2",  icon: AlertTriangle },
+  }[sellerProfile.status as string] ?? { label: sellerProfile.status, color: c.muted, bg: c.bgDim, icon: Clock };
+
+  const StatusIcon = statusInfo.icon;
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div style={{ backgroundColor: c.bg, minHeight: "100vh", fontFamily: "Inter, sans-serif" }} className="p-8 max-w-5xl">
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">{sellerProfile.company_name}</h1>
-          <p className="text-muted-foreground text-sm mt-1">{sellerProfile.city}, UAE</p>
+          <h1 style={{ color: c.primary, fontSize: "24px", fontWeight: 800, letterSpacing: "-0.5px" }}>
+            {sellerProfile.company_name}
+          </h1>
+          <p style={{ color: c.muted, fontSize: "14px", marginTop: "4px" }}>{sellerProfile.city}, UAE</p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant={statusInfo.color as "warning" | "success" | "destructive" | "outline"} className="gap-1.5 px-3 py-1">
-            <statusInfo.icon className="h-3 w-3" />
+          <span style={{ backgroundColor: statusInfo.bg, color: statusInfo.color, fontSize: "12px", fontWeight: 700, padding: "6px 14px", borderRadius: "20px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <StatusIcon style={{ width: "12px", height: "12px" }} />
             {statusInfo.label}
-          </Badge>
+          </span>
           {sellerProfile.status === "verified" && (
-            <Button size="sm" asChild>
-              <Link href="/seller/listings/new">
-                <Plus className="h-4 w-4 mr-1" /> Add listing
-              </Link>
-            </Button>
+            <Link
+              href="/seller/listings/new"
+              style={{ backgroundColor: c.primary, color: "#fff", fontSize: "13px", fontWeight: 600, padding: "8px 16px", borderRadius: "8px", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              <Plus style={{ width: "14px", height: "14px" }} /> Add listing
+            </Link>
           )}
         </div>
       </div>
 
+      {/* Pending / rejected banners */}
       {sellerProfile.status === "pending" && (
-        <div className="mb-8 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 flex items-start gap-3">
-          <Clock className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
+        <div style={{ marginBottom: "28px", borderRadius: "10px", border: `1px solid #FDE68A`, backgroundColor: c.amberBg, padding: "14px 18px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
+          <Clock style={{ color: c.amber, width: "18px", height: "18px", flexShrink: 0, marginTop: "2px" }} />
           <div>
-            <div className="font-medium text-yellow-800 text-sm">Verification in progress</div>
-            <div className="text-yellow-700 text-sm">
-              Our team is reviewing your trade license and company details. This usually takes 1–2 business days.
-            </div>
+            <p style={{ color: "#92400E", fontWeight: 600, fontSize: "14px" }}>Verification in progress</p>
+            <p style={{ color: "#92400E", fontSize: "13px", marginTop: "2px" }}>Our team is reviewing your trade license. This usually takes 1–2 business days.</p>
           </div>
         </div>
       )}
-
       {sellerProfile.status === "rejected" && (
-        <div className="mb-8 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-          <div className="font-medium text-red-800 text-sm">Application not approved</div>
-          {sellerProfile.rejection_reason && (
-            <div className="text-red-700 text-sm mt-1">Reason: {sellerProfile.rejection_reason}</div>
-          )}
-          <div className="text-red-700 text-sm mt-1">Please contact support to reapply.</div>
+        <div style={{ marginBottom: "28px", borderRadius: "10px", border: `1px solid #FECACA`, backgroundColor: "#FEF2F2", padding: "14px 18px" }}>
+          <p style={{ color: "#991B1B", fontWeight: 600, fontSize: "14px" }}>Application not approved</p>
+          {sellerProfile.rejection_reason && <p style={{ color: "#991B1B", fontSize: "13px", marginTop: "4px" }}>Reason: {sellerProfile.rejection_reason}</p>}
+          <p style={{ color: "#991B1B", fontSize: "13px", marginTop: "4px" }}>Please contact support to reapply.</p>
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Car className="h-4 w-4" /> Active listings
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{activeListings}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <ClipboardList className="h-4 w-4" /> Active deals
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{pendingDeals}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total deals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{totalDeals}</div>
-          </CardContent>
-        </Card>
+      {/* ── Stats row ───────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {[
+          { icon: Car,         label: "Active listings",  value: activeListings.toString(),           color: c.primary, bg: c.bgDim   },
+          { icon: TrendingUp,  label: "Active sales",     value: activeSales.length.toString(),       color: c.blue,    bg: c.blueBg  },
+          { icon: DollarSign,  label: "Pipeline value",   value: pipelineValue ? formatUSD(pipelineValue) : "—", color: c.amber, bg: c.amberBg },
+          { icon: BarChart2,   label: "Total revenue",    value: totalRevenue  ? formatUSD(totalRevenue)  : "—", color: c.green, bg: c.greenBg },
+        ].map(({ icon: Icon, label, value, color, bg }) => (
+          <div key={label} style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+              <div style={{ backgroundColor: bg, width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Icon style={{ color, width: "16px", height: "16px" }} />
+              </div>
+              <p style={{ color: c.muted, fontSize: "12px", fontWeight: 500 }}>{label}</p>
+            </div>
+            <p style={{ color: c.primary, fontSize: "22px", fontWeight: 800, letterSpacing: "-0.5px" }}>{value}</p>
+          </div>
+        ))}
       </div>
 
+      {/* ── Insights row ────────────────────────────────────────────────────── */}
+      <div className="grid md:grid-cols-3 gap-4 mb-8">
+        {/* Top listing */}
+        <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Eye style={{ color: c.green, width: "15px", height: "15px" }} />
+            <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>Most inquired</p>
+          </div>
+          {topListing ? (
+            <>
+              <p style={{ color: c.primary, fontWeight: 700, fontSize: "14px" }}>{topListing.year} {topListing.make} {topListing.model}</p>
+              <p style={{ color: c.muted, fontSize: "12px", marginTop: "4px" }}>{topListingDeals} {topListingDeals === 1 ? "inquiry" : "inquiries"}</p>
+              <Link href={`/listings/${topListing.id}`} style={{ color: c.green, fontSize: "12px", fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "12px" }}>
+                View listing <ArrowRight style={{ width: "11px", height: "11px" }} />
+              </Link>
+            </>
+          ) : (
+            <p style={{ color: c.muted, fontSize: "13px" }}>No inquiries yet</p>
+          )}
+        </div>
+
+        {/* Conversion */}
+        <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <BarChart2 style={{ color: c.blue, width: "15px", height: "15px" }} />
+            <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>Conversion</p>
+          </div>
+          <p style={{ color: c.primary, fontWeight: 800, fontSize: "22px", letterSpacing: "-0.5px" }}>
+            {totalDeals > 0 && activeListings > 0 ? `${Math.round((totalDeals / activeListings) * 10) / 10}×` : "—"}
+          </p>
+          <p style={{ color: c.muted, fontSize: "12px", marginTop: "4px" }}>Deals per active listing</p>
+          <p style={{ color: c.muted, fontSize: "11px", marginTop: "8px" }}>
+            {totalDeals} total {totalDeals === 1 ? "inquiry" : "inquiries"} across {activeListings} {activeListings === 1 ? "listing" : "listings"}
+          </p>
+        </div>
+
+        {/* Completed sales */}
+        <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle style={{ color: c.green, width: "15px", height: "15px" }} />
+            <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>Completed sales</p>
+          </div>
+          <p style={{ color: c.primary, fontWeight: 800, fontSize: "22px", letterSpacing: "-0.5px" }}>{completedSales.length}</p>
+          <p style={{ color: c.muted, fontSize: "12px", marginTop: "4px" }}>
+            {completedSales.length > 0 ? `${formatUSD(totalRevenue)} total` : "No completed sales yet"}
+          </p>
+        </div>
+      </div>
+
+      {/* ── Recent listings + sales ──────────────────────────────────────────── */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Recent listings */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
-            <CardTitle className="text-base">Recent listings</CardTitle>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/seller/listings">View all</Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {listings?.length === 0 && (
-              <p className="text-sm text-muted-foreground py-4 text-center">No listings yet.</p>
-            )}
-            {listings?.map((listing) => (
-              <div key={listing.id} className="flex items-center justify-between py-2 border-b last:border-0">
+        <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", overflow: "hidden" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: `1px solid ${c.border}` }}>
+            <p style={{ color: c.primary, fontWeight: 700, fontSize: "14px" }}>Recent listings</p>
+            <Link href="/seller/listings" style={{ color: c.muted, fontSize: "12px", textDecoration: "none" }} className="hover:text-[#0F172A] transition-colors">
+              View all
+            </Link>
+          </div>
+          <div>
+            {recentListings.length === 0 ? (
+              <p style={{ color: c.muted, fontSize: "13px", textAlign: "center", padding: "32px 0" }}>No listings yet.</p>
+            ) : recentListings.map((listing, i) => (
+              <div key={listing.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: i < recentListings.length - 1 ? `1px solid ${c.border}` : "none" }}>
                 <div>
-                  <div className="font-medium text-sm">{listing.year} {listing.make} {listing.model}</div>
-                  <div className="text-xs text-muted-foreground">{formatUSD(listing.price_usd)}</div>
+                  <p style={{ color: c.primary, fontWeight: 600, fontSize: "13px" }}>{listing.year} {listing.make} {listing.model}</p>
+                  <p style={{ color: c.muted, fontSize: "12px", marginTop: "2px" }}>{formatUSD(listing.price_usd)}</p>
                 </div>
-                <Badge
-                  variant={listing.status === "active" ? "success" : "secondary"}
-                  className="text-xs capitalize"
-                >
+                <span style={{ backgroundColor: listing.status === "active" ? c.greenBg : c.bgDim, color: listing.status === "active" ? c.greenText : c.muted, fontSize: "11px", fontWeight: 700, padding: "3px 10px", borderRadius: "20px", textTransform: "capitalize" }}>
                   {listing.status}
-                </Badge>
+                </span>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Recent deals */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
-            <CardTitle className="text-base">Recent deals</CardTitle>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/seller/deals">View all</Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {deals?.length === 0 && (
-              <p className="text-sm text-muted-foreground py-4 text-center">No deals yet.</p>
-            )}
-            {deals?.map((deal) => (
-              <Link key={deal.id} href={`/seller/deals/${deal.id}`}>
-                <div className="flex items-center justify-between py-2 border-b last:border-0 hover:bg-muted/50 rounded px-2 -mx-2 transition-colors">
-                  <div>
-                    <div className="font-medium text-sm">
-                      {(deal.listing as { year: number; make: string; model: string })?.year}{" "}
-                      {(deal.listing as { year: number; make: string; model: string })?.make}{" "}
-                      {(deal.listing as { year: number; make: string; model: string })?.model}
+        {/* Recent sales */}
+        <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", overflow: "hidden" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: `1px solid ${c.border}` }}>
+            <p style={{ color: c.primary, fontWeight: 700, fontSize: "14px" }}>Recent sales</p>
+            <Link href="/seller/sales" style={{ color: c.muted, fontSize: "12px", textDecoration: "none" }} className="hover:text-[#0F172A] transition-colors">
+              View all
+            </Link>
+          </div>
+          <div>
+            {recentDeals.length === 0 ? (
+              <p style={{ color: c.muted, fontSize: "13px", textAlign: "center", padding: "32px 0" }}>No sales yet.</p>
+            ) : recentDeals.map((deal, i) => {
+              const listing = deal.listing as { make: string; model: string; year: number };
+              const buyer   = deal.buyer   as { full_name: string; country: string };
+              return (
+                <Link key={deal.id} href={`/seller/sales/${deal.id}`} style={{ display: "block", textDecoration: "none" }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: i < recentDeals.length - 1 ? `1px solid ${c.border}` : "none" }}
+                    className="hover:bg-[#F8FAFC] transition-colors"
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ color: c.primary, fontWeight: 600, fontSize: "13px" }}>{listing?.year} {listing?.make} {listing?.model}</p>
+                      <p style={{ color: c.muted, fontSize: "11px", marginTop: "2px" }}>{buyer?.full_name} · {deal.destination_country}</p>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {(deal.buyer as { full_name: string; country: string })?.full_name} · {deal.destination_country}
-                    </div>
+                    <span style={{ color: c.muted, fontSize: "11px", fontWeight: 600, flexShrink: 0, marginLeft: "12px" }}>
+                      {DEAL_STATUS_LABELS[deal.status as DealStatus]}
+                    </span>
                   </div>
-                  <span className={`text-xs rounded-full px-2 py-0.5 font-medium ${DEAL_STATUS_COLORS[deal.status as keyof typeof DEAL_STATUS_COLORS]}`}>
-                    {DEAL_STATUS_LABELS[deal.status as keyof typeof DEAL_STATUS_LABELS]}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </CardContent>
-        </Card>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
