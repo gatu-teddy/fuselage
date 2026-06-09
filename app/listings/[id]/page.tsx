@@ -1,17 +1,37 @@
+import { createPublicClient } from "@/lib/supabase/public";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BuyerNav } from "@/components/layouts/buyer-nav";
+import Image from "next/image";
 import { InquiryForm } from "@/components/listings/inquiry-form";
-import { Shield, MapPin, Calendar, Hash, Gauge, Clock, CheckCircle } from "lucide-react";
+import {
+  Shield, MapPin, Calendar, Hash, Gauge, Clock,
+  CheckCircle2, ChevronRight, Car,
+} from "lucide-react";
 import { formatUSD, formatDate } from "@/lib/utils";
+
+// ─── Design tokens ────────────────────────────────────────────────────────────
+const c = {
+  primary:   "#0F172A",
+  green:     "#10B981",
+  greenBg:   "#D1FAE5",
+  greenText: "#065F46",
+  bg:        "#F8FAFC",
+  bgDim:     "#F1F5F9",
+  surface:   "#FFFFFF",
+  border:    "#E2E8F0",
+  muted:     "#64748B",
+  body:      "#334155",
+  amber:     "#F59E0B",
+  amberBg:   "#FEF3C7",
+};
 
 export default async function ListingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
+
+  // Public client for listing data (no auth needed)
+  const supabase = createPublicClient();
+  const authClient = await createClient();
 
   const [{ data: listing }, { data: { user } }] = await Promise.all([
     supabase
@@ -20,190 +40,246 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
       .eq("id", id)
       .eq("status", "active")
       .single(),
-    supabase.auth.getUser(),
+    authClient.auth.getUser(),
   ]);
 
   if (!listing) notFound();
 
-  const images = listing.images as { id: string; url: string; is_primary: boolean; position: number }[];
-  const sortedImages = images?.sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
+  const images = (listing.images as { id: string; url: string; is_primary: boolean; position: number }[])
+    ?.sort((a, b) => {
+      if (a.is_primary) return -1;
+      if (b.is_primary) return 1;
+      return a.position - b.position;
+    });
+
   const seller = listing.seller as {
-    company_name: string;
-    city: string;
-    description: string;
-    status: string;
-    website?: string;
+    company_name: string; city: string; description: string;
+    status: string; website?: string;
   };
 
-  const availabilityLabel: Record<string, string> = {
-    in_stock: "In stock — ready to ship",
-    en_route: "En route — already shipped",
-    pre_order: "Pre-order — can be sourced",
+  const availLabel: Record<string, string> = {
+    in_stock:  "In stock — ready to ship",
+    en_route:  "En route",
+    pre_order: "Pre-order",
   };
-
-  const availabilityColor: Record<string, "success" | "warning" | "secondary"> = {
-    in_stock: "success",
-    en_route: "warning",
-    pre_order: "secondary",
+  const availColor: Record<string, string> = {
+    in_stock:  c.green,
+    en_route:  c.amber,
+    pre_order: c.muted,
+  };
+  const availBg: Record<string, string> = {
+    in_stock:  c.greenBg,
+    en_route:  c.amberBg,
+    pre_order: "#F1F5F9",
   };
 
   return (
-    <div className="min-h-screen">
-      <BuyerNav />
+    <div style={{ backgroundColor: c.bg, fontFamily: "Inter, sans-serif", minHeight: "100vh" }}>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-4">
-          <Link href="/browse" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Back to browse
+      {/* ── NAV ──────────────────────────────────────────────────────────── */}
+      <nav style={{ backgroundColor: c.surface, borderBottom: `1px solid ${c.border}`, position: "sticky", top: 0, zIndex: 50 }}>
+        <div className="max-w-[1280px] mx-auto px-8 md:px-16 h-16 flex items-center justify-between">
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+            <div style={{ backgroundColor: c.primary, width: "28px", height: "28px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: "12px" }}>F</span>
+            </div>
+            <span style={{ color: c.primary, fontWeight: 800, fontSize: "16px", letterSpacing: "-0.5px" }}>Fuselage</span>
           </Link>
+          <div className="hidden md:flex items-center gap-7">
+            {[
+              { label: "Browse",       href: "/browse" },
+              { label: "How It Works", href: "/how-it-works" },
+            ].map(({ label, href }) => (
+              <Link key={label} href={href} style={{ color: c.muted, fontWeight: 500, fontSize: "14px", textDecoration: "none" }}>
+                {label}
+              </Link>
+            ))}
+          </div>
+          <Link href="/register" style={{ backgroundColor: c.primary, color: "#fff", fontSize: "13px", fontWeight: 600, padding: "8px 18px", borderRadius: "6px", textDecoration: "none" }}>
+            Get Started
+          </Link>
+        </div>
+      </nav>
+
+      <div className="max-w-[1280px] mx-auto px-8 md:px-16 py-8">
+
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 mb-6 text-sm">
+          <Link href="/browse" style={{ color: c.muted, textDecoration: "none" }} className="hover:text-[#0F172A] transition-colors">
+            Browse
+          </Link>
+          <ChevronRight style={{ color: c.muted, width: "14px", height: "14px" }} />
+          <span style={{ color: c.primary, fontWeight: 500 }}>{listing.year} {listing.make} {listing.model}</span>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left: images + details */}
+
+          {/* ── Left: images + specs ─────────────────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Image gallery */}
-            <div>
-              <div className="aspect-[16/9] bg-muted rounded-xl overflow-hidden mb-2">
-                {sortedImages?.[0] ? (
-                  <img
-                    src={sortedImages[0].url}
+
+            {/* Main image */}
+            <div style={{ borderRadius: "12px", overflow: "hidden", backgroundColor: c.bgDim }}>
+              <div style={{ position: "relative", aspectRatio: "16/9" }}>
+                {images?.[0] ? (
+                  <Image
+                    src={images[0].url}
                     alt={`${listing.year} ${listing.make} ${listing.model}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 66vw"
+                    priority
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: c.muted }}>
                     No photos available
                   </div>
                 )}
               </div>
-              {sortedImages?.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto">
-                  {sortedImages.slice(1).map((img) => (
-                    <div key={img.id} className="w-20 h-14 rounded-md overflow-hidden shrink-0 bg-muted">
-                      <img src={img.url} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
+
+            {/* Thumbnails */}
+            {images && images.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto pb-1">
+                {images.slice(1).map((img) => (
+                  <div
+                    key={img.id}
+                    style={{ width: "80px", height: "60px", borderRadius: "8px", overflow: "hidden", flexShrink: 0, border: `2px solid ${c.border}` }}
+                  >
+                    <Image src={img.url} alt="" width={80} height={60} className="object-cover w-full h-full" />
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Title & price */}
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-bold">
+                <h1 style={{ color: c.primary, fontSize: "26px", fontWeight: 800, letterSpacing: "-0.5px" }}>
                   {listing.year} {listing.make} {listing.model}
                 </h1>
-                {listing.color && (
-                  <div className="text-muted-foreground mt-0.5">{listing.color}</div>
-                )}
+                {listing.color && <p style={{ color: c.muted, fontSize: "14px", marginTop: "4px" }}>{listing.color}</p>}
+                <p style={{ color: c.primary, fontSize: "28px", fontWeight: 800, marginTop: "12px" }}>
+                  {formatUSD(listing.price_usd)}
+                  <span style={{ color: c.muted, fontSize: "14px", fontWeight: 400, marginLeft: "8px" }}>FOB {seller?.city ?? "Dubai"}</span>
+                </p>
               </div>
-              <Badge variant={availabilityColor[listing.availability]} className="mt-1">
-                {availabilityLabel[listing.availability]}
-              </Badge>
+              <span
+                style={{
+                  backgroundColor: availBg[listing.availability] ?? c.bgDim,
+                  color: availColor[listing.availability] ?? c.muted,
+                  fontSize: "12px", fontWeight: 700, padding: "6px 14px",
+                  borderRadius: "20px", whiteSpace: "nowrap", flexShrink: 0,
+                }}
+              >
+                {availLabel[listing.availability] ?? listing.availability}
+              </span>
             </div>
 
-            <div className="text-3xl font-bold">
-              {formatUSD(listing.price_usd)}
-              <span className="text-base font-normal text-muted-foreground ml-2">FOB Dubai</span>
-            </div>
-
-            {/* Specs grid */}
-            <Card>
-              <CardHeader className="pb-3"><CardTitle className="text-base">Specifications</CardTitle></CardHeader>
-              <CardContent>
-                <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                  {[
-                    { icon: Calendar, label: "Year", value: listing.year },
-                    { icon: Gauge, label: "Mileage", value: listing.mileage_km != null ? `${listing.mileage_km.toLocaleString()} km` : "—" },
-                    { icon: Hash, label: "Chassis / VIN", value: listing.chassis_number ?? "—" },
-                    { icon: Hash, label: "Engine", value: listing.engine_size ?? "—" },
-                    { icon: Clock, label: "ETA", value: listing.eta_date ? formatDate(listing.eta_date) : "—" },
-                    { icon: MapPin, label: "Origin", value: `${seller?.city}, UAE` },
-                  ].map(({ icon: Icon, label, value }) => (
-                    <div key={label} className="flex items-start gap-2">
-                      <Icon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                      <div>
-                        <dt className="text-muted-foreground text-xs">{label}</dt>
-                        <dd className="font-medium font-mono text-xs mt-0.5">{value}</dd>
-                      </div>
+            {/* Specs */}
+            <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "24px" }}>
+              <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "16px" }}>
+                Specifications
+              </p>
+              <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
+                {[
+                  { icon: Calendar, label: "Year",        value: listing.year?.toString() ?? "—" },
+                  { icon: Gauge,    label: "Mileage",     value: listing.mileage_km != null ? `${Number(listing.mileage_km).toLocaleString()} km` : "—" },
+                  { icon: Hash,     label: "Chassis / VIN", value: listing.chassis_number ?? "—" },
+                  { icon: Hash,     label: "Engine",      value: listing.engine_size ?? "—" },
+                  { icon: Car,      label: "Steering",    value: listing.steering ?? "—" },
+                  { icon: MapPin,   label: "Origin",      value: `${seller?.city ?? "Dubai"}, UAE` },
+                  { icon: Clock,    label: "ETA",         value: listing.eta_date ? formatDate(listing.eta_date) : "—" },
+                ].map(({ icon: Icon, label, value }) => (
+                  <div key={label} className="flex items-start gap-3">
+                    <Icon style={{ color: c.muted, flexShrink: 0, width: "15px", height: "15px", marginTop: "2px" }} />
+                    <div>
+                      <dt style={{ color: c.muted, fontSize: "11px", fontWeight: 600 }}>{label}</dt>
+                      <dd style={{ color: c.primary, fontSize: "13px", fontWeight: 600, marginTop: "2px", fontVariantNumeric: "tabular-nums" }}>{value}</dd>
                     </div>
-                  ))}
-                </dl>
-              </CardContent>
-            </Card>
+                  </div>
+                ))}
+              </dl>
+            </div>
 
             {/* Features */}
             {listing.features?.length > 0 && (
-              <Card>
-                <CardHeader className="pb-3"><CardTitle className="text-base">Features</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {(listing.features as string[]).map((f) => (
-                      <div key={f} className="flex items-center gap-1.5 bg-muted rounded-full px-3 py-1 text-xs">
-                        <CheckCircle className="h-3 w-3 text-green-500" />
-                        {f}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "24px" }}>
+                <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "16px" }}>
+                  Features
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(listing.features as string[]).map((f) => (
+                    <span
+                      key={f}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: c.greenBg, color: c.greenText, fontSize: "12px", fontWeight: 600, padding: "5px 12px", borderRadius: "20px" }}
+                    >
+                      <CheckCircle2 style={{ width: "11px", height: "11px" }} />
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Description */}
             {listing.description && (
-              <Card>
-                <CardHeader className="pb-3"><CardTitle className="text-base">Description</CardTitle></CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {listing.description}
-                  </p>
-                </CardContent>
-              </Card>
+              <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "24px" }}>
+                <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "12px" }}>
+                  Description
+                </p>
+                <p style={{ color: c.body, fontSize: "14px", lineHeight: 1.7 }}>{listing.description}</p>
+              </div>
             )}
 
-            {/* Destination ports */}
+            {/* Ships to */}
             {listing.destination_ports?.length > 0 && (
-              <Card>
-                <CardHeader className="pb-3"><CardTitle className="text-base">Ships to</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {(listing.destination_ports as string[]).map((port) => (
-                      <div key={port} className="flex items-center gap-1.5 border rounded-full px-3 py-1 text-xs">
-                        <MapPin className="h-3 w-3 text-gold-500" />
-                        {port}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "24px" }}>
+                <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "16px" }}>
+                  Ships to
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(listing.destination_ports as string[]).map((port) => (
+                    <span
+                      key={port}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", border: `1px solid ${c.border}`, color: c.body, fontSize: "13px", fontWeight: 500, padding: "5px 14px", borderRadius: "20px" }}
+                    >
+                      <MapPin style={{ width: "11px", height: "11px", color: c.green }} />
+                      {port}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Right: exporter info + inquiry */}
+          {/* ── Right: exporter + inquiry ─────────────────────────────────── */}
           <div className="space-y-4">
-            {/* Exporter card */}
-            <Card>
-              <CardContent className="p-5">
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-sm shrink-0">
-                    {seller?.company_name?.[0]}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm">{seller?.company_name}</div>
-                    <div className="text-xs text-muted-foreground">{seller?.city}, UAE</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs mb-3">
-                  <Shield className="h-3.5 w-3.5 text-gold-500" />
-                  <span className="text-gold-600 font-medium">Verified UAE exporter</span>
-                </div>
-                {seller?.description && (
-                  <p className="text-xs text-muted-foreground line-clamp-3">{seller.description}</p>
-                )}
-              </CardContent>
-            </Card>
 
-            {/* Inquiry form */}
+            {/* Exporter card */}
+            <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+              <div className="flex items-start gap-3 mb-4">
+                <div style={{ backgroundColor: c.primary, width: "40px", height: "40px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ color: "#fff", fontWeight: 800, fontSize: "15px" }}>
+                    {seller?.company_name?.[0]}
+                  </span>
+                </div>
+                <div>
+                  <p style={{ color: c.primary, fontWeight: 700, fontSize: "14px" }}>{seller?.company_name}</p>
+                  <p style={{ color: c.muted, fontSize: "12px" }}>{seller?.city}, UAE</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mb-3">
+                <Shield style={{ color: c.green, width: "14px", height: "14px" }} />
+                <span style={{ color: c.greenText, fontWeight: 600, fontSize: "12px" }}>Verified UAE exporter</span>
+              </div>
+              {seller?.description && (
+                <p style={{ color: c.muted, fontSize: "12px", lineHeight: 1.6 }} className="line-clamp-3">
+                  {seller.description}
+                </p>
+              )}
+            </div>
+
+            {/* Inquiry */}
             <InquiryForm
               listingId={listing.id}
               sellerId={listing.seller_id}
