@@ -10,7 +10,7 @@ import {
   ArrowRight,
   Globe,
 } from "lucide-react";
-import { MobileNavLinks } from "@/components/layouts/mobile-nav-links";
+import { AuthNav } from "@/components/layouts/auth-nav";
 
 // ─── Stitch design tokens ───────────────────────────────────────────────────
 const c = {
@@ -143,45 +143,23 @@ export default function LandingPage() {
             <span style={{ color: c.primary }} className="font-bold text-lg tracking-tight">Fuselage</span>
           </div>
 
-          {/* Desktop nav links */}
+          {/* Desktop nav links — always visible on md+ */}
           <div className="hidden md:flex items-center gap-7">
             {[
-              { label: "Browse",           href: "/browse" },
-              { label: "Vetting Process",  href: "#services" },
-              { label: "How It Works",     href: "/how-it-works" },
-              { label: "Destinations",     href: "#destinations" },
+              { label: "Browse",          href: "/browse"       },
+              { label: "Vetting Process", href: "#services"     },
+              { label: "How It Works",    href: "/how-it-works" },
+              { label: "Destinations",    href: "#destinations" },
             ].map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                style={{ color: c.body }}
-                className="text-sm font-medium hover:opacity-70 transition-opacity"
-              >
+              <Link key={label} href={href} style={{ color: c.body }}
+                className="text-sm font-medium hover:opacity-70 transition-opacity">
                 {label}
               </Link>
             ))}
           </div>
 
-          {/* Desktop CTA buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              style={{ color: c.body }}
-              className="text-sm font-medium px-4 py-2 hover:opacity-70 transition-opacity"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              style={{ backgroundColor: c.primary, color: "#fff" }}
-              className="text-sm font-semibold px-5 py-2 rounded hover:opacity-90 transition-opacity"
-            >
-              Get Started
-            </Link>
-          </div>
-
-          {/* Mobile hamburger */}
-          <MobileNavLinks />
+          {/* Auth-aware right side + mobile hamburger */}
+          <AuthNav />
         </div>
       </nav>
 
