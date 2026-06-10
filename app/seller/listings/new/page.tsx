@@ -44,7 +44,7 @@ export default function NewListingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [type, setType] = useState<"car" | "bike">("car");
-  const [steering, setSteering] = useState<"LHD" | "RHD">("LHD");
+  const [steering, setSteering] = useState<"LHD" | "RHD">("RHD");
   const [form, setForm] = useState({
     make: "", model: "", year: new Date().getFullYear().toString(),
     color: "", mileage_km: "0", chassis_number: "", engine_size: "",

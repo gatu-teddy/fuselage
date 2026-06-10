@@ -62,6 +62,7 @@ interface SearchParams {
   port?: string;
   min?: string;
   max?: string;
+  steering?: string;
 }
 
 export default async function BrowsePage({
@@ -94,6 +95,7 @@ export default async function BrowsePage({
       if (params.min)          query = query.gte("price_usd", params.min);
       if (params.max)          query = query.lte("price_usd", params.max);
       if (params.port)         query = query.contains("destination_ports", [params.port]);
+      if (params.steering)     query = query.eq("steering", params.steering);
 
       const { data } = await query.order("created_at", { ascending: false });
       listings = data;
@@ -186,7 +188,7 @@ export default async function BrowsePage({
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {/* Mobile filter button */}
-                <BrowseFilters currentParams={params} mobileOnly />
+                <BrowseFilters currentParams={params} mobileOnly={true} />
                 <div
                   style={{ border: `1px solid ${c.border}`, borderRadius: "6px", backgroundColor: c.surface }}
                   className="hidden md:flex items-center gap-2 px-3 h-9"
@@ -270,14 +272,26 @@ export default async function BrowsePage({
 
                       {/* Card body */}
                       <div className="p-4">
-                        {/* Doc verified chip */}
-                        <div className="flex items-center gap-2 mb-2">
+                        {/* Chips row: Doc Verified + RHD/LHD */}
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <span
                             style={{ backgroundColor: c.greenBg, color: c.greenText }}
                             className="text-xs font-semibold px-2 py-0.5 rounded-full"
                           >
                             Doc Verified
                           </span>
+                          {listing.steering && (
+                            <span
+                              style={{
+                                backgroundColor: listing.steering === "RHD" ? "#EFF6FF" : "#F5F3FF",
+                                color: listing.steering === "RHD" ? "#1D4ED8" : "#6D28D9",
+                                border: `1px solid ${listing.steering === "RHD" ? "#BFDBFE" : "#DDD6FE"}`,
+                              }}
+                              className="text-xs font-bold px-2 py-0.5 rounded-full"
+                            >
+                              {listing.steering}
+                            </span>
+                          )}
                         </div>
 
                         {/* Title */}

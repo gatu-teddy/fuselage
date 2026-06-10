@@ -24,6 +24,7 @@ interface Props {
     port?: string;
     min?: string;
     max?: string;
+    steering?: string;
   };
   /** When true, renders only a mobile Filters button + bottom sheet */
   mobileOnly?: boolean;
@@ -66,6 +67,7 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
   const [port, setPort]                 = useState(currentParams.port ?? "");
   const [min, setMin]                   = useState(currentParams.min ?? "");
   const [max, setMax]                   = useState(currentParams.max ?? "");
+  const [steering, setSteering]         = useState(currentParams.steering ?? "");
 
   const makes = type === "bike" ? VEHICLE_MAKES.bike : VEHICLE_MAKES.car;
   const filteredMakes = makes.filter((m) =>
@@ -74,29 +76,72 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
 
   function apply(overrides?: Record<string, string>) {
     const params = new URLSearchParams();
-    const vals = { type, make, availability, port, min, max, ...overrides };
+    const vals = { type, make, availability, port, min, max, steering, ...overrides };
     if (vals.type)         params.set("type", vals.type);
     if (vals.make)         params.set("make", vals.make);
     if (vals.availability) params.set("availability", vals.availability);
     if (vals.port)         params.set("port", vals.port);
     if (vals.min)          params.set("min", vals.min);
     if (vals.max)          params.set("max", vals.max);
+    if (vals.steering)     params.set("steering", vals.steering);
     router.push(`/browse?${params.toString()}`);
   }
 
   function clear() {
     setType(""); setMake(""); setMakeSearch(""); setAvailability("");
-    setPort(""); setMin(""); setMax("");
+    setPort(""); setMin(""); setMax(""); setSteering("");
     router.push("/browse");
   }
 
-  const hasFilters = type || make || availability || port || min || max;
-  const activeCount = [type, make, availability, port, min, max].filter(Boolean).length;
+  const hasFilters = type || make || availability || port || min || max || steering;
+  const activeCount = [type, make, availability, port, min, max, steering].filter(Boolean).length;
 
   // ── Shared filter sections JSX ────────────────────────────────────────────
   function FilterBody({ onApply }: { onApply?: () => void }) {
     return (
       <div style={{ fontFamily: "Inter, sans-serif" }}>
+
+        {/* ── Steering — top because East Africa is RHD ── */}
+        <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
+          <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
+            Steering
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
+            {[
+              { value: "",    label: "Any"  },
+              { value: "RHD", label: "RHD" },
+              { value: "LHD", label: "LHD" },
+            ].map(({ value, label }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => {
+                  setSteering(value);
+                  apply({ steering: value });
+                  onApply?.();
+                }}
+                style={{
+                  height: "34px",
+                  border: `2px solid ${steering === value ? c.green : c.border}`,
+                  borderRadius: "7px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  backgroundColor: steering === value ? c.greenBg : c.surface,
+                  color: steering === value ? c.greenText : c.muted,
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {steering === "" && (
+            <p style={{ color: c.muted, fontSize: "11px", marginTop: "8px" }}>
+              Tip: East Africa requires <strong>RHD</strong>
+            </p>
+          )}
+        </div>
 
         {/* Vetting Status */}
         <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
