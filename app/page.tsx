@@ -165,12 +165,21 @@ const destinations = [
     port: "Djibouti (landlocked)",
     note: "Large population, rapidly growing middle class",
   },
+  {
+    country: "Pakistan",
+    flag: "🇵🇰",
+    demand: "High",
+    demandColor: "#EA580C",
+    demandBg: "#FFF7ED",
+    port: "Karachi",
+    note: "Growing market for Japanese & Korean used vehicles",
+  },
 ];
 
 const partners = ["Maersk", "MSC", "CMA CGM", "Hapag-Lloyd", "Evergreen"];
 
 const stats = [
-  { value: "6",         label: "Exporter countries" },
+  { value: "7",         label: "Markets served" },
   { value: "15+",       label: "African ports served" },
   { value: "100%",      label: "VIN tracked deals" },
   { value: "0",         label: "Unverified sellers" },

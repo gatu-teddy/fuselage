@@ -45,6 +45,25 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
   if (!listing) notFound();
 
+  // Check if this buyer has already inquired → reveal full VIN
+  let vinRevealed = false;
+  if (user) {
+    const { data: deal } = await authClient
+      .from("deals")
+      .select("id")
+      .eq("listing_id", id)
+      .eq("buyer_id", user.id)
+      .neq("status", "cancelled")
+      .maybeSingle();
+    vinRevealed = !!deal;
+  }
+
+  // VIN masking helper
+  function maskVin(vin: string): string {
+    if (vin.length <= 8) return vin.slice(0, 2) + "•".repeat(vin.length - 2);
+    return vin.slice(0, 6) + "•".repeat(vin.length - 10) + vin.slice(-4);
+  }
+
   const images = (listing.images as { id: string; url: string; is_primary: boolean; position: number }[])
     ?.sort((a, b) => {
       if (a.is_primary) return -1;
@@ -53,7 +72,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
     });
 
   const seller = listing.seller as {
-    company_name: string; city: string; description: string;
+    company_name: string; city: string; country?: string; description: string;
     status: string; website?: string;
   };
 
@@ -182,13 +201,12 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
               </p>
               <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
                 {[
-                  { icon: Calendar, label: "Year",        value: listing.year?.toString() ?? "—" },
-                  { icon: Gauge,    label: "Mileage",     value: listing.mileage_km != null ? `${Number(listing.mileage_km).toLocaleString()} km` : "—" },
-                  { icon: Hash,     label: "Chassis / VIN", value: listing.chassis_number ?? "—" },
-                  { icon: Hash,     label: "Engine",      value: listing.engine_size ?? "—" },
-                  { icon: Car,      label: "Steering",    value: listing.steering ?? "—" },
-                  { icon: MapPin,   label: "Origin",      value: seller?.city ? `${seller.city}${seller.country ? `, ${seller.country}` : ""}` : "—" },
-                  { icon: Clock,    label: "ETA",         value: listing.eta_date ? formatDate(listing.eta_date) : "—" },
+                  { icon: Calendar, label: "Year",    value: listing.year?.toString() ?? "—" },
+                  { icon: Gauge,    label: "Mileage", value: listing.mileage_km != null ? `${Number(listing.mileage_km).toLocaleString()} km` : "—" },
+                  { icon: Hash,     label: "Engine",  value: listing.engine_size ?? "—" },
+                  { icon: Car,      label: "Steering",value: listing.steering ?? "—" },
+                  { icon: MapPin,   label: "Origin",  value: seller?.city ? `${seller.city}${seller.country ? `, ${seller.country}` : ""}` : "—" },
+                  { icon: Clock,    label: "ETA",     value: listing.eta_date ? formatDate(listing.eta_date) : "—" },
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex items-start gap-3">
                     <Icon style={{ color: c.muted, flexShrink: 0, width: "15px", height: "15px", marginTop: "2px" }} />
@@ -198,6 +216,30 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                     </div>
                   </div>
                 ))}
+
+                {/* Chassis / VIN — masked until inquiry */}
+                {listing.chassis_number && (
+                  <div className="flex items-start gap-3 col-span-2">
+                    <Hash style={{ color: c.muted, flexShrink: 0, width: "15px", height: "15px", marginTop: "2px" }} />
+                    <div>
+                      <dt style={{ color: c.muted, fontSize: "11px", fontWeight: 600 }}>Chassis / VIN</dt>
+                      {vinRevealed ? (
+                        <dd style={{ color: c.primary, fontSize: "13px", fontWeight: 600, marginTop: "2px", fontFamily: "monospace" }}>
+                          {listing.chassis_number}
+                        </dd>
+                      ) : (
+                        <dd style={{ marginTop: "2px" }}>
+                          <span style={{ color: c.primary, fontSize: "13px", fontWeight: 600, fontFamily: "monospace", letterSpacing: "0.05em" }}>
+                            {maskVin(listing.chassis_number as string)}
+                          </span>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginLeft: "8px", backgroundColor: c.amberBg, color: "#92400E", fontSize: "10px", fontWeight: 700, padding: "2px 8px", borderRadius: "4px" }}>
+                            🔒 Revealed after inquiry
+                          </span>
+                        </dd>
+                      )}
+                    </div>
+                  </div>
+                )}
               </dl>
             </div>
 

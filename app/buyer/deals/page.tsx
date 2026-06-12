@@ -15,7 +15,7 @@ export default async function BuyerDealsPage() {
   const { data: deals } = await supabase
     .from("deals")
     .select(
-      "*, listing:listings(make, model, year, images:listing_images(url, is_primary)), seller:seller_profiles(company_name, city)"
+      "*, listing:listings(make, model, year, images:listing_images(url, is_primary)), seller:seller_profiles(company_name, city, country)"
     )
     .eq("buyer_id", user.id)
     .order("updated_at", { ascending: false });
@@ -77,7 +77,7 @@ export default async function BuyerDealsPage() {
 
 function DealCard({ deal }: { deal: Record<string, unknown> }) {
   const listing = deal.listing as { make: string; model: string; year: number; images?: { url: string; is_primary: boolean }[] };
-  const seller = deal.seller as { company_name: string; city: string };
+  const seller = deal.seller as { company_name: string; city: string; country?: string };
   const primaryImage = listing?.images?.find((i) => i.is_primary)?.url ?? listing?.images?.[0]?.url;
 
   return (

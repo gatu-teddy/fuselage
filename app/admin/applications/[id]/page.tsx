@@ -23,7 +23,13 @@ export default async function AdminApplicationDetailPage({
     .from("seller_profiles")
     .select("*, profile:profiles(full_name, email, phone, country, created_at)")
     .eq("id", id)
-    .single();
+    .single() as { data: {
+      id: string; company_name: string; trade_license_number: string;
+      trade_license_url?: string; document_urls?: string[];
+      city: string; country?: string; website?: string; description?: string;
+      status: string; rejection_reason?: string; verified_at?: string; created_at: string;
+      profile: { full_name: string; email: string; phone?: string; country?: string; created_at: string };
+    } | null };
 
   if (!application) notFound();
 

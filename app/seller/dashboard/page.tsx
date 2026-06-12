@@ -101,7 +101,7 @@ export default async function SellerDashboardPage() {
           <Clock style={{ color: c.amber, width: "18px", height: "18px", flexShrink: 0, marginTop: "2px" }} />
           <div>
             <p style={{ color: "#92400E", fontWeight: 600, fontSize: "14px" }}>Verification in progress</p>
-            <p style={{ color: "#92400E", fontSize: "13px", marginTop: "2px" }}>Our team is reviewing your trade license. This usually takes 1–2 business days.</p>
+            <p style={{ color: "#92400E", fontSize: "13px", marginTop: "2px" }}>Our compliance team is reviewing your documents. This usually takes 1–2 business days.</p>
           </div>
         </div>
       )}
