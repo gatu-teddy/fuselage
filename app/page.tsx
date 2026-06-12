@@ -210,6 +210,7 @@ export default function LandingPage() {
               { label: "Vetting Process", href: "#services"     },
               { label: "How It Works",    href: "/how-it-works" },
               { label: "Destinations",    href: "#destinations" },
+              { label: "Pricing",         href: "/pricing"      },
             ].map(({ label, href }) => (
               <Link key={label} href={href} style={{ color: c.body }}
                 className="text-sm font-medium hover:opacity-70 transition-opacity">
