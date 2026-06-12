@@ -143,32 +143,6 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
           )}
         </div>
 
-        {/* Vetting Status */}
-        <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
-          <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
-            Vetting Status
-          </p>
-          <div className="space-y-2.5">
-            {[
-              { value: "car",  label: "Elite Vetted (Cars)" },
-              { value: "bike", label: "Vetted (Bikes)" },
-            ].map(({ value, label }) => (
-              <label key={value} className="flex items-center gap-2.5 cursor-pointer">
-                <Checkbox
-                  checked={type === value}
-                  onClick={() => {
-                    const next = type === value ? "" : value;
-                    setType(next); setMake(""); setMakeSearch("");
-                    apply({ type: next, make: "" });
-                    onApply?.();
-                  }}
-                />
-                <span style={{ color: c.body }} className="text-sm">{label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
         {/* Logistics Status */}
         <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
           <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Shield, MapPin, Clock, CheckCircle2, ArrowRight, Star } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { BrowseFilters } from "@/components/listings/browse-filters";
+import { VehicleTypeToggle } from "@/components/listings/vehicle-type-toggle";
 import { AuthNav } from "@/components/layouts/auth-nav";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
@@ -133,6 +134,12 @@ export default async function BrowsePage({
 
       {/* ── PAGE BODY ───────────────────────────────────────────────────── */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-16 py-6 md:py-10">
+
+        {/* ── Vehicle type toggle ──────────────────────────────────────── */}
+        <div className="mb-6 md:mb-8">
+          <VehicleTypeToggle currentType={params.type} />
+        </div>
+
         <div className="flex items-start gap-8">
 
           {/* ── Filters sidebar — desktop only ──────────────────────────── */}
@@ -157,10 +164,19 @@ export default async function BrowsePage({
             <div className="flex items-center justify-between mb-4 md:mb-6 gap-3">
               <div className="min-w-0">
                 <h1 style={{ color: c.primary }} className="text-xl md:text-2xl font-bold tracking-tight">
-                  Vetted Marketplace
+                  {params.type === "bike"
+                    ? "Motorbikes"
+                    : params.type === "car"
+                    ? "Cars"
+                    : "Vetted Marketplace"}
                 </h1>
                 <p style={{ color: c.muted }} className="text-sm mt-0.5">
-                  Showing {listings?.length ?? 0} high-performance international listings
+                  {listings?.length ?? 0}{" "}
+                  {params.type === "bike"
+                    ? `motorbike${(listings?.length ?? 0) !== 1 ? "s" : ""} available`
+                    : params.type === "car"
+                    ? `car${(listings?.length ?? 0) !== 1 ? "s" : ""} available`
+                    : "international listings"}
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -182,9 +198,20 @@ export default async function BrowsePage({
                 style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "0.5rem" }}
                 className="text-center py-20"
               >
-                <p style={{ color: c.muted }} className="mb-4">No listings match your filters.</p>
+                <p style={{ color: c.muted }} className="mb-2">
+                  {params.type === "bike"
+                    ? "No motorbike listings yet."
+                    : params.type === "car"
+                    ? "No car listings match your filters."
+                    : "No listings match your filters."}
+                </p>
+                <p style={{ color: c.muted, fontSize: "12px" }} className="mb-6">
+                  {params.type === "bike"
+                    ? "Be the first — sellers can list motorbikes from their portal."
+                    : "Try adjusting or clearing your filters."}
+                </p>
                 <Link
-                  href="/browse"
+                  href={params.type ? `/browse?type=${params.type}` : "/browse"}
                   style={{ backgroundColor: c.primary, color: "#fff" }}
                   className="inline-flex items-center gap-2 text-sm font-semibold px-6 h-9 rounded hover:opacity-90 transition-opacity"
                 >
