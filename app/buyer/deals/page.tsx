@@ -97,7 +97,7 @@ function DealCard({ deal }: { deal: Record<string, unknown> }) {
             </div>
             <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Shield className="h-3 w-3 text-gold-500" />
-              {seller?.company_name} · {seller?.city}, UAE
+              {seller?.company_name}{seller?.city ? ` · ${seller.city}` : ""}{seller?.country ? `, ${seller.country}` : ""}
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
               {deal.destination_country as string} · {formatDate(deal.created_at as string)}

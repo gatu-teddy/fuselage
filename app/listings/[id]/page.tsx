@@ -160,7 +160,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                 {listing.color && <p style={{ color: c.muted, fontSize: "14px", marginTop: "4px" }}>{listing.color}</p>}
                 <p style={{ color: c.primary, fontSize: "28px", fontWeight: 800, marginTop: "12px" }}>
                   {formatUSD(listing.price_usd)}
-                  <span style={{ color: c.muted, fontSize: "14px", fontWeight: 400, marginLeft: "8px" }}>FOB {seller?.city ?? "Dubai"}</span>
+                  <span style={{ color: c.muted, fontSize: "14px", fontWeight: 400, marginLeft: "8px" }}>FOB {seller?.city ?? "origin port"}</span>
                 </p>
               </div>
               <span
@@ -187,7 +187,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                   { icon: Hash,     label: "Chassis / VIN", value: listing.chassis_number ?? "—" },
                   { icon: Hash,     label: "Engine",      value: listing.engine_size ?? "—" },
                   { icon: Car,      label: "Steering",    value: listing.steering ?? "—" },
-                  { icon: MapPin,   label: "Origin",      value: `${seller?.city ?? "Dubai"}, UAE` },
+                  { icon: MapPin,   label: "Origin",      value: seller?.city ? `${seller.city}${seller.country ? `, ${seller.country}` : ""}` : "—" },
                   { icon: Clock,    label: "ETA",         value: listing.eta_date ? formatDate(listing.eta_date) : "—" },
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex items-start gap-3">
@@ -265,12 +265,12 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                 </div>
                 <div>
                   <p style={{ color: c.primary, fontWeight: 700, fontSize: "14px" }}>{seller?.company_name}</p>
-                  <p style={{ color: c.muted, fontSize: "12px" }}>{seller?.city}, UAE</p>
+                  <p style={{ color: c.muted, fontSize: "12px" }}>{seller?.city}{seller?.country ? `, ${seller.country}` : ""}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 mb-3">
                 <Shield style={{ color: c.green, width: "14px", height: "14px" }} />
-                <span style={{ color: c.greenText, fontWeight: 600, fontSize: "12px" }}>Verified UAE exporter</span>
+                <span style={{ color: c.greenText, fontWeight: 600, fontSize: "12px" }}>Verified exporter</span>
               </div>
               {seller?.description && (
                 <p style={{ color: c.muted, fontSize: "12px", lineHeight: 1.6 }} className="line-clamp-3">

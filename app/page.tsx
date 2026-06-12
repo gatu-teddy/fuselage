@@ -97,14 +97,14 @@ const transitSteps = [
 ];
 
 const buyerSteps = [
-  { n: "01", title: "Browse verified inventory",  body: "Filter by make, model, price, and destination port. Every listing is from a UAE-licensed exporter." },
+  { n: "01", title: "Browse verified inventory",  body: "Filter by make, model, price, and destination port. Every listing is from a verified, licensed exporter." },
   { n: "02", title: "Send an inquiry",             body: "Contact the exporter directly through the platform. No WhatsApp strangers, no middlemen." },
   { n: "03", title: "Agree on terms",              body: "Negotiate price and shipping terms on-platform. Every message is logged." },
   { n: "04", title: "Track to delivery",           body: "Wire payment, upload the receipt, and track your vehicle all the way to your port." },
 ];
 
 const sellerSteps = [
-  { n: "01", title: "Apply to list",              body: "Submit your UAE trade license. We verify every exporter manually before approval." },
+  { n: "01", title: "Apply to list",              body: "Submit your trade or business license. We verify every exporter manually before approval." },
   { n: "02", title: "List your inventory",         body: "Add vehicles with photos, specs, VIN, FOB pricing, and available shipping routes." },
   { n: "03", title: "Receive qualified leads",     body: "Serious buyers only. Respond and negotiate in one centralised place." },
   { n: "04", title: "Close the deal",              body: "Confirm payment and update shipment tracking to build your verified history." },
@@ -170,7 +170,7 @@ const destinations = [
 const partners = ["Maersk", "MSC", "CMA CGM", "Hapag-Lloyd", "Evergreen"];
 
 const stats = [
-  { value: "UAE Only",  label: "Verified exporters" },
+  { value: "6",         label: "Exporter countries" },
   { value: "15+",       label: "African ports served" },
   { value: "100%",      label: "VIN tracked deals" },
   { value: "0",         label: "Unverified sellers" },
@@ -262,8 +262,8 @@ export default function LandingPage() {
             </h1>
 
             <p style={{ color: "rgba(255,255,255,0.65)" }} className="text-lg leading-relaxed mb-8 max-w-lg">
-              Connect with verified UAE exporters. Every vehicle is inspected, documented,
-              and tracked in real time — from Dubai to your port across Africa.
+              Connect with verified exporters across Africa and the Middle East. Every vehicle is inspected, documented,
+              and tracked in real time — straight to your port.
             </p>
 
             <div className="flex flex-wrap gap-3 mb-12">
@@ -410,14 +410,14 @@ export default function LandingPage() {
                 2023 Mercedes-Benz G63 AMG
               </h3>
               <p style={{ color: c.muted }} className="text-sm mb-6">
-                VIN: WDC4636251X123456 &nbsp;·&nbsp; UAE Origin &nbsp;·&nbsp; RHD
+                VIN: WDC4636251X123456 &nbsp;·&nbsp; RHD
               </p>
 
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: "Mileage",      value: "12,400 km" },
                   { label: "Colour",       value: "Obsidian Black" },
-                  { label: "Origin Port",  value: "Jebel Ali, UAE" },
+                  { label: "Origin Port",  value: "Jebel Ali (Dubai)" },
                   { label: "Destination", value: "Lagos (Apapa)" },
                   { label: "Departure",   value: "02 Jun 2026" },
                   { label: "ETA",         value: "28 Jun 2026" },
@@ -648,7 +648,7 @@ export default function LandingPage() {
         <div className="max-w-[1280px] mx-auto px-8 md:px-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: Shield,    title: "Verified Exporters Only",    body: "Every seller submits a UAE trade licence and is manually reviewed before listing." },
+              { icon: Shield,    title: "Verified Exporters Only",    body: "Every seller submits a trade licence and is manually reviewed before listing a single vehicle." },
               { icon: FileCheck, title: "VIN on Every Listing",       body: "Chassis numbers visible before you inquire. No mystery vehicles, ever." },
               { icon: Globe,     title: "Global Reach",               body: "Operating across 15+ African ports with established logistics hubs in key markets." },
               { icon: Truck,     title: "Fully Tracked Deals",        body: "From first inquiry to port arrival — every step is logged and visible to both parties." },
@@ -689,7 +689,7 @@ export default function LandingPage() {
             Import the right way.
           </h2>
           <p style={{ color: "rgba(255,255,255,0.6)" }} className="text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-            Join the platform built for serious buyers and UAE-verified exporters.
+            Join the platform built for serious buyers and verified exporters from across Africa and the Middle East.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

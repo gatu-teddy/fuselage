@@ -29,7 +29,7 @@ const SIDE_IMG =
 
 const TRUST_POINTS = [
   "2,400+ vehicles exported to Africa",
-  "Verified UAE exporters only",
+  "Verified exporters across 6 countries",
   "15+ destination ports covered",
   "24/7 logistics support",
 ];
@@ -110,7 +110,7 @@ function RegisterForm() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
               {([
                 { value: "buyer",  label: "Buyer",    sub: "Looking to import", Icon: User },
-                { value: "seller", label: "Exporter", sub: "UAE-based company",  Icon: Building2 },
+                { value: "seller", label: "Exporter", sub: "Export company",       Icon: Building2 },
               ] as const).map(({ value, label, sub, Icon }) => (
                 <button
                   key={value}
@@ -189,7 +189,7 @@ function RegisterForm() {
             {role === "seller" && (
               <div style={{ backgroundColor: c.amberBg, border: `1px solid ${c.amberBorder}`, borderRadius: "8px", padding: "10px 14px" }}>
                 <p style={{ color: c.amber, fontSize: "12px", lineHeight: 1.5, margin: 0 }}>
-                  After registration you will need to submit your UAE trade license for verification before your listings go live.
+                  After registration you will need to submit your trade or business license for verification before your listings go live.
                 </p>
               </div>
             )}

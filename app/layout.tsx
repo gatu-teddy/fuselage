@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Fuselage — Premium Vehicle Import Marketplace",
   description:
-    "Connect with verified UAE import/export companies. Browse luxury cars and high-end bikes shipped directly to Africa.",
+    "Connect with verified exporters from Nigeria, UAE, Ghana, Kenya and more. Browse luxury cars and high-end vehicles shipped directly to Africa.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

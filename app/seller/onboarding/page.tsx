@@ -34,7 +34,10 @@ const labelStyle: React.CSSProperties = {
   display: "block", marginBottom: "6px",
 };
 
-const cities = ["Dubai", "Sharjah", "Abu Dhabi", "Ajman", "Ras Al Khaimah", "Fujairah", "Umm Al Quwain"];
+const exporterCountries = [
+  "UAE", "Nigeria", "Ghana", "Kenya", "Tanzania", "Libya", "Ethiopia",
+  "Saudi Arabia", "Jordan", "Egypt", "South Africa", "Other",
+];
 
 type UploadFile = { file: File; preview?: string };
 
@@ -47,7 +50,7 @@ export default function SellerOnboardingPage() {
 
   const [form, setForm] = useState({
     company_name: "", trade_license_number: "",
-    city: "Dubai", website: "", description: "",
+    country: "UAE", city: "", website: "", description: "",
   });
   const [uploadFile, setUploadFile] = useState<UploadFile | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -84,7 +87,7 @@ export default function SellerOnboardingPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!uploadFile) { setError("Please upload your UAE trade license document."); return; }
+    if (!uploadFile) { setError("Please upload your trade license or business registration document."); return; }
     setLoading(true); setError("");
 
     const supabase = createClient();
@@ -183,7 +186,7 @@ export default function SellerOnboardingPage() {
             Company information
           </p>
           <p style={{ color: c.muted, fontSize: "13px", marginBottom: "24px" }}>
-            We verify every exporter. Ensure these match your official trade license.
+            We verify every exporter. Ensure these match your official business registration documents.
           </p>
 
           <form onSubmit={handleSubmit}>
@@ -200,7 +203,7 @@ export default function SellerOnboardingPage() {
               <div>
                 <label style={labelStyle}>Company name <span style={{ color: c.error }}>*</span></label>
                 <input
-                  placeholder="Al Rashidi Motors LLC"
+                  placeholder="e.g. Apex Motors Ltd"
                   value={form.company_name}
                   onChange={(e) => update("company_name", e.target.value)}
                   required
@@ -208,32 +211,44 @@ export default function SellerOnboardingPage() {
                 />
               </div>
 
+              {/* Country */}
+              <div>
+                <label style={labelStyle}>Country of registration <span style={{ color: c.error }}>*</span></label>
+                <select
+                  value={form.country}
+                  onChange={(e) => update("country", e.target.value)}
+                  required
+                  style={{ ...fieldStyle, paddingRight: "32px" }}
+                >
+                  {exporterCountries.map((ct) => <option key={ct} value={ct}>{ct}</option>)}
+                </select>
+              </div>
+
+              {/* City */}
+              <div>
+                <label style={labelStyle}>City <span style={{ color: c.error }}>*</span></label>
+                <input
+                  placeholder="e.g. Lagos, Dubai, Accra"
+                  value={form.city}
+                  onChange={(e) => update("city", e.target.value)}
+                  required
+                  style={fieldStyle}
+                />
+              </div>
+
               {/* Trade license number */}
               <div>
-                <label style={labelStyle}>UAE Trade license number <span style={{ color: c.error }}>*</span></label>
+                <label style={labelStyle}>Business / Trade license number <span style={{ color: c.error }}>*</span></label>
                 <input
-                  placeholder="DED-123456"
+                  placeholder="e.g. RC-1234567"
                   value={form.trade_license_number}
                   onChange={(e) => update("trade_license_number", e.target.value)}
                   required
                   style={fieldStyle}
                 />
                 <p style={{ color: c.muted, fontSize: "11px", marginTop: "5px" }}>
-                  Issued by DED, Sharjah Economic Department, or equivalent UAE authority.
+                  Issued by your national trade or business registration authority.
                 </p>
-              </div>
-
-              {/* City */}
-              <div>
-                <label style={labelStyle}>City <span style={{ color: c.error }}>*</span></label>
-                <select
-                  value={form.city}
-                  onChange={(e) => update("city", e.target.value)}
-                  required
-                  style={{ ...fieldStyle, paddingRight: "32px" }}
-                >
-                  {cities.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
               </div>
 
               {/* Website */}
@@ -241,7 +256,7 @@ export default function SellerOnboardingPage() {
                 <label style={labelStyle}>Website <span style={{ color: c.muted, fontWeight: 400 }}>(optional)</span></label>
                 <input
                   type="url"
-                  placeholder="https://alrashidimotors.ae"
+                  placeholder="https://yourcompany.com"
                   value={form.website}
                   onChange={(e) => update("website", e.target.value)}
                   style={fieldStyle}
@@ -267,7 +282,7 @@ export default function SellerOnboardingPage() {
                   Trade license document <span style={{ color: c.error }}>*</span>
                 </label>
                 <p style={{ color: c.muted, fontSize: "11px", marginBottom: "10px" }}>
-                  Upload a clear copy of your UAE trade license. PDF, JPG, or PNG · Max 10 MB
+                  Upload a clear copy of your trade license or business registration document. PDF, JPG, or PNG · Max 10 MB
                 </p>
 
                 {!uploadFile ? (

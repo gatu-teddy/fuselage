@@ -25,7 +25,7 @@ const HERO =
 
 const TRUST_POINTS = [
   "200-point inspection on every vehicle",
-  "Verified UAE exporters only",
+  "Verified exporters across 6 countries",
   "End-to-end logistics tracking",
 ];
 
@@ -104,7 +104,7 @@ export default function LoginPage() {
             Africa's trusted vehicle import marketplace
           </h2>
           <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "15px", lineHeight: 1.6, marginBottom: "32px" }}>
-            Connecting verified UAE exporters with buyers across Africa — every vehicle inspected, every shipment tracked.
+            Connecting verified exporters with buyers across Africa — every vehicle inspected, every shipment tracked.
           </p>
 
           {/* Trust points */}

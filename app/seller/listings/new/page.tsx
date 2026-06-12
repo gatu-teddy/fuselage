@@ -194,7 +194,7 @@ export default function NewListingPage() {
         {/* Pricing & availability */}
         <Section title="Pricing & availability">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-            <Field label="Price (USD FOB Dubai)" required hint="FOB = Free On Board at UAE port. Excludes shipping.">
+            <Field label="Price (USD FOB)" required hint="FOB = Free On Board at origin port. Excludes shipping.">
               <input type="number" min="1000" placeholder="85000" value={form.price_usd} onChange={(e) => update("price_usd", e.target.value)} required style={fieldStyle} />
             </Field>
 

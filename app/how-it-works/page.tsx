@@ -286,7 +286,7 @@ export default function HowItWorksPage() {
               </p>
             </div>
             {[
-              { icon: Shield, title: "Verified Exporters Only",  body: "All sellers submit a UAE trade licence and are manually reviewed before listing a single vehicle." },
+              { icon: Shield, title: "Verified Exporters Only",  body: "All sellers submit a trade licence and are manually reviewed before listing a single vehicle." },
               { icon: Globe,  title: "Global Reach",             body: "Operating across 15+ African ports with established logistics hubs in Dubai, Hamburg, and New Jersey." },
             ].map(({ icon: Icon, title, body }) => (
               <div key={title} style={{ borderLeft: `2px solid rgba(255,255,255,0.1)` }} className="pl-8">
@@ -351,7 +351,7 @@ export default function HowItWorksPage() {
                 {
                   icon: UserCheck,
                   title: "Seller Identity Verification",
-                  body: "Every exporter submits their UAE trade licence. We manually verify each business before they can list a single vehicle. No anonymous sellers.",
+                  body: "Every exporter submits their trade licence. We manually verify each business before they can list a single vehicle. No anonymous sellers.",
                 },
                 {
                   icon: ClipboardCheck,
@@ -361,7 +361,7 @@ export default function HowItWorksPage() {
                 {
                   icon: ShieldCheck,
                   title: "Export Compliance Review",
-                  body: "Our legal team reviews all export documentation against UAE regulations and the destination country's import requirements before transit is approved.",
+                  body: "Our compliance team reviews all export documentation against the origin country's regulations and the destination country's import requirements before transit is approved.",
                 },
                 {
                   icon: Lock,
@@ -451,7 +451,7 @@ export default function HowItWorksPage() {
             Source your next vehicle<br />the right way.
           </h2>
           <p style={{ color: c.muted }} className="text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-            Join the network of serious buyers and UAE-verified exporters moving vehicles safely across borders.
+            Join the network of serious buyers and verified exporters moving vehicles safely across borders.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

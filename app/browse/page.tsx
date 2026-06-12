@@ -289,7 +289,7 @@ export default async function BrowsePage({
                           {listing.year} {listing.make} {listing.model}
                         </h3>
                         <p style={{ color: c.muted }} className="text-xs mb-3">
-                          FOB {seller?.city ?? "Dubai"}
+                          FOB {seller?.city ?? "origin port"}
                         </p>
 
                         {/* Price */}

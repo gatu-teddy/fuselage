@@ -77,7 +77,7 @@ export default async function SellerDashboardPage() {
           <h1 style={{ color: c.primary, fontSize: "24px", fontWeight: 800, letterSpacing: "-0.5px" }}>
             {sellerProfile.company_name}
           </h1>
-          <p style={{ color: c.muted, fontSize: "14px", marginTop: "4px" }}>{sellerProfile.city}, UAE</p>
+          <p style={{ color: c.muted, fontSize: "14px", marginTop: "4px" }}>{sellerProfile.city}{sellerProfile.country ? `, ${sellerProfile.country}` : ""}</p>
         </div>
         <div className="flex items-center gap-3">
           <span style={{ backgroundColor: statusInfo.bg, color: statusInfo.color, fontSize: "12px", fontWeight: 700, padding: "6px 14px", borderRadius: "20px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
