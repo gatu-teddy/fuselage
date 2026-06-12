@@ -63,19 +63,54 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
   }
   if (isSeller) vinRevealed = true; // seller always sees full VIN on their own listing
 
-  // Fetch similar listings (same make, different ID, active) — shown to sellers instead of inquiry form
-  type SimilarListing = { id: string; year: number; make: string; model: string; price_usd: number; images: { url: string; is_primary: boolean }[]; seller: { city: string } };
+  // Tiered similar listings — shown to sellers instead of inquiry form
+  type SimilarListing = {
+    id: string; year: number; make: string; model: string;
+    price_usd: number; mileage_km: number | null; steering: string | null;
+    images: { url: string; is_primary: boolean }[];
+    seller: { city: string };
+  };
+  const SIMILAR_SELECT = "id, year, make, model, price_usd, mileage_km, steering, images:listing_images(url, is_primary), seller:seller_profiles(city)";
   let similarListings: SimilarListing[] = [];
+  let similarMakeMatch = false; // used for "See all →" link
+
   if (isSeller) {
-    const { data: similar } = await supabase
+    // ── Tier 1+2: same make (up to 10), then sort so same model floats first ──
+    const { data: sameMakeRows } = await supabase
       .from("listings")
-      .select("id, year, make, model, price_usd, images:listing_images(url, is_primary), seller:seller_profiles(city)")
+      .select(SIMILAR_SELECT)
       .eq("status", "active")
       .eq("make", listing.make)
       .neq("id", id)
-      .limit(3);
-    similarListings = (similar ?? []) as unknown as SimilarListing[];
+      .limit(10);
+
+    if (sameMakeRows && sameMakeRows.length > 0) {
+      similarMakeMatch = true;
+      // Sort: exact model match first, then others
+      const sorted = [...sameMakeRows].sort((a, b) => {
+        const am = (a.model as string).toLowerCase() === (listing.model as string).toLowerCase() ? 0 : 1;
+        const bm = (b.model as string).toLowerCase() === (listing.model as string).toLowerCase() ? 0 : 1;
+        return am - bm;
+      });
+      similarListings = sorted.slice(0, 6) as unknown as SimilarListing[];
+    }
+
+    // ── Tier 3: any other active listing (guaranteed minimum 1) ─────────────
+    if (similarListings.length === 0) {
+      const { data: anyRows } = await supabase
+        .from("listings")
+        .select(SIMILAR_SELECT)
+        .eq("status", "active")
+        .neq("id", id)
+        .limit(6);
+      similarListings = (anyRows ?? []) as unknown as SimilarListing[];
+    }
   }
+
+  // "See all" URL — pre-fills browse filters with make when we have make-matched results
+  const seeAllHref = similarMakeMatch
+    ? `/browse?make=${encodeURIComponent(listing.make as string)}`
+    : `/browse`;
 
   // VIN masking helper
   function maskVin(vin: string): string {
@@ -341,47 +376,103 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
             {/* Inquiry — hidden for the seller who owns this listing */}
             {isSeller ? (
               <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+                {/* Header */}
                 <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "14px" }}>
-                  Similar listings
+                  {similarMakeMatch ? `Other ${listing.make as string} listings` : "Other listings"}
                 </p>
+
                 {similarListings.length === 0 ? (
-                  <p style={{ color: c.muted, fontSize: "13px" }}>No similar listings right now.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {similarListings.map((s) => {
-                      const simImages = s.images as { url: string; is_primary: boolean }[];
-                      const simThumb = simImages?.find((i) => i.is_primary)?.url ?? simImages?.[0]?.url ?? null;
-                      const simSeller = s.seller as { city: string };
-                      return (
-                        <Link key={s.id} href={`/listings/${s.id}`} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }} className="group">
-                          <div style={{ width: "56px", height: "42px", borderRadius: "6px", overflow: "hidden", flexShrink: 0, backgroundColor: c.bgDim, border: `1px solid ${c.border}` }}>
-                            {simThumb ? (
-                              <Image src={simThumb} alt="" width={56} height={42} className="object-cover w-full h-full" />
-                            ) : (
-                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: c.muted }}>
-                                <Car style={{ width: "16px", height: "16px" }} />
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p style={{ color: c.primary, fontSize: "12px", fontWeight: 600 }} className="truncate group-hover:text-[#10B981] transition-colors">
-                              {s.year} {s.make} {s.model}
-                            </p>
-                            <p style={{ color: c.muted, fontSize: "11px" }}>{formatUSD(s.price_usd)} · {simSeller?.city ?? "—"}</p>
-                          </div>
-                          <ArrowRight style={{ color: c.muted, width: "13px", height: "13px", flexShrink: 0 }} />
-                        </Link>
-                      );
-                    })}
+                  /* ── Zero results: no other listings exist in DB at all ── */
+                  <div style={{ textAlign: "center", padding: "20px 0" }}>
+                    <div style={{ fontSize: "28px", marginBottom: "8px" }}>🔍</div>
+                    <p style={{ color: c.primary, fontWeight: 600, fontSize: "13px", marginBottom: "4px" }}>No similar listings yet</p>
+                    <p style={{ color: c.muted, fontSize: "12px", lineHeight: 1.5, marginBottom: "16px" }}>
+                      You&apos;re the first to list a {listing.make as string} on Fuselage.
+                    </p>
+                    <Link
+                      href="/browse"
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: c.primary, color: "#fff", fontSize: "12px", fontWeight: 600, padding: "8px 16px", borderRadius: "6px", textDecoration: "none" }}
+                    >
+                      Browse all listings <ArrowRight style={{ width: "12px", height: "12px" }} />
+                    </Link>
                   </div>
+                ) : (
+                  <>
+                    {/* ── Scrollable list — max 6 ── */}
+                    <div style={{ maxHeight: "420px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "2px" }}>
+                      {similarListings.map((s) => {
+                        const simImages = s.images as { url: string; is_primary: boolean }[];
+                        const simThumb = simImages?.find((i) => i.is_primary)?.url ?? simImages?.[0]?.url ?? null;
+                        const simSeller = s.seller as { city: string };
+                        const sameModel = (s.model as string).toLowerCase() === (listing.model as string).toLowerCase();
+
+                        return (
+                          <Link
+                            key={s.id}
+                            href={`/listings/${s.id}`}
+                            style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", padding: "8px 6px", borderRadius: "8px" }}
+                            className="group hover:bg-[#F8FAFC] transition-colors"
+                          >
+                            {/* Thumbnail */}
+                            <div style={{ width: "64px", height: "48px", borderRadius: "6px", overflow: "hidden", flexShrink: 0, backgroundColor: c.bgDim, border: `1px solid ${c.border}` }}>
+                              {simThumb ? (
+                                <Image src={simThumb} alt="" width={64} height={48} className="object-cover w-full h-full" />
+                              ) : (
+                                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: c.muted }}>
+                                  <Car style={{ width: "18px", height: "18px" }} />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Details */}
+                            <div className="flex-1 min-w-0">
+                              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                <p style={{ color: c.primary, fontSize: "12px", fontWeight: 600 }} className="truncate group-hover:text-[#10B981] transition-colors">
+                                  {s.year} {s.make} {s.model}
+                                </p>
+                                {sameModel && (
+                                  <span style={{ backgroundColor: c.greenBg, color: c.greenText, fontSize: "9px", fontWeight: 700, padding: "1px 5px", borderRadius: "3px", flexShrink: 0 }}>
+                                    SAME
+                                  </span>
+                                )}
+                              </div>
+                              <p style={{ color: c.primary, fontSize: "12px", fontWeight: 700, marginTop: "1px" }}>
+                                {formatUSD(s.price_usd)}
+                              </p>
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "2px" }}>
+                                {s.mileage_km != null && (
+                                  <span style={{ color: c.muted, fontSize: "10px" }}>
+                                    {Number(s.mileage_km).toLocaleString()} km
+                                  </span>
+                                )}
+                                {s.steering && (
+                                  <span style={{ color: s.steering === "RHD" ? "#1D4ED8" : "#6D28D9", backgroundColor: s.steering === "RHD" ? "#EFF6FF" : "#F5F3FF", fontSize: "9px", fontWeight: 700, padding: "1px 5px", borderRadius: "3px" }}>
+                                    {s.steering}
+                                  </span>
+                                )}
+                                {simSeller?.city && (
+                                  <span style={{ color: c.muted, fontSize: "10px" }}>· {simSeller.city}</span>
+                                )}
+                              </div>
+                            </div>
+
+                            <ArrowRight style={{ color: c.muted, width: "12px", height: "12px", flexShrink: 0 }} />
+                          </Link>
+                        );
+                      })}
+                    </div>
+
+                    {/* ── See all → ── */}
+                    <Link
+                      href={seeAllHref}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginTop: "14px", color: c.primary, fontSize: "12px", fontWeight: 600, textDecoration: "none", border: `1px solid ${c.border}`, borderRadius: "6px", padding: "9px 0" }}
+                      className="hover:bg-[#F8FAFC] transition-colors"
+                    >
+                      {similarMakeMatch ? `See all ${listing.make as string} listings` : "See all listings"}
+                      <ArrowRight style={{ width: "12px", height: "12px" }} />
+                    </Link>
+                  </>
                 )}
-                <Link
-                  href="/browse"
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginTop: "16px", color: c.primary, fontSize: "12px", fontWeight: 600, textDecoration: "none", border: `1px solid ${c.border}`, borderRadius: "6px", padding: "8px 0" }}
-                  className="hover:bg-[#F8FAFC] transition-colors"
-                >
-                  View all listings <ArrowRight style={{ width: "12px", height: "12px" }} />
-                </Link>
               </div>
             ) : (
               <InquiryForm
