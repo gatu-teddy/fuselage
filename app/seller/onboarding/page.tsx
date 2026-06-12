@@ -12,6 +12,7 @@ const c = {
   greenBg:   "#D1FAE5",
   greenText: "#065F46",
   bg:        "#F8FAFC",
+  bgDim:     "#F1F5F9",
   surface:   "#FFFFFF",
   border:    "#E2E8F0",
   muted:     "#64748B",
@@ -35,25 +36,27 @@ const labelStyle: React.CSSProperties = {
 };
 
 const exporterCountries = [
-  "UAE", "Nigeria", "Ghana", "Kenya", "Tanzania", "Libya", "Ethiopia",
-  "Pakistan", "Saudi Arabia", "Jordan", "Egypt", "South Africa", "Other",
+  "UAE", "United Kingdom", "Nigeria", "Ghana", "Kenya", "Tanzania", "Libya",
+  "Ethiopia", "Pakistan", "Saudi Arabia", "Jordan", "Egypt", "South Africa", "Other",
 ];
 
-// Example document types by country for the hint text
-const docExamples: Record<string, string> = {
-  UAE:          "Trade License (DED / DDA / JAFZA)",
-  Nigeria:      "CAC Certificate of Incorporation",
-  Ghana:        "Registrar General's Certificate",
-  Kenya:        "Certificate of Incorporation (CAK)",
-  Tanzania:     "Business Registration Certificate (BRELA)",
-  Libya:        "Commercial Registration Certificate",
-  Ethiopia:     "Ministry of Trade Business License",
-  Pakistan:     "SECP Certificate of Incorporation",
-  "Saudi Arabia": "Commercial Registration (CR)",
-  Jordan:       "Commercial Registration Certificate",
-  Egypt:        "Commercial Registration Certificate",
-  "South Africa": "CIPC Certificate of Incorporation",
-  Other:        "Official business license or certificate of incorporation",
+// Per-country document requirements shown in the onboarding form
+type DocReq = { primary: string; supporting: string[]; regBody: string };
+const DOC_REQUIREMENTS: Record<string, DocReq> = {
+  UAE:          { primary: "Trade License (DED / DDA / JAFZA / DIFC)", supporting: ["VAT registration certificate", "Chamber of commerce membership"], regBody: "DED / Free Zone Authority" },
+  Nigeria:      { primary: "CAC Certificate of Incorporation", supporting: ["FIRS Tax Identification Number (TIN)", "Form CAC2 (Allotment of shares)", "Business Permit (if foreign-owned)"], regBody: "Corporate Affairs Commission (CAC)" },
+  Ghana:        { primary: "Certificate of Incorporation (RGD)", supporting: ["Ghana Revenue Authority TIN", "Certificate to Commence Business"], regBody: "Registrar General's Department" },
+  Kenya:        { primary: "Certificate of Incorporation (CAK / eCitizen)", supporting: ["KRA PIN certificate", "Business permit (county)", "Export license (if applicable)"], regBody: "Companies Registry / eCitizen" },
+  Tanzania:     { primary: "Business Registration Certificate (BRELA)", supporting: ["TIN certificate", "Business License (MLHSD)"], regBody: "Business Registrations and Licensing Agency (BRELA)" },
+  "United Kingdom": { primary: "Companies House certificate of incorporation", supporting: ["HMRC UTR / VAT registration", "Proof of registered office address"], regBody: "Companies House" },
+  Libya:        { primary: "Commercial Registration Certificate", supporting: ["National ID of director", "Chamber of commerce certificate"], regBody: "Ministry of Economy" },
+  Ethiopia:     { primary: "Ministry of Trade Business License", supporting: ["TIN certificate", "Trade name registration"], regBody: "Ministry of Trade and Regional Integration" },
+  Pakistan:     { primary: "SECP Certificate of Incorporation", supporting: ["NTN (National Tax Number)", "Form-A (list of directors)"], regBody: "Securities & Exchange Commission of Pakistan (SECP)" },
+  "Saudi Arabia": { primary: "Commercial Registration (CR)", supporting: ["Chamber of commerce membership", "VAT registration certificate (if applicable)"], regBody: "Ministry of Commerce" },
+  Jordan:       { primary: "Commercial Registration Certificate", supporting: ["Tax registration certificate", "Chamber of industry/commerce card"], regBody: "Companies Controller Department" },
+  Egypt:        { primary: "Commercial Registration Certificate", supporting: ["Tax card", "Social insurance certificate"], regBody: "General Authority for Investment (GAFI)" },
+  "South Africa": { primary: "CIPC Certificate of Incorporation (CoR14.3)", supporting: ["SARS Tax clearance certificate", "B-BBEE certificate (if applicable)"], regBody: "Companies and Intellectual Property Commission (CIPC)" },
+  Other:        { primary: "Official certificate of incorporation or business license", supporting: ["Tax registration document", "Proof of business address"], regBody: "Your national companies / trade registry" },
 };
 
 type UploadFile = { file: File; preview?: string };
@@ -260,7 +263,7 @@ export default function SellerOnboardingPage() {
     );
   }
 
-  const hint = docExamples[form.country] ?? docExamples["Other"];
+  const docReq = DOC_REQUIREMENTS[form.country] ?? DOC_REQUIREMENTS["Other"];
 
   // ── Form ────────────────────────────────────────────────────────────────────
   return (
@@ -346,13 +349,33 @@ export default function SellerOnboardingPage() {
                 />
               </div>
 
+              {/* ── Document requirements for selected country ───────────── */}
+              <div style={{ backgroundColor: c.bgDim ?? c.bg, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "14px 16px" }}>
+                <p style={{ color: c.primary, fontSize: "12px", fontWeight: 700, marginBottom: "8px" }}>
+                  📋 Required documents for {form.country}
+                </p>
+                <p style={{ color: c.muted, fontSize: "11px", marginBottom: "8px" }}>
+                  Issued by: <strong style={{ color: c.body }}>{docReq.regBody}</strong>
+                </p>
+                <ul style={{ margin: 0, paddingLeft: "16px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <li style={{ color: c.primary, fontSize: "12px", fontWeight: 600 }}>
+                    ✅ {docReq.primary} <span style={{ color: c.error }}>(required)</span>
+                  </li>
+                  {docReq.supporting.map(s => (
+                    <li key={s} style={{ color: c.muted, fontSize: "12px" }}>
+                      + {s} <span style={{ color: c.muted, fontStyle: "italic" }}>(if applicable)</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               {/* ── Primary document (required) ──────────────────────────── */}
               <div>
                 <label style={labelStyle}>
                   Primary registration document <span style={{ color: c.error }}>*</span>
                 </label>
                 <p style={{ color: c.muted, fontSize: "11px", marginBottom: "10px" }}>
-                  {hint} — PDF, JPG, or PNG · Max 10 MB
+                  {docReq.primary} — PDF, JPG, or PNG · Max 10 MB
                 </p>
                 {!primaryDoc ? (
                   <DropZone onFile={(f) => {

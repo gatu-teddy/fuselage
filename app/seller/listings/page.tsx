@@ -34,11 +34,18 @@ export default async function SellerListingsPage() {
             {listings?.length ?? 0} vehicle{listings?.length !== 1 ? "s" : ""} listed
           </p>
         </div>
-        <Button asChild>
-          <Link href="/seller/listings/new">
-            <Plus className="h-4 w-4 mr-1" /> Add listing
-          </Link>
-        </Button>
+        <div className="flex gap-3">
+          <Button asChild variant="outline">
+            <Link href="/seller/listings/bulk">
+              Bulk import CSV
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/seller/listings/new">
+              <Plus className="h-4 w-4 mr-1" /> Add listing
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {listings?.length === 0 && (

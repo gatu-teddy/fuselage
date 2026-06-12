@@ -36,7 +36,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
   const [{ data: listing }, { data: { user } }] = await Promise.all([
     supabase
       .from("listings")
-      .select("*, images:listing_images(*), seller:seller_profiles(*, profile:profiles(full_name, email))")
+      .select("*, images:listing_images(*), seller:seller_profiles(company_name, city, country, description, status, website)")
       .eq("id", id)
       .eq("status", "active")
       .single(),
