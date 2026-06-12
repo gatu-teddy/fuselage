@@ -11,6 +11,7 @@ const c = {
   greenText: "#065F46",
   body:      "#334155",
   bg:        "#F8FAFC",
+  bgDim:     "#F1F5F9",
   surface:   "#FFFFFF",
   border:    "#E2E8F0",
   muted:     "#64748B",
@@ -25,8 +26,8 @@ interface Props {
     min?: string;
     max?: string;
     steering?: string;
+    q?: string;
   };
-  /** When true, renders only a mobile Filters button + bottom sheet */
   mobileOnly?: boolean;
 }
 
@@ -59,15 +60,17 @@ function Checkbox({ checked, onClick }: { checked: boolean; onClick: () => void 
 
 export function BrowseFilters({ currentParams, mobileOnly }: Props) {
   const router = useRouter();
-  const [mobileOpen, setMobileOpen]     = useState(false);
-  const [type, setType]                 = useState(currentParams.type ?? "");
-  const [make, setMake]                 = useState(currentParams.make ?? "");
-  const [makeSearch, setMakeSearch]     = useState(currentParams.make ?? "");
-  const [availability, setAvailability] = useState(currentParams.availability ?? "");
-  const [port, setPort]                 = useState(currentParams.port ?? "");
-  const [min, setMin]                   = useState(currentParams.min ?? "");
-  const [max, setMax]                   = useState(currentParams.max ?? "");
-  const [steering, setSteering]         = useState(currentParams.steering ?? "");
+
+  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [type,        setType]        = useState(currentParams.type ?? "");
+  const [make,        setMake]        = useState(currentParams.make ?? "");
+  const [makeSearch,  setMakeSearch]  = useState(currentParams.make ?? "");
+  const [availability,setAvailability]= useState(currentParams.availability ?? "");
+  const [port,        setPort]        = useState(currentParams.port ?? "");
+  const [min,         setMin]         = useState(currentParams.min ?? "");
+  const [max,         setMax]         = useState(currentParams.max ?? "");
+  const [steering,    setSteering]    = useState(currentParams.steering ?? "");
+  const [q,           setQ]           = useState(currentParams.q ?? "");
 
   const makes = type === "bike" ? VEHICLE_MAKES.bike : VEHICLE_MAKES.car;
   const filteredMakes = makes.filter((m) =>
@@ -76,32 +79,116 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
 
   function apply(overrides?: Record<string, string>) {
     const params = new URLSearchParams();
-    const vals = { type, make, availability, port, min, max, steering, ...overrides };
-    if (vals.type)         params.set("type", vals.type);
-    if (vals.make)         params.set("make", vals.make);
+    const vals = { type, make, availability, port, min, max, steering, q, ...overrides };
+    if (vals.type)         params.set("type",         vals.type);
+    if (vals.make)         params.set("make",         vals.make);
     if (vals.availability) params.set("availability", vals.availability);
-    if (vals.port)         params.set("port", vals.port);
-    if (vals.min)          params.set("min", vals.min);
-    if (vals.max)          params.set("max", vals.max);
-    if (vals.steering)     params.set("steering", vals.steering);
+    if (vals.port)         params.set("port",         vals.port);
+    if (vals.min)          params.set("min",          vals.min);
+    if (vals.max)          params.set("max",          vals.max);
+    if (vals.steering)     params.set("steering",     vals.steering);
+    if (vals.q)            params.set("q",            vals.q);
     router.push(`/browse?${params.toString()}`);
   }
 
   function clear() {
     setType(""); setMake(""); setMakeSearch(""); setAvailability("");
-    setPort(""); setMin(""); setMax(""); setSteering("");
+    setPort(""); setMin(""); setMax(""); setSteering(""); setQ("");
     router.push("/browse");
   }
 
-  const hasFilters = type || make || availability || port || min || max || steering;
-  const activeCount = [type, make, availability, port, min, max, steering].filter(Boolean).length;
+  const hasFilters = type || make || availability || port || min || max || steering || q;
+  const activeCount = [type, make, availability, port, min, max, steering, q].filter(Boolean).length;
 
-  // ── Shared filter sections JSX ────────────────────────────────────────────
+  // ── Type toggle (Cars / Motorbikes) ────────────────────────────────────────
+  function TypeToggle({ onApply }: { onApply?: () => void }) {
+    return (
+      <div
+        style={{
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3px",
+          padding: "3px", backgroundColor: c.bgDim,
+          borderRadius: "8px", marginBottom: "14px",
+          border: `1px solid ${c.border}`,
+        }}
+      >
+        {([
+          { value: "car",  label: "Cars" },
+          { value: "bike", label: "Motorbikes" },
+        ] as const).map(({ value, label }) => {
+          const isActive = type === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              onClick={() => {
+                const next = isActive ? "" : value;
+                setType(next); setMake(""); setMakeSearch("");
+                apply({ type: next, make: "" });
+                onApply?.();
+              }}
+              style={{
+                height: "34px", border: "none", borderRadius: "6px",
+                fontSize: "13px", fontWeight: isActive ? 700 : 500,
+                cursor: "pointer", transition: "all 0.12s ease",
+                backgroundColor: isActive ? c.primary : "transparent",
+                color: isActive ? "#ffffff" : c.muted,
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // ── Global search bar ──────────────────────────────────────────────────────
+  function SearchBar({ onApply }: { onApply?: () => void }) {
+    return (
+      <div style={{ position: "relative", marginBottom: "20px" }}>
+        <Search
+          style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: c.muted, width: "14px", height: "14px", pointerEvents: "none" }}
+        />
+        <input
+          type="text"
+          placeholder="Search make, model..."
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") { apply({ q }); onApply?.(); }
+          }}
+          style={{
+            width: "100%", paddingLeft: "32px", paddingRight: q ? "32px" : "10px",
+            height: "38px", fontSize: "13px", outline: "none",
+            border: `1px solid ${q ? c.primary : c.border}`,
+            borderRadius: "7px", color: c.body, backgroundColor: c.surface,
+            fontFamily: "Inter, sans-serif", boxSizing: "border-box",
+          }}
+        />
+        {q && (
+          <button
+            type="button"
+            onClick={() => { setQ(""); apply({ q: "" }); onApply?.(); }}
+            style={{
+              position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)",
+              background: "none", border: "none", cursor: "pointer", padding: "2px",
+              display: "flex", alignItems: "center", color: c.muted,
+            }}
+          >
+            <X style={{ width: "13px", height: "13px" }} />
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  // ── Filter sections (steering, logistics, make, region, price) ─────────────
   function FilterBody({ onApply }: { onApply?: () => void }) {
     return (
       <div style={{ fontFamily: "Inter, sans-serif" }}>
 
-        {/* ── Steering — top because East Africa is RHD ── */}
+        {/* Steering */}
         <div style={{ borderBottom: `1px solid ${c.border}` }} className="pb-5 mb-5">
           <p style={{ color: c.primary }} className="text-xs font-semibold uppercase tracking-widest mb-3">
             Steering
@@ -123,13 +210,10 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
                 style={{
                   height: "34px",
                   border: `2px solid ${steering === value ? c.green : c.border}`,
-                  borderRadius: "7px",
-                  fontSize: "12px",
-                  fontWeight: 700,
+                  borderRadius: "7px", fontSize: "12px", fontWeight: 700,
                   backgroundColor: steering === value ? c.greenBg : c.surface,
                   color: steering === value ? c.greenText : c.muted,
-                  cursor: "pointer",
-                  fontFamily: "Inter, sans-serif",
+                  cursor: "pointer", fontFamily: "Inter, sans-serif",
                 }}
               >
                 {label}
@@ -232,9 +316,7 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
           </p>
           <div className="flex gap-2 mb-4">
             <input
-              type="number"
-              placeholder="Min"
-              value={min}
+              type="number" placeholder="Min" value={min}
               onChange={(e) => setMin(e.target.value)}
               style={{
                 width: 0, flex: 1, minWidth: 0, height: "36px", fontSize: "13px", outline: "none",
@@ -243,9 +325,7 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
               }}
             />
             <input
-              type="number"
-              placeholder="Max"
-              value={max}
+              type="number" placeholder="Max" value={max}
               onChange={(e) => setMax(e.target.value)}
               style={{
                 width: 0, flex: 1, minWidth: 0, height: "36px", fontSize: "13px", outline: "none",
@@ -256,7 +336,10 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
           </div>
           <button
             onClick={() => { apply(); onApply?.(); }}
-            style={{ backgroundColor: c.primary, color: "#fff", width: "100%", height: "38px", borderRadius: "6px", fontSize: "13px", fontWeight: 600, border: "none", cursor: "pointer" }}
+            style={{
+              backgroundColor: c.primary, color: "#fff", width: "100%", height: "38px",
+              borderRadius: "6px", fontSize: "13px", fontWeight: 600, border: "none", cursor: "pointer",
+            }}
             className="hover:opacity-90 transition-opacity"
           >
             Apply Filters
@@ -266,27 +349,20 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
     );
   }
 
-  // ── Mobile-only mode: trigger button + bottom sheet ───────────────────────
+  // ── Mobile-only mode ───────────────────────────────────────────────────────
   if (mobileOnly) {
     return (
       <>
-        {/* Trigger */}
         <button
           onClick={() => setMobileOpen(true)}
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            height: "36px",
-            padding: "0 14px",
+            display: "inline-flex", alignItems: "center", gap: "6px",
+            height: "36px", padding: "0 14px",
             border: `1px solid ${activeCount > 0 ? c.green : c.border}`,
-            borderRadius: "6px",
-            fontSize: "13px",
-            fontWeight: 600,
+            borderRadius: "6px", fontSize: "13px", fontWeight: 600,
             color: activeCount > 0 ? c.green : c.primary,
             backgroundColor: activeCount > 0 ? c.greenBg : c.surface,
-            cursor: "pointer",
-            fontFamily: "Inter, sans-serif",
+            cursor: "pointer", fontFamily: "Inter, sans-serif",
           }}
           className="md:hidden"
         >
@@ -294,28 +370,21 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
           Filters{activeCount > 0 ? ` (${activeCount})` : ""}
         </button>
 
-        {/* Bottom sheet */}
         {mobileOpen && (
           <div style={{ position: "fixed", inset: 0, zIndex: 50 }} className="md:hidden">
-            {/* Backdrop */}
             <div
               style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.5)" }}
               onClick={() => setMobileOpen(false)}
             />
-            {/* Sheet */}
             <div
               style={{
-                position: "absolute",
-                bottom: 0, left: 0, right: 0,
-                backgroundColor: "#fff",
-                borderRadius: "20px 20px 0 0",
-                maxHeight: "85vh",
-                overflowY: "auto",
-                padding: "20px",
+                position: "absolute", bottom: 0, left: 0, right: 0,
+                backgroundColor: "#fff", borderRadius: "20px 20px 0 0",
+                maxHeight: "90vh", overflowY: "auto", padding: "20px",
               }}
             >
               {/* Sheet header */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
                 <span style={{ color: c.primary, fontWeight: 700, fontSize: "16px", fontFamily: "Inter, sans-serif" }}>Filters</span>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   {hasFilters && (
@@ -334,6 +403,10 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
                   </button>
                 </div>
               </div>
+
+              {/* Toggle + search inside sheet */}
+              <TypeToggle onApply={() => setMobileOpen(false)} />
+              <SearchBar onApply={() => setMobileOpen(false)} />
               <FilterBody onApply={() => setMobileOpen(false)} />
             </div>
           </div>
@@ -342,10 +415,17 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
     );
   }
 
-  // ── Desktop sidebar mode ──────────────────────────────────────────────────
+  // ── Desktop sidebar mode ───────────────────────────────────────────────────
   return (
     <div style={{ fontFamily: "Inter, sans-serif" }}>
-      {/* Header */}
+
+      {/* Toggle — above "Filters" title */}
+      <TypeToggle />
+
+      {/* Search bar */}
+      <SearchBar />
+
+      {/* Filters header */}
       <div className="flex items-center justify-between mb-5">
         <span style={{ color: c.primary }} className="text-sm font-bold">Filters</span>
         {hasFilters && (
@@ -358,6 +438,7 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
           </button>
         )}
       </div>
+
       <FilterBody />
     </div>
   );

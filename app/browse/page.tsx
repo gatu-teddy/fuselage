@@ -7,7 +7,6 @@ import Image from "next/image";
 import { Shield, MapPin, Clock, CheckCircle2, ArrowRight, Star } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { BrowseFilters } from "@/components/listings/browse-filters";
-import { VehicleTypeToggle } from "@/components/listings/vehicle-type-toggle";
 import { AuthNav } from "@/components/layouts/auth-nav";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
@@ -51,6 +50,7 @@ interface SearchParams {
   min?: string;
   max?: string;
   steering?: string;
+  q?: string;
 }
 
 export default async function BrowsePage({
@@ -84,6 +84,7 @@ export default async function BrowsePage({
       if (params.max)          query = query.lte("price_usd", params.max);
       if (params.port)         query = query.contains("destination_ports", [params.port]);
       if (params.steering)     query = query.eq("steering", params.steering);
+      if (params.q)            query = query.or(`make.ilike.%${params.q}%,model.ilike.%${params.q}%`);
 
       const { data } = await query.order("created_at", { ascending: false });
       listings = data;
@@ -134,12 +135,6 @@ export default async function BrowsePage({
 
       {/* ── PAGE BODY ───────────────────────────────────────────────────── */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-16 py-6 md:py-10">
-
-        {/* ── Vehicle type toggle ──────────────────────────────────────── */}
-        <div className="mb-6 md:mb-8">
-          <VehicleTypeToggle currentType={params.type} />
-        </div>
-
         <div className="flex items-start gap-8">
 
           {/* ── Filters sidebar — desktop only ──────────────────────────── */}
