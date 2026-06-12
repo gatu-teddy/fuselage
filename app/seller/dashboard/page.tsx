@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Car, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight } from "lucide-react";
+import { Car, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight, Zap } from "lucide-react";
 import { formatUSD, formatDate } from "@/lib/utils";
 import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
+import { getPlan } from "@/lib/plans";
 
 const c = {
   primary:   "#0F172A",
@@ -35,6 +36,8 @@ export default async function SellerDashboardPage() {
   ]);
 
   if (!sellerProfile) redirect("/seller/onboarding");
+
+  const plan = getPlan(sellerProfile.plan);
 
   // ── Metrics ────────────────────────────────────────────────────────────────
   const activeListings   = listings?.filter((l) => l.status === "active").length ?? 0;
@@ -79,7 +82,26 @@ export default async function SellerDashboardPage() {
           </h1>
           <p style={{ color: c.muted, fontSize: "14px", marginTop: "4px" }}>{sellerProfile.city}{sellerProfile.country ? `, ${sellerProfile.country}` : ""}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Plan badge */}
+          <span
+            style={{
+              backgroundColor: plan.bg, color: plan.textColor, border: `1px solid ${plan.border}`,
+              fontSize: "11px", fontWeight: 700, padding: "4px 12px", borderRadius: "99px",
+              textTransform: "uppercase", letterSpacing: "0.05em",
+            }}
+          >
+            {plan.label}
+          </span>
+          {/* Upgrade CTA if not enterprise */}
+          {sellerProfile.plan !== "enterprise" && (
+            <Link
+              href="/seller/upgrade"
+              style={{ color: c.muted, fontSize: "12px", fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}
+            >
+              <Zap style={{ width: "11px", height: "11px" }} /> Upgrade
+            </Link>
+          )}
           <span style={{ backgroundColor: statusInfo.bg, color: statusInfo.color, fontSize: "12px", fontWeight: 700, padding: "6px 14px", borderRadius: "20px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <StatusIcon style={{ width: "12px", height: "12px" }} />
             {statusInfo.label}
