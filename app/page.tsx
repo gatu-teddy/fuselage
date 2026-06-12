@@ -110,10 +110,61 @@ const sellerSteps = [
   { n: "04", title: "Close the deal",              body: "Confirm payment and update shipment tracking to build your verified history." },
 ];
 
-const ports = [
-  "Lagos (Apapa)", "Lagos (Tin Can)", "Mombasa", "Tema (Accra)",
-  "Durban", "Cape Town", "Dar es Salaam", "Alexandria",
-  "Casablanca", "Dakar", "Abidjan", "Douala", "Port Harcourt",
+const destinations = [
+  {
+    country: "Nigeria",
+    flag: "🇳🇬",
+    demand: "Highest",
+    demandColor: "#DC2626",
+    demandBg: "#FEF2F2",
+    port: "Apapa & Tin Can Island",
+    note: "Insatiable demand for Toyota, Lexus, Mercedes",
+  },
+  {
+    country: "Ghana",
+    flag: "🇬🇭",
+    demand: "Very High",
+    demandColor: "#DC2626",
+    demandBg: "#FEF2F2",
+    port: "Tema (Accra)",
+    note: "Strong middle class growth",
+  },
+  {
+    country: "Kenya",
+    flag: "🇰🇪",
+    demand: "Very High",
+    demandColor: "#DC2626",
+    demandBg: "#FEF2F2",
+    port: "Mombasa",
+    note: "East Africa gateway — re-exports to Uganda, Rwanda, Ethiopia",
+  },
+  {
+    country: "Tanzania",
+    flag: "🇹🇿",
+    demand: "High",
+    demandColor: "#EA580C",
+    demandBg: "#FFF7ED",
+    port: "Dar es Salaam",
+    note: "Fast growing market",
+  },
+  {
+    country: "Libya",
+    flag: "🇱🇾",
+    demand: "High",
+    demandColor: "#EA580C",
+    demandBg: "#FFF7ED",
+    port: "Tripoli & Misrata",
+    note: "LHD market, post-conflict reconstruction demand",
+  },
+  {
+    country: "Ethiopia",
+    flag: "🇪🇹",
+    demand: "High",
+    demandColor: "#EA580C",
+    demandBg: "#FFF7ED",
+    port: "Djibouti (landlocked)",
+    note: "Large population, rapidly growing middle class",
+  },
 ];
 
 const partners = ["Maersk", "MSC", "CMA CGM", "Hapag-Lloyd", "Evergreen"];
@@ -542,19 +593,50 @@ export default function LandingPage() {
               Our exporters ship to major ports continent-wide.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {ports.map((port) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {destinations.map(({ country, flag, demand, demandColor, demandBg, port, note }) => (
               <div
-                key={port}
+                key={country}
                 style={{
+                  backgroundColor: c.surface,
                   border: `1px solid ${c.border}`,
-                  borderRadius: "9999px",
-                  color: c.body,
+                  borderRadius: "0.75rem",
+                  padding: "20px",
                 }}
-                className="flex items-center gap-1.5 px-4 py-1.5 text-sm hover:border-[#10B981] hover:text-[#0F172A] transition-colors cursor-default"
+                className="hover:shadow-md transition-shadow"
               >
-                <MapPin style={{ color: c.green }} className="h-3 w-3" />
-                {port}
+                {/* Country + demand badge */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl">{flag}</span>
+                    <span style={{ color: c.primary, fontWeight: 700, fontSize: "15px" }}>
+                      {country}
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      backgroundColor: demandBg,
+                      color: demandColor,
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      padding: "3px 8px",
+                      borderRadius: "20px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {demand}
+                  </span>
+                </div>
+
+                {/* Port */}
+                <div className="flex items-center gap-1.5 mb-2">
+                  <MapPin style={{ color: c.green }} className="h-3 w-3 shrink-0" />
+                  <span style={{ color: c.muted, fontSize: "12px", fontWeight: 500 }}>{port}</span>
+                </div>
+
+                {/* Note */}
+                <p style={{ color: c.body, fontSize: "12px", lineHeight: "1.5" }}>{note}</p>
               </div>
             ))}
           </div>
