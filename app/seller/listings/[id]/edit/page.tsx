@@ -10,12 +10,19 @@ export default async function EditListingPage({ params }: { params: Promise<{ id
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("*")
+    .select("*, images:listing_images(*)")
     .eq("id", id)
     .eq("seller_id", user.id)
     .single();
 
   if (!listing) notFound();
 
-  return <EditListingForm listing={listing} />;
+  const images = ((listing.images ?? []) as { id: string; url: string; is_primary: boolean; position: number }[])
+    .sort((a, b) => {
+      if (a.is_primary) return -1;
+      if (b.is_primary) return 1;
+      return a.position - b.position;
+    });
+
+  return <EditListingForm listing={listing} existingImages={images} />;
 }
