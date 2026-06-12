@@ -23,19 +23,6 @@ const c = {
   muted:     "#64748B",
 };
 
-// ─── Stitch fallback images by make ──────────────────────────────────────────
-const FALLBACK: Record<string, string> = {
-  Porsche:    "https://lh3.googleusercontent.com/aida-public/AB6AXuAuHkVfg0VUaZSNsKiLEIeD8yMNnSVXcjBYGPiPukKpxmqQbVFWB3tN9Qw0FRmp-5djgbBqTie2C91uZ9a01MtI5aeMbn3nhGlZ1SM2Dg33HGEcKR1V2kcVRWnH1lJIzIAjcBbNj_IeYZSf2U_T60hzHfdEERIEKwk0TCdQU8OaBjB842ts4fHX0pGtwFqHUrGHtysQq1SmnUNn_zeRu2-63nx4UsO99BISyyzrOTItMYMALTN0PF90gMUnnX-Cz2Mjmdo7cruBAiY",
-  BMW:        "https://lh3.googleusercontent.com/aida-public/AB6AXuBPSPgXddMyCczflpuV_PXhTfMIzpJNRUJ5-lhrceZ94TEczZ3-DIMsOH74dq8DXetMGHSHX0ZiJ3EMI7XJW8tQTYOxlFp6rfZFP5RUkj8IZThSMOY1maC4FoLcymlbT8W6Mf6sibbEhEPkU2jhjBe7Y7XZ3LPx9boudLx4ZL10jg25UdU6NPWCwwSF8AaowzFXrQ4bQSF45y4LCAEhpcP3nHp4xouXS_akGVI-ZxZocKBXDgRWh_MhauW001NWA7njdpwergrcTe4",
-  Mercedes:   "https://lh3.googleusercontent.com/aida-public/AB6AXuDwIeFdGZKiF_5ElpeZR65A-cloxXDBLwrgjR737hUL_qwSr2VkHo4lDQjo9hUTOT4jLAuK8khxFII0Y6ArWvo5f_1J8ACmGPbjlIz07OH4m6m9c3LN_fKBIWUX5IQHZZUS00iAnF2UpIafNr3TXGF_p2Y-jRXqM_VFC2yQ4enj6ZRwBAy0erlN7_e-H_J0PjNcL3VUq1p_4GBTkVIrlioT9cWqmyxnZ31LDXOqduw7aOzGGzjwkjye_GXzLuREdDVluwRaEUadM5Y",
-  Ferrari:    "https://lh3.googleusercontent.com/aida-public/AB6AXuAmUhwT_Qkg--4MYWFkrfdFh_QbGTMUMWjTwZ9WVhjZtnkLgIOi85cSu9W-vkwky_dcyfIEwjqLCm45Er6qyeX3QBMGhTu5YilYoU7CKeYet43h7ZOoRlIynVUSEsN7-EBQpW16Tfioz2pxSYyR6w_Fer9AN5VnkkjcuiVCQHtt9ACExiap-eWMPLQG12Y0zKIPsQLzovFtliN4xzkkFRbSmFNlsN94DICFJy35EzJAvgU35uaiSqJ8avYiaJAOxnW3f04N9y5MI98",
-  DEFAULT:    "https://lh3.googleusercontent.com/aida-public/AB6AXuBPSPgXddMyCczflpuV_PXhTfMIzpJNRUJ5-lhrceZ94TEczZ3-DIMsOH74dq8DXetMGHSHX0ZiJ3EMI7XJW8tQTYOxlFp6rfZFP5RUkj8IZThSMOY1maC4FoLcymlbT8W6Mf6sibbEhEPkU2jhjBe7Y7XZ3LPx9boudLx4ZL10jg25UdU6NPWCwwSF8AaowzFXrQ4bQSF45y4LCAEhpcP3nHp4xouXS_akGVI-ZxZocKBXDgRWh_MhauW001NWA7njdpwergrcTe4",
-};
-
-function getFallback(make: string): string {
-  return FALLBACK[make] ?? FALLBACK.DEFAULT;
-}
-
 // Fake quality score derived from available fields (placeholder until real scoring exists)
 function qualityScore(listing: { price_usd: number; mileage?: number }): string {
   const base = 9.0;
@@ -210,10 +197,9 @@ export default async function BrowsePage({
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
               {listings?.map((listing) => {
                 const images = listing.images as { url: string; is_primary: boolean }[];
-                const primaryImage = images?.find((i) => i.is_primary)?.url ?? images?.[0]?.url;
+                const primaryImage = images?.find((i) => i.is_primary)?.url ?? images?.[0]?.url ?? null;
                 const seller = listing.seller as { company_name: string; city: string; status: string };
                 const isVerified = seller?.status === "verified" || seller?.status === "approved";
-                const imgSrc = primaryImage ?? getFallback(listing.make);
                 const score = qualityScore(listing);
                 const logisticsLabel = availabilityLabel[listing.availability] ?? listing.availability;
                 const logisticsColor = availabilityColor[listing.availability] ?? c.muted;
@@ -230,14 +216,25 @@ export default async function BrowsePage({
                       className="hover:shadow-md transition-shadow"
                     >
                       {/* Image */}
-                      <div className="relative" style={{ aspectRatio: "4/3" }}>
-                        <Image
-                          src={imgSrc}
-                          alt={`${listing.year} ${listing.make} ${listing.model}`}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                        />
+                      <div className="relative" style={{ aspectRatio: "4/3", backgroundColor: c.bgDim }}>
+                        {primaryImage ? (
+                          <Image
+                            src={primaryImage}
+                            alt={`${listing.year} ${listing.make} ${listing.model}`}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                          />
+                        ) : (
+                          <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", color: c.muted }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="3" width="18" height="18" rx="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <path d="m21 15-5-5L5 21" />
+                            </svg>
+                            <span style={{ fontSize: "11px", fontWeight: 500 }}>No photos yet</span>
+                          </div>
+                        )}
                         {/* Verified badge overlay */}
                         {isVerified && (
                           <div className="absolute top-3 left-3">

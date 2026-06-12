@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { InquiryForm } from "@/components/listings/inquiry-form";
+import { AuthNav } from "@/components/layouts/auth-nav";
 import {
   Shield, MapPin, Calendar, Hash, Gauge, Clock,
-  CheckCircle2, ChevronRight, Car,
+  CheckCircle2, ChevronRight, Car, ArrowRight,
 } from "lucide-react";
 import { formatUSD, formatDate } from "@/lib/utils";
 
@@ -45,9 +46,12 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
   if (!listing) notFound();
 
+  // Is the viewer the seller who owns this listing?
+  const isSeller = !!user && user.id === listing.seller_id;
+
   // Check if this buyer has already inquired → reveal full VIN
   let vinRevealed = false;
-  if (user) {
+  if (user && !isSeller) {
     const { data: deal } = await authClient
       .from("deals")
       .select("id")
@@ -56,6 +60,21 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
       .neq("status", "cancelled")
       .maybeSingle();
     vinRevealed = !!deal;
+  }
+  if (isSeller) vinRevealed = true; // seller always sees full VIN on their own listing
+
+  // Fetch similar listings (same make, different ID, active) — shown to sellers instead of inquiry form
+  type SimilarListing = { id: string; year: number; make: string; model: string; price_usd: number; images: { url: string; is_primary: boolean }[]; seller: { city: string } };
+  let similarListings: SimilarListing[] = [];
+  if (isSeller) {
+    const { data: similar } = await supabase
+      .from("listings")
+      .select("id, year, make, model, price_usd, images:listing_images(url, is_primary), seller:seller_profiles(city)")
+      .eq("status", "active")
+      .eq("make", listing.make)
+      .neq("id", id)
+      .limit(3);
+    similarListings = (similar ?? []) as unknown as SimilarListing[];
   }
 
   // VIN masking helper
@@ -97,7 +116,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
       {/* ── NAV ──────────────────────────────────────────────────────────── */}
       <nav style={{ backgroundColor: c.surface, borderBottom: `1px solid ${c.border}`, position: "sticky", top: 0, zIndex: 50 }}>
-        <div className="max-w-[1280px] mx-auto px-8 md:px-16 h-16 flex items-center justify-between">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-16 h-16 flex items-center justify-between relative">
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
             <div style={{ backgroundColor: c.primary, width: "28px", height: "28px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <span style={{ color: "#fff", fontWeight: 900, fontSize: "12px" }}>F</span>
@@ -114,9 +133,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
               </Link>
             ))}
           </div>
-          <Link href="/register" style={{ backgroundColor: c.primary, color: "#fff", fontSize: "13px", fontWeight: 600, padding: "8px 18px", borderRadius: "6px", textDecoration: "none" }}>
-            Get Started
-          </Link>
+          <AuthNav />
         </div>
       </nav>
 
@@ -321,13 +338,59 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
               )}
             </div>
 
-            {/* Inquiry */}
-            <InquiryForm
-              listingId={listing.id}
-              sellerId={listing.seller_id}
-              listingTitle={`${listing.year} ${listing.make} ${listing.model}`}
-              currentUser={user}
-            />
+            {/* Inquiry — hidden for the seller who owns this listing */}
+            {isSeller ? (
+              <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+                <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "14px" }}>
+                  Similar listings
+                </p>
+                {similarListings.length === 0 ? (
+                  <p style={{ color: c.muted, fontSize: "13px" }}>No similar listings right now.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {similarListings.map((s) => {
+                      const simImages = s.images as { url: string; is_primary: boolean }[];
+                      const simThumb = simImages?.find((i) => i.is_primary)?.url ?? simImages?.[0]?.url ?? null;
+                      const simSeller = s.seller as { city: string };
+                      return (
+                        <Link key={s.id} href={`/listings/${s.id}`} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }} className="group">
+                          <div style={{ width: "56px", height: "42px", borderRadius: "6px", overflow: "hidden", flexShrink: 0, backgroundColor: c.bgDim, border: `1px solid ${c.border}` }}>
+                            {simThumb ? (
+                              <Image src={simThumb} alt="" width={56} height={42} className="object-cover w-full h-full" />
+                            ) : (
+                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: c.muted }}>
+                                <Car style={{ width: "16px", height: "16px" }} />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p style={{ color: c.primary, fontSize: "12px", fontWeight: 600 }} className="truncate group-hover:text-[#10B981] transition-colors">
+                              {s.year} {s.make} {s.model}
+                            </p>
+                            <p style={{ color: c.muted, fontSize: "11px" }}>{formatUSD(s.price_usd)} · {simSeller?.city ?? "—"}</p>
+                          </div>
+                          <ArrowRight style={{ color: c.muted, width: "13px", height: "13px", flexShrink: 0 }} />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+                <Link
+                  href="/browse"
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginTop: "16px", color: c.primary, fontSize: "12px", fontWeight: 600, textDecoration: "none", border: `1px solid ${c.border}`, borderRadius: "6px", padding: "8px 0" }}
+                  className="hover:bg-[#F8FAFC] transition-colors"
+                >
+                  View all listings <ArrowRight style={{ width: "12px", height: "12px" }} />
+                </Link>
+              </div>
+            ) : (
+              <InquiryForm
+                listingId={listing.id}
+                sellerId={listing.seller_id}
+                listingTitle={`${listing.year} ${listing.make} ${listing.model}`}
+                currentUser={user}
+              />
+            )}
           </div>
         </div>
       </div>
