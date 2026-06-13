@@ -361,6 +361,17 @@ export function DealChatWidget({
               </div>
             )}
             {messages.map((msg) => {
+              // System events render as centred status pills
+              if ((msg as { message_type?: string }).message_type === "system_event") {
+                const meta = (msg as { metadata?: { to_status?: string } }).metadata;
+                return (
+                  <div key={msg.id} style={{ display: "flex", justifyContent: "center", margin: "4px 0" }}>
+                    <span style={{ backgroundColor: c.bgDim, color: c.muted, fontSize: "10px", fontWeight: 600, padding: "3px 10px", borderRadius: "99px", border: `1px solid ${c.border}` }}>
+                      {meta?.to_status ? `Status → ${meta.to_status.replace(/_/g, " ")}` : msg.message}
+                    </span>
+                  </div>
+                );
+              }
               const isMine = msg.sender_id === currentUserId;
               return (
                 <div key={msg.id} style={{ display: "flex", flexDirection: isMine ? "row-reverse" : "row", alignItems: "flex-end", gap: "6px" }}>

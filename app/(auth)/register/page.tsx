@@ -216,7 +216,7 @@ function RegisterForm() {
               {[
                 { label: "Privacy", href: "/privacy" },
                 { label: "Terms",   href: "/terms" },
-                { label: "Contact", href: "/contact" },
+                { label: "Support", href: "/support" },
                 { label: "Browse",  href: "/browse" },
               ].map(({ label, href }) => (
                 <Link key={label} href={href} style={{ color: c.muted, fontSize: "13px", textDecoration: "none" }}

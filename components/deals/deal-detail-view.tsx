@@ -80,6 +80,113 @@ function fileTypeFromMime(file: File): "pdf" | "image" {
   return file.type === "application/pdf" ? "pdf" : "image";
 }
 
+// ─── Legal hold panel ───────────────────────────────────────────────────────
+function LegalPanel({ dealId, currentUserId, role }: { dealId: string; currentUserId: string; role: "buyer" | "seller" }) {
+  const [open,       setOpen]       = useState(false);
+  const [reason,     setReason]     = useState("");
+  const [refNo,      setRefNo]      = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted,  setSubmitted]  = useState(false);
+  const [error,      setError]      = useState("");
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reason.trim()) { setError("Please describe the reason for this request."); return; }
+    setSubmitting(true); setError("");
+
+    const supabase = createClient();
+    const { error: err } = await supabase.from("legal_hold_requests").insert({
+      deal_id:        dealId,
+      requested_by:   currentUserId,
+      requester_role: role,
+      reason:         reason.trim(),
+      reference_number: refNo.trim() || null,
+    });
+
+    if (err) { setError(err.message); setSubmitting(false); return; }
+    setSubmitted(true); setSubmitting(false);
+  }
+
+  return (
+    <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "0.5rem", marginTop: "24px" }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", background: "none", border: "none", cursor: "pointer" }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <FileText className="h-4 w-4" style={{ color: c.muted }} />
+          <p style={{ color: c.primary, fontSize: "13px", fontWeight: 700 }}>Legal request / dispute</p>
+        </div>
+        <ChevronDown className="h-4 w-4" style={{ color: c.muted, transform: open ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }} />
+      </button>
+
+      {open && (
+        <div style={{ borderTop: `1px solid ${c.border}`, padding: "18px 20px" }}>
+          {/* Info block */}
+          <div style={{ backgroundColor: "#F0F9FF", border: "1px solid #BAE6FD", borderRadius: "8px", padding: "12px 16px", marginBottom: "16px" }}>
+            <p style={{ color: "#0369A1", fontSize: "12px", fontWeight: 700, marginBottom: "4px" }}>How conversation records work</p>
+            <p style={{ color: "#0369A1", fontSize: "12px", lineHeight: 1.65 }}>
+              Every message, status change, payment event, and document upload on this deal is stored in TrueWagon&apos;s immutable audit log and cannot be altered or deleted by either party.
+              If you are involved in a legal dispute or have received a request from an authority, submit a legal hold request below.
+              TrueWagon will acknowledge within 5 business days and, upon valid legal authority, provide a certified conversation export.
+            </p>
+          </div>
+
+          {submitted ? (
+            <div style={{ backgroundColor: c.greenBg, border: `1px solid #6EE7B7`, borderRadius: "8px", padding: "14px 16px", textAlign: "center" }}>
+              <p style={{ color: c.greenText, fontWeight: 700, fontSize: "13px" }}>Request submitted</p>
+              <p style={{ color: c.greenText, fontSize: "12px", marginTop: "4px" }}>TrueWagon will acknowledge your request within 5 business days. Reference ID: <strong>LHR-{dealId.slice(-8).toUpperCase()}</strong></p>
+            </div>
+          ) : (
+            <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {error && <p style={{ color: c.red, fontSize: "12px" }}>{error}</p>}
+
+              <div>
+                <label style={{ color: c.body, fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "5px" }}>
+                  Reason for legal hold / dispute <span style={{ color: c.red }}>*</span>
+                </label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  rows={3}
+                  placeholder="Describe the nature of the dispute or the legal authority requiring this record…"
+                  style={{ width: "100%", border: `1px solid ${c.border}`, borderRadius: "6px", padding: "9px 12px", fontSize: "13px", color: c.body, resize: "vertical", fontFamily: "Inter, sans-serif", outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ color: c.body, fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "5px" }}>
+                  Court / authority reference number <span style={{ color: c.muted, fontWeight: 400 }}>(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={refNo}
+                  onChange={(e) => setRefNo(e.target.value)}
+                  placeholder="e.g. DIFC-2026-001234"
+                  style={{ width: "100%", border: `1px solid ${c.border}`, borderRadius: "6px", padding: "9px 12px", fontSize: "13px", color: c.body, fontFamily: "Inter, sans-serif", outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <p style={{ color: c.muted, fontSize: "11px", lineHeight: 1.6 }}>
+                By submitting this request you confirm that the information provided is accurate and that you are a party to this deal or acting on behalf of a recognised legal authority.
+                False requests may result in account suspension.
+              </p>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{ backgroundColor: c.primary, color: "#fff", border: "none", borderRadius: "6px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: submitting ? "not-allowed" : "pointer", alignSelf: "flex-start", opacity: submitting ? 0.6 : 1 }}
+              >
+                {submitting ? "Submitting…" : "Submit legal hold request"}
+              </button>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Props ──────────────────────────────────────────────────────────────────
 interface Props {
   deal: Deal & {
@@ -986,6 +1093,10 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
             )}
 
           </div>
+
+          {/* ── Legal / Dispute section ───────────────────────────────────── */}
+          <LegalPanel dealId={deal.id} currentUserId={currentUserId} role={role} />
+
         </div>
       </div>
 

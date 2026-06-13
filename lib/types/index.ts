@@ -99,6 +99,10 @@ export interface Deal {
   bill_of_lading_url?: string;
   created_at: string;
   updated_at: string;
+  // Legal hold
+  legal_hold?: boolean;
+  legal_hold_requested_at?: string;
+  legal_hold_reason?: string;
   listing?: Listing;
   buyer?: Profile;
   seller?: SellerProfile;
@@ -112,8 +116,24 @@ export interface DealMessage {
   deal_id: string;
   sender_id: string;
   message: string;
+  message_type: "text" | "system_event";
+  is_flagged?: boolean;
+  metadata?: Record<string, unknown>;
   created_at: string;
   sender?: Profile;
+}
+
+export interface LegalHoldRequest {
+  id: string;
+  deal_id: string;
+  requested_by: string;
+  requester_role: "buyer" | "seller" | "admin" | "legal";
+  reason: string;
+  reference_number?: string;
+  status: "pending" | "acknowledged" | "exported" | "closed";
+  acknowledged_at?: string;
+  export_url?: string;
+  created_at: string;
 }
 
 export interface PaymentProof {
