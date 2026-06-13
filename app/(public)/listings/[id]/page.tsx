@@ -311,8 +311,12 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
           {/* ── Right: exporter + inquiry ─────────────────────────────────── */}
           <div className="space-y-4">
 
-            {/* Exporter card */}
-            <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}>
+            {/* Exporter card — fully clickable */}
+            <Link
+              href={`/sellers/${listing.seller_id}`}
+              style={{ display: "block", textDecoration: "none", backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "20px" }}
+              className="hover:border-[#94A3B8] hover:shadow-sm transition-all group"
+            >
               <div className="flex items-start gap-3 mb-4">
                 <div style={{ backgroundColor: c.primary, width: "40px", height: "40px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <span style={{ color: "#fff", fontWeight: 800, fontSize: "15px" }}>
@@ -320,7 +324,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                   </span>
                 </div>
                 <div>
-                  <p style={{ color: c.primary, fontWeight: 700, fontSize: "14px" }}>{seller?.company_name}</p>
+                  <p style={{ color: c.primary, fontWeight: 700, fontSize: "14px" }} className="group-hover:underline">{seller?.company_name}</p>
                   <p style={{ color: c.muted, fontSize: "12px" }}>{seller?.city}{seller?.country ? `, ${seller.country}` : ""}</p>
                 </div>
               </div>
@@ -333,14 +337,10 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                   {seller.description}
                 </p>
               )}
-              <Link
-                href={`/sellers/${listing.seller_id}`}
-                style={{ display: "inline-flex", alignItems: "center", gap: "5px", color: c.primary, fontSize: "12px", fontWeight: 600, marginTop: "12px", textDecoration: "none", border: `1px solid ${c.border}`, padding: "5px 12px", borderRadius: "6px" }}
-                className="hover:border-[#94A3B8] transition-colors"
-              >
-                View seller profile →
-              </Link>
-            </div>
+              <p style={{ color: c.muted, fontSize: "12px", fontWeight: 600, marginTop: "12px", display: "flex", alignItems: "center", gap: "4px" }}>
+                View seller profile <span className="group-hover:translate-x-0.5 transition-transform inline-block">→</span>
+              </p>
+            </Link>
 
             {/* Inquiry — hidden for the seller who owns this listing */}
             {isSeller ? (
