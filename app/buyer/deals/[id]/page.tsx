@@ -13,7 +13,7 @@ export default async function BuyerDealPage({ params }: { params: Promise<{ id: 
     .select(`
       *,
       listing:listings(*, images:listing_images(url, is_primary)),
-      buyer:profiles(*),
+      buyer:profiles!deals_buyer_id_fkey(*),
       seller:seller_profiles(*, profile:profiles(full_name, email)),
       messages:deal_messages(*, sender:profiles(full_name, avatar_url)),
       payment_proofs(*),
