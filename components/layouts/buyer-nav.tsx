@@ -25,9 +25,9 @@ export function BuyerNav() {
     <header className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md px-6 py-3 flex items-center justify-between">
       <Link href="/" className="flex items-center gap-2">
         <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center">
-          <span className="text-primary-foreground font-black text-xs">F</span>
+          <span className="text-primary-foreground font-black text-xs">T</span>
         </div>
-        <span className="font-bold text-sm">Fuselage</span>
+        <span className="font-bold text-sm">TrueWagon</span>
       </Link>
       <nav className="flex items-center gap-1">
         {nav.map(({ href, label, icon: Icon }) => (

@@ -10,10 +10,7 @@ const nav = [
   { href: "/seller/sales",     label: "Sales",      icon: TrendingUp },
 ];
 
-const c = {
-  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5",
-  surface: "#FFFFFF", border: "#E2E8F0", muted: "#64748B", bg: "#F8FAFC",
-};
+import { c } from "@/lib/tokens";
 
 export function SellerNav() {
   const pathname = usePathname();
@@ -33,9 +30,9 @@ export function SellerNav() {
       <div style={{ padding: "24px 20px", borderBottom: `1px solid ${c.border}` }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
           <div style={{ backgroundColor: c.primary, width: "28px", height: "28px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontWeight: 900, fontSize: "12px" }}>F</span>
+            <span style={{ color: "#fff", fontWeight: 900, fontSize: "12px" }}>T</span>
           </div>
-          <span style={{ color: c.primary, fontWeight: 800, fontSize: "15px", letterSpacing: "-0.3px" }}>Fuselage</span>
+          <span style={{ color: c.primary, fontWeight: 800, fontSize: "15px", letterSpacing: "-0.3px" }}>TrueWagon</span>
         </Link>
         <p style={{ color: c.muted, fontSize: "11px", marginTop: "4px", marginLeft: "36px" }}>Exporter portal</p>
       </div>

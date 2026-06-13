@@ -3,13 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { DealDetailView } from "@/components/deals/deal-detail-view";
 
-const c = {
-  primary: "#0F172A",
-  green:   "#10B981",
-  bg:      "#FFFFFF",
-  border:  "#E2E8F0",
-  muted:   "#64748B",
-};
+import { c } from "@/lib/tokens";
 
 function StitchNav({ active }: { active?: string }) {
   const links = [
@@ -29,7 +23,7 @@ function StitchNav({ active }: { active?: string }) {
     >
       <div className="max-w-[1280px] mx-auto px-8 md:px-16 h-16 flex items-center justify-between">
         <Link href="/" style={{ color: c.primary, fontWeight: 800, fontSize: "18px", textDecoration: "none", letterSpacing: "-0.5px" }}>
-          Fuselage
+          TrueWagon
         </Link>
         <div className="hidden md:flex items-center gap-8">
           {links.map(({ href, label }) => (
@@ -48,7 +42,7 @@ function StitchNav({ active }: { active?: string }) {
           ))}
         </div>
         <Link
-          href="/sell"
+          href="/seller/listings/new"
           style={{
             backgroundColor: c.primary, color: "#fff",
             fontSize: "13px", fontWeight: 600,
@@ -77,7 +71,8 @@ export default async function SellerDealPage({ params }: { params: Promise<{ id:
       buyer:profiles(*),
       seller:seller_profiles(*, profile:profiles(*)),
       messages:deal_messages(*, sender:profiles(full_name, avatar_url)),
-      payment_proofs(*)
+      payment_proofs(*),
+      deal_documents(*)
     `)
     .eq("id", id)
     .eq("seller_id", user.id)

@@ -6,22 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Building2, User, Eye, EyeOff, ArrowRight, CheckCircle2 } from "lucide-react";
 
-const c = {
-  primary:   "#0F172A",
-  green:     "#10B981",
-  greenBg:   "#D1FAE5",
-  greenText: "#065F46",
-  bg:        "#F8FAFC",
-  surface:   "#FFFFFF",
-  border:    "#E2E8F0",
-  muted:     "#64748B",
-  body:      "#334155",
-  error:     "#EF4444",
-  errorBg:   "#FEF2F2",
-  amber:     "#D97706",
-  amberBg:   "#FFFBEB",
-  amberBorder: "#FDE68A",
-};
+import { c } from "@/lib/tokens";
 
 // Use the Porsche image for the right panel on register
 const SIDE_IMG =
@@ -93,7 +78,7 @@ function RegisterForm() {
               <div style={{ backgroundColor: c.primary, width: "34px", height: "34px", borderRadius: "7px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "14px" }}>F</span>
               </div>
-              <span style={{ color: c.primary, fontWeight: 800, fontSize: "18px", letterSpacing: "-0.5px" }}>Fuselage</span>
+              <span style={{ color: c.primary, fontWeight: 800, fontSize: "18px", letterSpacing: "-0.5px" }}>TrueWagon</span>
             </Link>
           </div>
 
@@ -224,7 +209,7 @@ function RegisterForm() {
               <div style={{ backgroundColor: c.primary, width: "20px", height: "20px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "10px" }}>F</span>
               </div>
-              <span style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>Fuselage</span>
+              <span style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>TrueWagon</span>
               <span style={{ color: c.muted, fontSize: "13px" }}>© 2026</span>
             </Link>
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
@@ -240,7 +225,7 @@ function RegisterForm() {
                 </Link>
               ))}
             </div>
-            <span style={{ color: c.muted, fontSize: "12px" }}>logistics@fuselage.io</span>
+            <span style={{ color: c.muted, fontSize: "12px" }}>logistics@truewagon.com</span>
           </div>
         </footer>
       </div>
@@ -275,7 +260,7 @@ function RegisterForm() {
             Every vehicle. Vetted. Shipped. Delivered.
           </h2>
           <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", lineHeight: 1.6, marginBottom: "28px" }}>
-            Fuselage is the only marketplace where every listing passes a 200-point inspection before it ever reaches a buyer.
+            TrueWagon is the only marketplace where every listing passes a 200-point inspection before it ever reaches a buyer.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {TRUST_POINTS.map((point) => (

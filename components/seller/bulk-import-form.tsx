@@ -116,7 +116,7 @@ export function BulkImportForm() {
     const blob = new Blob([generateCSV()], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "fuselage-inventory-template.csv";
+    a.download = "truewagon-inventory-template.csv";
     a.click();
   }
 

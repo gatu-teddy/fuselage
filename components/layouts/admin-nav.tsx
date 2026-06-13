@@ -26,9 +26,9 @@ export function AdminNav() {
       <div className="p-6 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center">
-            <span className="text-primary-foreground font-black text-xs">F</span>
+            <span className="text-primary-foreground font-black text-xs">T</span>
           </div>
-          <span className="font-bold text-sm">Fuselage</span>
+          <span className="font-bold text-sm">TrueWagon</span>
         </Link>
         <div className="mt-1 text-xs text-muted-foreground">Admin panel</div>
       </div>

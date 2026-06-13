@@ -6,22 +6,7 @@ import {
   Shield, CheckCircle, Upload, X, FileText, ImageIcon, AlertTriangle, Plus,
 } from "lucide-react";
 
-const c = {
-  primary:   "#0F172A",
-  green:     "#10B981",
-  greenBg:   "#D1FAE5",
-  greenText: "#065F46",
-  bg:        "#F8FAFC",
-  bgDim:     "#F1F5F9",
-  surface:   "#FFFFFF",
-  border:    "#E2E8F0",
-  muted:     "#64748B",
-  body:      "#334155",
-  amber:     "#F59E0B",
-  amberBg:   "#FEF3C7",
-  error:     "#EF4444",
-  errorBg:   "#FEF2F2",
-};
+import { c } from "@/lib/tokens";
 
 const fieldStyle: React.CSSProperties = {
   width: "100%", height: "42px", border: `1px solid ${c.border}`, borderRadius: "8px",
@@ -425,7 +410,7 @@ export default function SellerOnboardingPage() {
               <div style={{ backgroundColor: c.amberBg, border: `1px solid #FDE68A`, borderRadius: "8px", padding: "12px 14px", display: "flex", gap: "10px" }}>
                 <Shield style={{ color: c.amber, width: "15px", height: "15px", flexShrink: 0, marginTop: "1px" }} />
                 <p style={{ color: "#92400E", fontSize: "12px", lineHeight: "1.5", margin: 0 }}>
-                  All documents are stored securely and only accessible to Fuselage compliance staff. They will not be shared with buyers.
+                  All documents are stored securely and only accessible to TrueWagon compliance staff. They will not be shared with buyers.
                 </p>
               </div>
 

@@ -21,9 +21,9 @@ export function HeroSection() {
       <nav className="relative z-50 flex items-center justify-between px-8 md:px-14 pt-8">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#9A8174" }}>
-            <span className="font-black text-sm" style={{ color: "#FBFFF4" }}>F</span>
+            <span className="font-black text-sm" style={{ color: "#FBFFF4" }}>T</span>
           </div>
-          <span className="font-bold text-lg tracking-tight" style={{ color: "#FBFFF4" }}>Fuselage</span>
+          <span className="font-bold text-lg tracking-tight" style={{ color: "#FBFFF4" }}>TrueWagon</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm">

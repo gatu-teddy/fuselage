@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fuselage — Premium Vehicle Import Marketplace",
+  title: "TrueWagon — Premium Vehicle Import Marketplace",
   description:
     "Connect with verified exporters from Nigeria, UAE, Ghana, Kenya and more. Browse luxury cars and high-end vehicles shipped directly to Africa.",
 };

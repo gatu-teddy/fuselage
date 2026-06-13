@@ -9,10 +9,7 @@ import {
   LayoutDashboard, ChevronDown, LogOut, User as UserIcon,
 } from "lucide-react";
 
-const c = {
-  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5", greenText: "#065F46",
-  body: "#334155", border: "#E2E8F0", muted: "#64748B", surface: "#FFFFFF",
-};
+import { c } from "@/lib/tokens";
 
 const publicNavLinks = [
   { label: "Browse",          href: "/browse"        },

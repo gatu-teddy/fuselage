@@ -42,7 +42,7 @@ export default async function AdminDashboardPage() {
     <div className="p-8 max-w-5xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Platform overview</h1>
-        <p className="text-muted-foreground text-sm mt-1">Fuselage admin dashboard</p>
+        <p className="text-muted-foreground text-sm mt-1">TrueWagon admin dashboard</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

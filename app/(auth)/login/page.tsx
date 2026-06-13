@@ -6,19 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Eye, EyeOff, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 
-const c = {
-  primary:   "#0F172A",
-  green:     "#10B981",
-  greenBg:   "#D1FAE5",
-  greenText: "#065F46",
-  bg:        "#F8FAFC",
-  surface:   "#FFFFFF",
-  border:    "#E2E8F0",
-  muted:     "#64748B",
-  body:      "#334155",
-  error:     "#EF4444",
-  errorBg:   "#FEF2F2",
-};
+import { c } from "@/lib/tokens";
 
 const HERO =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuCGaHS6gz6dJxeezM-JE2FjaLCXTZc8RZreIKQCImymQpCf51rhwcOhLgfUrOL8bpo6TU0IFRA-UmJW14RMT7C937Xh7V5kelCiD5Qc8D3n_LhCPHZ0J2GIP2vYVheCW4a3_il8_DbQoSABp21z2KjegIBn9xG42ON_-kdwwyQgWpG3PxN2c3k3mZIiE9l9cdLtFqb6bev6qjKAcGtx3_G2JdPJuN1S_HdKJ5MDe_QpTS3qNPedRgUlKq6O0SMAfOjUI0O8vQTz47s";
@@ -96,7 +84,7 @@ export default function LoginPage() {
               <div style={{ backgroundColor: c.green, width: "32px", height: "32px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "14px" }}>F</span>
               </div>
-              <span style={{ color: "#fff", fontWeight: 800, fontSize: "18px", letterSpacing: "-0.5px" }}>Fuselage</span>
+              <span style={{ color: "#fff", fontWeight: 800, fontSize: "18px", letterSpacing: "-0.5px" }}>TrueWagon</span>
             </Link>
           </div>
 
@@ -136,7 +124,7 @@ export default function LoginPage() {
               <div style={{ backgroundColor: c.primary, width: "36px", height: "36px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "15px" }}>F</span>
               </div>
-              <span style={{ color: c.primary, fontWeight: 800, fontSize: "20px", letterSpacing: "-0.5px" }}>Fuselage</span>
+              <span style={{ color: c.primary, fontWeight: 800, fontSize: "20px", letterSpacing: "-0.5px" }}>TrueWagon</span>
             </Link>
           </div>
 
@@ -251,7 +239,7 @@ export default function LoginPage() {
               <div style={{ backgroundColor: c.primary, width: "20px", height: "20px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: "10px" }}>F</span>
               </div>
-              <span style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>Fuselage</span>
+              <span style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>TrueWagon</span>
               <span style={{ color: c.muted, fontSize: "13px" }}>© 2026</span>
             </Link>
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
@@ -267,7 +255,7 @@ export default function LoginPage() {
                 </Link>
               ))}
             </div>
-            <span style={{ color: c.muted, fontSize: "12px" }}>logistics@fuselage.io</span>
+            <span style={{ color: c.muted, fontSize: "12px" }}>logistics@truewagon.com</span>
           </div>
         </footer>
       </div>

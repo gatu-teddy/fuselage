@@ -104,6 +104,7 @@ export interface Deal {
   seller?: SellerProfile;
   messages?: DealMessage[];
   payment_proofs?: PaymentProof[];
+  deal_documents?: DealDocument[];
 }
 
 export interface DealMessage {
@@ -120,9 +121,56 @@ export interface PaymentProof {
   deal_id: string;
   uploaded_by: string;
   file_url: string;
+  file_name?: string;
+  file_type?: "pdf" | "image";
   amount_usd?: number;
   wire_reference?: string;
   notes?: string;
+  created_at: string;
+}
+
+export type DocType =
+  | "purchase_agreement"
+  | "export_certificate"
+  | "port_receipt"
+  | "customs_clearance"
+  | "insurance"
+  | "inspection_report"
+  | "power_of_attorney"
+  | "bill_of_lading"
+  | "other";
+
+export const DOC_TYPE_LABELS: Record<DocType, string> = {
+  purchase_agreement:  "Purchase Agreement",
+  export_certificate:  "Export Certificate / MLIT Form",
+  port_receipt:        "Port Handling Receipt",
+  customs_clearance:   "Customs Clearance",
+  insurance:           "Insurance Certificate",
+  inspection_report:   "Pre-Shipment Inspection Report",
+  power_of_attorney:   "Power of Attorney (Port Agent)",
+  bill_of_lading:      "Bill of Lading",
+  other:               "Other Document",
+};
+
+/** Doc types that require a counter-signature from the other party */
+export const COUNTER_SIGN_TYPES: DocType[] = ["purchase_agreement", "power_of_attorney"];
+
+export interface DealDocument {
+  id: string;
+  deal_id: string;
+  uploaded_by: string;
+  uploader_role: "buyer" | "seller";
+  doc_type: DocType;
+  doc_label?: string;
+  file_url: string;
+  file_name: string;
+  file_type?: "pdf" | "image";
+  notes?: string;
+  requires_counter_sign: boolean;
+  counter_sign_file_url?: string;
+  counter_sign_file_name?: string;
+  counter_signed_by?: string;
+  counter_signed_at?: string;
   created_at: string;
 }
 

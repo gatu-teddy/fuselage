@@ -20,6 +20,9 @@ export interface Plan {
   prioritySearch: boolean;
   portPolicy:     PortPolicy;
   support:        string;
+  // Website link feature
+  websiteLink:    "hidden" | "ppc" | "unlimited";
+  websiteClickCostUsd: number;     // cost per click when ppc; 0 = unlimited
   // UI tokens
   color:          string;
   bg:             string;
@@ -44,6 +47,8 @@ export const PLANS: Record<PlanKey, Plan> = {
     prioritySearch: false,
     portPolicy:     "proof_required",
     support:        "Email",
+    websiteLink:    "hidden",
+    websiteClickCostUsd: 0,
     color:          "#64748B",
     bg:             "#F1F5F9",
     border:         "#CBD5E1",
@@ -65,6 +70,8 @@ export const PLANS: Record<PlanKey, Plan> = {
     prioritySearch: false,
     portPolicy:     "proof_required",
     support:        "Email",
+    websiteLink:    "ppc",
+    websiteClickCostUsd: 0.75,     // $0.75 per click-through to seller's site
     color:          "#2563EB",
     bg:             "#DBEAFE",
     border:         "#BFDBFE",
@@ -86,6 +93,8 @@ export const PLANS: Record<PlanKey, Plan> = {
     prioritySearch: true,
     portPolicy:     "unrestricted_with_liability",
     support:        "Dedicated",
+    websiteLink:    "unlimited",
+    websiteClickCostUsd: 0,        // included in plan
     color:          "#7C3AED",
     bg:             "#EDE9FE",
     border:         "#DDD6FE",
