@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { getInitials, formatDate } from "@/lib/utils";
 import { Send, MessageSquare, ChevronDown, Lock, ExternalLink } from "lucide-react";
@@ -48,6 +49,14 @@ interface Message {
   sender: { full_name: string; avatar_url?: string };
 }
 
+interface ListingSnippet {
+  year: number;
+  make: string;
+  model: string;
+  price_usd: number;
+  image?: string | null;
+}
+
 interface Props {
   dealId: string;
   messages: Message[];
@@ -59,12 +68,19 @@ interface Props {
   whatsappUnlocked: boolean;
   /** The role of the current viewer */
   role: "buyer" | "seller";
+  /** Listing details shown as pinned card in thread */
+  listing?: ListingSnippet | null;
+  /** Buyer's initial inquiry notes — shown as first message */
+  buyerNotes?: string | null;
+  /** Buyer's name for the first notes message attribution */
+  buyerName?: string;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 export function DealChatWidget({
   dealId, messages, currentUserId, otherPartyName,
   isClosed, dealStatus, whatsappUnlocked, role,
+  listing, buyerNotes, buyerName,
 }: Props) {
   const router  = useRouter();
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -296,10 +312,49 @@ export function DealChatWidget({
           {/* ── Message thread ────────────────────────────────────────── */}
           <div
             ref={bodyRef}
-            style={{ flex: 1, overflowY: "auto", padding: "14px 14px 8px", display: "flex", flexDirection: "column", gap: "10px", minHeight: "260px", maxHeight: "320px" }}
+            style={{ flex: 1, overflowY: "auto", padding: "10px 12px 8px", display: "flex", flexDirection: "column", gap: "10px", minHeight: "260px", maxHeight: "320px" }}
           >
-            {messages.length === 0 && (
-              <div style={{ textAlign: "center", marginTop: "40px" }}>
+            {/* ── Pinned listing card ──────────────────────────────────── */}
+            {listing && (
+              <div style={{ backgroundColor: c.bgDim, border: `1px solid ${c.border}`, borderRadius: "10px", overflow: "hidden", flexShrink: 0, marginBottom: "4px" }}>
+                <div style={{ display: "flex", gap: "0" }}>
+                  {listing.image ? (
+                    <div style={{ width: "72px", flexShrink: 0, position: "relative", backgroundColor: "#E2E8F0" }}>
+                      <Image src={listing.image} alt={`${listing.year} ${listing.make}`} fill style={{ objectFit: "cover" }} sizes="72px" />
+                    </div>
+                  ) : (
+                    <div style={{ width: "72px", flexShrink: 0, backgroundColor: c.border, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: "18px" }}>🚗</span>
+                    </div>
+                  )}
+                  <div style={{ padding: "10px 12px", flex: 1, minWidth: 0 }}>
+                    <p style={{ color: c.primary, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {listing.year} {listing.make} {listing.model}
+                    </p>
+                    <p style={{ color: c.green, fontSize: "13px", fontWeight: 700, marginTop: "2px" }}>
+                      ${listing.price_usd.toLocaleString()}
+                    </p>
+                    <p style={{ color: c.muted, fontSize: "10px", marginTop: "2px" }}>Inquiry</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Buyer notes as first message ─────────────────────────── */}
+            {buyerNotes && (
+              <div style={{ display: "flex", flexDirection: role === "buyer" ? "row-reverse" : "row", alignItems: "flex-end", gap: "6px" }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: c.bgDim, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 700, color: c.muted, flexShrink: 0 }}>
+                  {getInitials(buyerName ?? "B")}
+                </div>
+                <div style={{ maxWidth: "220px", backgroundColor: role === "buyer" ? c.primary : c.bgDim, color: role === "buyer" ? "#fff" : c.body, borderRadius: role === "buyer" ? "12px 12px 2px 12px" : "12px 12px 12px 2px", padding: "8px 11px", fontSize: "12px", lineHeight: 1.55 }}>
+                  <p style={{ fontSize: "9px", fontWeight: 700, opacity: 0.6, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Inquiry note</p>
+                  <p style={{ marginBottom: "3px" }}>{buyerNotes}</p>
+                </div>
+              </div>
+            )}
+
+            {messages.length === 0 && !buyerNotes && (
+              <div style={{ textAlign: "center", marginTop: "24px" }}>
                 <MessageSquare style={{ color: c.border, margin: "0 auto 10px" }} className="h-8 w-8" />
                 <p style={{ color: c.muted, fontSize: "13px" }}>No messages yet.</p>
                 <p style={{ color: c.muted, fontSize: "11px", marginTop: "4px" }}>Start the conversation below.</p>

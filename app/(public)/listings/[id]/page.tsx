@@ -333,6 +333,13 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                   {seller.description}
                 </p>
               )}
+              <Link
+                href={`/sellers/${listing.seller_id}`}
+                style={{ display: "inline-flex", alignItems: "center", gap: "5px", color: c.primary, fontSize: "12px", fontWeight: 600, marginTop: "12px", textDecoration: "none", border: `1px solid ${c.border}`, padding: "5px 12px", borderRadius: "6px" }}
+                className="hover:border-[#94A3B8] transition-colors"
+              >
+                View seller profile →
+              </Link>
             </div>
 
             {/* Inquiry — hidden for the seller who owns this listing */}

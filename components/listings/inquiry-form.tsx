@@ -54,9 +54,21 @@ export function InquiryForm({ listingId, sellerId, listingTitle, currentUser }: 
           <p className="text-green-700 text-xs mt-1 mb-4">
             The exporter will respond through your deals dashboard.
           </p>
-          <Button size="sm" variant="outline" asChild>
-            <Link href="/buyer/deals">View my deals</Link>
-          </Button>
+          <Link
+            href="/buyer/deals"
+            style={{
+              display: "inline-block",
+              backgroundColor: "#065F46",
+              color: "#fff",
+              fontSize: "13px",
+              fontWeight: 600,
+              padding: "8px 20px",
+              borderRadius: "6px",
+              textDecoration: "none",
+            }}
+          >
+            View my deals
+          </Link>
         </CardContent>
       </Card>
     );

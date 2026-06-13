@@ -816,7 +816,12 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
               <div style={{ borderTop: `1px solid ${c.border}` }} className="pt-3">
                 <p style={{ color: c.muted }} className="text-xs font-semibold uppercase tracking-widest mb-1.5">Exporter</p>
                 <p style={{ color: c.primary }} className="text-sm font-medium">{seller?.company_name}</p>
-                <p style={{ color: c.muted }} className="text-xs flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{seller?.city}, UAE</p>
+                <p style={{ color: c.muted }} className="text-xs flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{seller?.city}</p>
+                {role === "buyer" && (
+                  <a href={`/sellers/${deal.seller_id}`} style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: c.blue, fontSize: "11px", fontWeight: 600, marginTop: "6px", textDecoration: "none" }}>
+                    View seller profile →
+                  </a>
+                )}
               </div>
             </div>
 
@@ -998,6 +1003,15 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
         dealStatus={deal.status}
         whatsappUnlocked={!!(deal as unknown as Record<string, unknown>).whatsapp_unlocked}
         role={role}
+        listing={listing ? {
+          year:      listing.year as number,
+          make:      listing.make as string,
+          model:     listing.model as string,
+          price_usd: listing.price_usd as number,
+          image:     primaryImage ?? null,
+        } : null}
+        buyerNotes={deal.buyer_notes ?? null}
+        buyerName={buyer?.full_name ?? "Buyer"}
       />
     </div>
   );
