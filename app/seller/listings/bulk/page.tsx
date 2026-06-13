@@ -5,11 +5,7 @@ import { BulkImportForm } from "@/components/seller/bulk-import-form";
 import Link from "next/link";
 import { Lock, Zap } from "lucide-react";
 
-const c = {
-  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5", greenText: "#065F46",
-  bg: "#F8FAFC", surface: "#FFFFFF", border: "#E2E8F0", muted: "#64748B",
-  amber: "#F59E0B", amberBg: "#FEF3C7",
-};
+import { c } from "@/lib/tokens";
 
 export default async function BulkImportPage() {
   const supabase = await createClient();

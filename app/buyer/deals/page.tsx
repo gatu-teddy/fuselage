@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { BuyerNav } from "@/components/layouts/buyer-nav";
 import { Card, CardContent } from "@/components/ui/card";
 import { DEAL_STATUS_LABELS, DEAL_STATUS_COLORS, type DealStatus } from "@/lib/types";
 import { formatUSD, formatDate } from "@/lib/utils";
@@ -24,9 +23,7 @@ export default async function BuyerDealsPage() {
   const closed = deals?.filter((d) => ["completed", "cancelled"].includes(d.status)) ?? [];
 
   return (
-    <div className="min-h-screen">
-      <BuyerNav />
-      <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold">My deals</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -71,7 +68,6 @@ export default async function BuyerDealsPage() {
           )}
         </div>
       </div>
-    </div>
   );
 }
 

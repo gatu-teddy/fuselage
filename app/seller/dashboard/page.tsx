@@ -6,22 +6,7 @@ import { formatUSD, formatDate } from "@/lib/utils";
 import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
 import { getPlan } from "@/lib/plans";
 
-const c = {
-  primary:   "#0F172A",
-  green:     "#10B981",
-  greenBg:   "#D1FAE5",
-  greenText: "#065F46",
-  bg:        "#F8FAFC",
-  bgDim:     "#F1F5F9",
-  surface:   "#FFFFFF",
-  border:    "#E2E8F0",
-  muted:     "#64748B",
-  body:      "#334155",
-  amber:     "#F59E0B",
-  amberBg:   "#FEF3C7",
-  blue:      "#3B82F6",
-  blueBg:    "#DBEAFE",
-};
+import { c } from "@/lib/tokens";
 
 export default async function SellerDashboardPage() {
   const supabase = await createClient();

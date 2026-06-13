@@ -1,14 +1,11 @@
 import Link from "next/link";
 import { Heart } from "lucide-react";
 
-const c = {
-  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5", greenText: "#065F46",
-  bg: "#F8FAFC", surface: "#FFFFFF", border: "#E2E8F0", muted: "#64748B",
-};
+import { c } from "@/lib/tokens";
 
 export default function WishlistPage() {
   return (
-    <div style={{ backgroundColor: c.bg, minHeight: "100vh", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
       <div style={{ textAlign: "center", maxWidth: "400px" }}>
         <div style={{ width: "56px", height: "56px", borderRadius: "50%", backgroundColor: c.greenBg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
           <Heart style={{ color: c.green, width: "24px", height: "24px" }} />

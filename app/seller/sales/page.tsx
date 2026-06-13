@@ -4,11 +4,7 @@ import Link from "next/link";
 import { DEAL_STATUS_LABELS, DEAL_STATUS_COLORS, type DealStatus } from "@/lib/types";
 import { formatUSD, formatDate } from "@/lib/utils";
 
-const c = {
-  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5", greenText: "#065F46",
-  bg: "#F8FAFC", surface: "#FFFFFF", border: "#E2E8F0", muted: "#64748B", body: "#334155",
-  amber: "#F59E0B", amberBg: "#FEF3C7",
-};
+import { c } from "@/lib/tokens";
 
 export default async function SellerSalesPage() {
   const supabase = await createClient();
