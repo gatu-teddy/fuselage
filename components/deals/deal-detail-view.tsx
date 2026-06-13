@@ -222,13 +222,15 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
   const [confirmChecked, setConfirmChecked] = useState(false);
 
   // ── deal documents
-  const [docFile, setDocFile]               = useState<File | null>(null);
-  const [docType, setDocType]               = useState<DocType | "">("");
-  const [docNotes, setDocNotes]             = useState("");
+  const [docFile, setDocFile]                       = useState<File | null>(null);
+  const [docType, setDocType]                       = useState<DocType | "">("");
+  const [docCustomLabel, setDocCustomLabel]         = useState("");
+  const [docNotes, setDocNotes]                     = useState("");
   const [docRequiresCounter, setDocRequiresCounter] = useState(false);
-  const [uploadingDoc, setUploadingDoc]     = useState(false);
-  const [docError, setDocError]             = useState("");
-  const [showDocForm, setShowDocForm]       = useState(false);
+  const [docRequestCounterpart, setDocRequestCounterpart] = useState(false);
+  const [uploadingDoc, setUploadingDoc]             = useState(false);
+  const [docError, setDocError]                     = useState("");
+  const [showDocForm, setShowDocForm]               = useState(false);
   const docFileRef = useRef<HTMLInputElement>(null);
 
   // ── counter-signature
@@ -370,8 +372,8 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
 
   function handleDocTypeChange(val: DocType) {
     setDocType(val);
-    // Auto-tick counter-sign for applicable types
     setDocRequiresCounter(COUNTER_SIGN_TYPES.includes(val));
+    if (val !== "other") { setDocCustomLabel(""); setDocRequestCounterpart(false); }
   }
 
   async function uploadDocument(e: React.FormEvent) {
@@ -395,27 +397,34 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
       return;
     }
 
+    const resolvedLabel = docType === "other" && docCustomLabel.trim()
+      ? docCustomLabel.trim()
+      : DOC_TYPE_LABELS[docType];
+
     await supabase.from("deal_documents").insert({
-      deal_id:              deal.id,
-      uploaded_by:          currentUserId,
-      uploader_role:        role,
-      doc_type:             docType,
-      doc_label:            DOC_TYPE_LABELS[docType],
-      file_url:             path,
-      file_name:            docFile.name,
-      file_type:            fileTypeFromMime(docFile),
-      notes:                docNotes || null,
-      requires_counter_sign: docRequiresCounter,
+      deal_id:                    deal.id,
+      uploaded_by:                currentUserId,
+      uploader_role:              role,
+      doc_type:                   docType,
+      doc_label:                  resolvedLabel,
+      file_url:                   path,
+      file_name:                  docFile.name,
+      file_type:                  fileTypeFromMime(docFile),
+      notes:                      docNotes || null,
+      requires_counter_sign:      docRequiresCounter,
+      requires_counterpart_upload: docRequestCounterpart,
+      counterpart_upload_label:   docRequestCounterpart ? resolvedLabel : null,
     });
 
     // Notify other party
     const otherRole = role === "seller" ? "buyer" : "seller";
     await notifyBackend(
       docRequiresCounter ? "counter_sign_requested" : "document_uploaded",
-      { docLabel: DOC_TYPE_LABELS[docType], role: otherRole },
+      { docLabel: resolvedLabel, role: otherRole },
     );
 
-    setDocFile(null); setDocType(""); setDocNotes(""); setDocRequiresCounter(false);
+    setDocFile(null); setDocType(""); setDocCustomLabel(""); setDocNotes("");
+    setDocRequiresCounter(false); setDocRequestCounterpart(false);
     setShowDocForm(false);
     setUploadingDoc(false);
     router.refresh();
@@ -685,6 +694,23 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
                     </div>
                   </div>
 
+                  {/* Custom label for "Other Document" */}
+                  {docType === "other" && (
+                    <div>
+                      <label style={{ color: c.muted }} className="text-xs font-medium block mb-1">
+                        Document name <span style={{ color: c.red }}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={docCustomLabel}
+                        onChange={(e) => setDocCustomLabel(e.target.value)}
+                        placeholder="e.g. Customs declaration form, Bank draft…"
+                        required
+                        style={{ width: "100%", height: "36px", border: `1px solid ${c.border}`, borderRadius: "6px", paddingLeft: "10px", fontSize: "13px", outline: "none", color: c.primary, backgroundColor: c.surface }}
+                      />
+                    </div>
+                  )}
+
                   {/* File picker */}
                   <div>
                     <label style={{ color: c.muted }} className="text-xs font-medium block mb-1">File (PDF preferred)</label>
@@ -724,6 +750,16 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
                     </span>
                   </label>
 
+                  {/* Counterpart upload request */}
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" checked={docRequestCounterpart}
+                      onChange={(e) => setDocRequestCounterpart(e.target.checked)}
+                      style={{ width: "14px", height: "14px", accentColor: c.amber }} />
+                    <span style={{ color: c.body, fontSize: "12px" }}>
+                      {role === "buyer" ? "Seller" : "Buyer"} must upload a matching document
+                    </span>
+                  </label>
+
                   {docError && <p style={{ color: c.red, fontSize: "12px" }}>{docError}</p>}
 
                   <div className="flex gap-2 pt-1">
@@ -747,10 +783,12 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
               )}
               <div className="space-y-3">
                 {docs.map((doc) => {
-                  const isMyDoc       = doc.uploaded_by === currentUserId;
-                  const needsMySign   = doc.requires_counter_sign && !doc.counter_signed_at && !isMyDoc;
-                  const bothSigned    = doc.requires_counter_sign && !!doc.counter_signed_at;
-                  const awaitingOther = doc.requires_counter_sign && !doc.counter_signed_at && isMyDoc;
+                  const isMyDoc         = doc.uploaded_by === currentUserId;
+                  const needsMySign     = doc.requires_counter_sign && !doc.counter_signed_at && !isMyDoc;
+                  const bothSigned      = doc.requires_counter_sign && !!doc.counter_signed_at;
+                  const awaitingOther   = doc.requires_counter_sign && !doc.counter_signed_at && isMyDoc;
+                  const needsMyUpload   = doc.requires_counterpart_upload && !doc.counterpart_upload_fulfilled && !isMyDoc;
+                  const awaitingUpload  = doc.requires_counterpart_upload && !doc.counterpart_upload_fulfilled && isMyDoc;
 
                   return (
                     <div key={doc.id}
@@ -778,6 +816,16 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
                                   Awaiting counter-signature
                                 </span>
                               )}
+                              {needsMyUpload && (
+                                <span style={{ backgroundColor: c.redBg, color: c.red, fontSize: "10px", fontWeight: 700, padding: "2px 7px", borderRadius: "99px" }}>
+                                  Upload required
+                                </span>
+                              )}
+                              {awaitingUpload && !doc.counterpart_upload_fulfilled && (
+                                <span style={{ backgroundColor: c.amberBg, color: c.amber, fontSize: "10px", fontWeight: 700, padding: "2px 7px", borderRadius: "99px" }}>
+                                  Awaiting counterpart upload
+                                </span>
+                              )}
                             </div>
                             <p style={{ color: c.muted, fontSize: "11px", marginTop: "2px" }}>
                               Uploaded by {doc.uploader_role} · {formatDate(doc.created_at)}
@@ -802,6 +850,23 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
                           )}
                         </div>
                       </div>
+
+                      {/* Counterpart upload action */}
+                      {needsMyUpload && (
+                        <div style={{ borderTop: `1px solid ${c.redBorder}`, marginTop: "10px", paddingTop: "10px" }}>
+                          <p style={{ color: c.red, fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+                            Action required: upload your copy of &quot;{doc.counterpart_upload_label ?? doc.doc_label ?? DOC_TYPE_LABELS[doc.doc_type]}&quot;
+                          </p>
+                          <button
+                            onClick={() => setShowDocForm(true)}
+                            style={{ backgroundColor: c.red, color: "#fff", width: "100%", height: "34px", borderRadius: "6px", fontSize: "12px", fontWeight: 600, border: "none", cursor: "pointer" }}
+                            className="flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                          >
+                            <Upload className="h-3.5 w-3.5" />
+                            Upload matching document
+                          </button>
+                        </div>
+                      )}
 
                       {/* Counter-sign action */}
                       {needsMySign && (

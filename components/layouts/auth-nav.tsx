@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import {
-  Menu, X, Heart, ClipboardList, Headphones,
+  Menu, X, Heart, MessageSquare, Headphones,
   LayoutDashboard, ChevronDown, LogOut, User as UserIcon,
 } from "lucide-react";
 
@@ -19,9 +19,9 @@ const publicNavLinks = [
 ];
 
 const buyerLinks = [
-  { label: "My Inquiries", href: "/buyer/deals",    icon: ClipboardList },
-  { label: "Wishlist",     href: "/buyer/wishlist", icon: Heart         },
-  { label: "Support",      href: "/support",        icon: Headphones    },
+  { label: "Messages", href: "/buyer/deals",    icon: MessageSquare },
+  { label: "Wishlist", href: "/buyer/wishlist", icon: Heart         },
+  { label: "Support",  href: "/support",        icon: Headphones    },
 ];
 
 // ── Avatar initials ────────────────────────────────────────────────────────

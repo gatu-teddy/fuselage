@@ -191,6 +191,13 @@ export interface DealDocument {
   counter_sign_file_name?: string;
   counter_signed_by?: string;
   counter_signed_at?: string;
+  requires_counterpart_upload: boolean;
+  counterpart_upload_label?: string;
+  counterpart_upload_fulfilled: boolean;
+  counterpart_upload_file_url?: string;
+  counterpart_upload_file_name?: string;
+  counterpart_uploaded_at?: string;
+  counterpart_uploaded_by?: string;
   created_at: string;
 }
 

@@ -62,7 +62,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // ── Seller portal (/seller/*) — role must be "seller", approved status ────
-  if (pathname.startsWith("/seller")) {
+  if (pathname.startsWith("/seller/") || pathname === "/seller") {
     if (!user) return redirectTo("/login");
 
     // Fetch role + approval status in one query

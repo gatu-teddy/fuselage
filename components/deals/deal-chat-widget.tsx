@@ -82,8 +82,9 @@ export function DealChatWidget({
   isClosed, dealStatus, whatsappUnlocked, role,
   listing, buyerNotes, buyerName,
 }: Props) {
-  const router  = useRouter();
-  const bodyRef = useRef<HTMLDivElement>(null);
+  const router     = useRouter();
+  const bodyRef    = useRef<HTMLDivElement>(null);
+  const widgetRef  = useRef<HTMLDivElement>(null);
 
   const [isOpen,       setIsOpen]       = useState(false);
   const [message,      setMessage]      = useState("");
@@ -94,6 +95,24 @@ export function DealChatWidget({
   const [unlockDone,   setUnlockDone]   = useState(whatsappUnlocked);
 
   const lsKey = `chat-seen-${dealId}`;
+
+  // ── Write global chat info to localStorage for the global bubble ─────────
+  useEffect(() => {
+    localStorage.setItem("last-active-chat", JSON.stringify({
+      dealId, otherPartyName, dealStatus, isClosed, role,
+    }));
+  }, [dealId, otherPartyName, dealStatus, isClosed, role]);
+
+  // ── Click outside to minimize ────────────────────────────────────────────
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (isOpen && widgetRef.current && !widgetRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [isOpen]);
 
   // ── Unread count ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -178,7 +197,7 @@ export function DealChatWidget({
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 200, fontFamily: "Inter, sans-serif" }}>
+    <div ref={widgetRef} style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 200, fontFamily: "Inter, sans-serif" }}>
 
       {/* ── Expanded panel ──────────────────────────────────────────────── */}
       {isOpen && (
