@@ -108,15 +108,25 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
                   </span>
                 )}
                 {seller.website && (
-                  <a
-                    href={`/api/seller/website-click?sellerId=${seller.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: c.blue, fontSize: "13px", display: "flex", alignItems: "center", gap: "5px", textDecoration: "none" }}
-                  >
-                    <Globe className="h-3.5 w-3.5" />
-                    Website
-                  </a>
+                  seller.plan === "free" || !seller.plan ? (
+                    <span
+                      title="This exporter hasn't enabled external website links"
+                      style={{ color: c.muted, fontSize: "13px", display: "flex", alignItems: "center", gap: "5px", opacity: 0.4, cursor: "not-allowed", userSelect: "none" }}
+                    >
+                      <Globe className="h-3.5 w-3.5" />
+                      Website
+                    </span>
+                  ) : (
+                    <a
+                      href={`/api/seller/website-click?sellerId=${seller.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: c.blue, fontSize: "13px", display: "flex", alignItems: "center", gap: "5px", textDecoration: "none" }}
+                    >
+                      <Globe className="h-3.5 w-3.5" />
+                      Website
+                    </a>
+                  )
                 )}
               </div>
 

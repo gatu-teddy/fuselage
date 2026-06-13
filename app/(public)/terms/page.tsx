@@ -98,6 +98,7 @@ const TOC = [
   { id: "18-governing-law", label: "18. Governing Law" },
   { id: "19-changes",       label: "19. Changes to These Terms" },
   { id: "20-contact",       label: "20. Contact" },
+  { id: "21-timezone",      label: "21. Timezone" },
 ];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -629,6 +630,12 @@ export default function TermsPage() {
                 Registered address: <strong>[COMPANY REGISTERED ADDRESS — TO BE ADDED]</strong>
               </p>
             </div>
+
+            {/* ── 21. Timezone ─────────────────────────────────────────────── */}
+            <H2 id="21-timezone">21. Timezone</H2>
+            <P>
+              All timestamps displayed on the TrueWagon platform — including message delivery times, deal status changes, document uploads, and activity logs — are shown in <strong>UAE Gulf Standard Time (GST, UTC+4 / GMT+4)</strong>. Gulf Standard Time does not observe daylight saving. Users in other time zones should account for the difference when interpreting timestamps.
+            </P>
 
             {/* Footer note */}
             <div

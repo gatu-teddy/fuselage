@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Car, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight, Zap } from "lucide-react";
+import { Car, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight, Zap, Globe, Bell } from "lucide-react";
 import { formatUSD, formatDate } from "@/lib/utils";
 import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
 import { getPlan } from "@/lib/plans";
@@ -13,11 +13,15 @@ export default async function SellerDashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: sellerProfile }, { data: listings }, { data: deals }] = await Promise.all([
+  const thisMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+
+  const [{ data: sellerProfile }, { data: listings }, { data: deals }, { count: websiteClicks }] = await Promise.all([
     supabase.from("seller_profiles").select("*, profile:profiles(*)").eq("id", user.id).single(),
     supabase.from("listings").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
     supabase.from("deals").select("*, listing:listings(make,model,year), buyer:profiles(full_name,country)")
       .eq("seller_id", user.id).order("created_at", { ascending: false }),
+    supabase.from("seller_website_clicks").select("id", { count: "exact", head: true })
+      .eq("seller_id", user.id).gte("clicked_at", thisMonthStart),
   ]);
 
   if (!sellerProfile) redirect("/seller/onboarding");
@@ -117,6 +121,58 @@ export default async function SellerDashboardPage() {
           <p style={{ color: "#991B1B", fontWeight: 600, fontSize: "14px" }}>Application not approved</p>
           {sellerProfile.rejection_reason && <p style={{ color: "#991B1B", fontSize: "13px", marginTop: "4px" }}>Reason: {sellerProfile.rejection_reason}</p>}
           <p style={{ color: "#991B1B", fontSize: "13px", marginTop: "4px" }}>Please contact support to reapply.</p>
+        </div>
+      )}
+
+      {/* ── TrueWagon Notifications ─────────────────────────────────────────── */}
+      {sellerProfile.website && (
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+            <Bell style={{ color: c.muted, width: "14px", height: "14px" }} />
+            <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              From TrueWagon
+            </p>
+          </div>
+
+          {plan.websiteLink === "hidden" ? (
+            /* Free plan — upsell */
+            <div style={{ backgroundColor: c.surface, border: `1px solid #BFDBFE`, borderRadius: "10px", padding: "14px 18px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
+              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#0F172A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Globe style={{ color: "#fff", width: "15px", height: "15px" }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ color: c.primary, fontWeight: 700, fontSize: "13px", marginBottom: "3px" }}>
+                  Your website icon is locked for buyers
+                </p>
+                <p style={{ color: c.body, fontSize: "12px", lineHeight: 1.6 }}>
+                  Buyers who visit your seller profile can see your website icon but can&apos;t click through — it&apos;s locked on the Free plan.
+                  Upgrade to <strong>Growth</strong> to enable click-throughs at $0.75/click, or <strong>Enterprise</strong> for unlimited visits.
+                </p>
+                <Link
+                  href="/pricing"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "10px", backgroundColor: "#2563EB", color: "#fff", fontSize: "12px", fontWeight: 600, padding: "6px 14px", borderRadius: "6px", textDecoration: "none" }}
+                >
+                  <Zap style={{ width: "11px", height: "11px" }} /> View upgrade options
+                </Link>
+              </div>
+            </div>
+          ) : (
+            /* Paid plan — show click count */
+            <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px" }}>
+              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#0F172A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Globe style={{ color: "#fff", width: "15px", height: "15px" }} />
+              </div>
+              <div>
+                <p style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>
+                  {websiteClicks ?? 0} website click{(websiteClicks ?? 0) !== 1 ? "s" : ""} this month
+                </p>
+                <p style={{ color: c.muted, fontSize: "12px", marginTop: "2px" }}>
+                  Buyers clicked through to your website from your seller profile.
+                  {plan.websiteLink === "ppc" && ` Charged at $${plan.websiteClickCostUsd}/click.`}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

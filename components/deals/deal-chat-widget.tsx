@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import { getInitials, formatDate } from "@/lib/utils";
+import { getInitials, formatDateTime } from "@/lib/utils";
 import { Send, MessageSquare, ChevronDown, Lock, ExternalLink } from "lucide-react";
 
 // ─── Design tokens ──────────────────────────────────────────────────────────
@@ -399,7 +399,7 @@ export function DealChatWidget({
                   </div>
                   <div style={{ maxWidth: "220px", backgroundColor: isMine ? c.primary : c.bgDim, color: isMine ? "#fff" : c.body, borderRadius: isMine ? "12px 12px 2px 12px" : "12px 12px 12px 2px", padding: "8px 11px", fontSize: "12px", lineHeight: 1.55 }}>
                     <p style={{ marginBottom: "3px" }}>{msg.message}</p>
-                    <p style={{ fontSize: "10px", opacity: 0.55, textAlign: "right" }}>{formatDate(msg.created_at)}</p>
+                    <p style={{ fontSize: "10px", opacity: 0.55, textAlign: "right" }}>{formatDateTime(msg.created_at)}</p>
                   </div>
                 </div>
               );
