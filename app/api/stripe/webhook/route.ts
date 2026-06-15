@@ -17,7 +17,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { stripe } from "@/lib/stripe";
+import { STRIPE_ENABLED, getStripe } from "@/lib/stripe";
 import Stripe from "stripe";
 
 // Use the service role key so RLS is bypassed for trusted webhook writes.
@@ -55,14 +55,20 @@ async function syncSellerPlan(
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.text();
-  const sig  = req.headers.get("stripe-signature");
+  // Stripe not configured yet — acknowledge silently so the endpoint doesn't 500
+  if (!STRIPE_ENABLED) {
+    return NextResponse.json({ received: true, note: "Stripe not configured" });
+  }
+
+  const body   = await req.text();
+  const sig    = req.headers.get("stripe-signature");
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!sig || !secret) {
     return NextResponse.json({ error: "Missing signature or secret" }, { status: 400 });
   }
 
+  const stripe = getStripe();
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, sig, secret);
@@ -114,7 +120,7 @@ export async function POST(req: NextRequest) {
         const subId   = invoice.subscription as string | null;
 
         if (subId) {
-          const sub    = await stripe.subscriptions.retrieve(subId);
+          const sub    = await getStripe().subscriptions.retrieve(subId);
           const userId = sub.metadata?.supabase_user_id;
 
           if (userId) {
