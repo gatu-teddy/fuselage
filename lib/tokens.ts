@@ -39,6 +39,12 @@ export const c = {
   // Form error aliases (same values, semantic names)
   error:         "#EF4444",   // Form error text
   errorBg:       "#FEF2F2",   // Form error background
+
+  // WhatsApp / direct-contact feature
+  wa:            "#25D366",   // WhatsApp green
+  waBg:          "#DCFCE7",   // WhatsApp panel background
+  waText:        "#15803D",   // WhatsApp panel text
+  waBorder:      "#86EFAC",   // WhatsApp panel border
 } as const;
 
 export type TokenKey = keyof typeof c;

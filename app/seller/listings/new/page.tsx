@@ -25,8 +25,6 @@ export default async function NewListingPage() {
 
   // ── Gate: listing limit reached ──────────────────────────────────────────
   if (atLimit) {
-    const nextPlan = profile.plan === "free" ? "growth" : "enterprise";
-    const nextLimit = nextPlan === "growth" ? 50 : "Unlimited";
 
     return (
       <div style={{ backgroundColor: c.bg, minHeight: "100vh", fontFamily: "Inter, sans-serif" }} className="p-8 max-w-2xl">

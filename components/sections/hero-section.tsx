@@ -7,10 +7,10 @@ const HERO_BG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuCGaHS6gz6dJxeezM-JE2FjaLCXTZc8RZreIKQCImymQpCf51rhwcOhLgfUrOL8bpo6TU0IFRA-UmJW14RMT7C937Xh7V5kelCiD5Qc8D3n_LhCPHZ0J2GIP2vYVheCW4a3_il8_DbQoSABp21z2KjegIBn9xG42ON_-kdwwyQgWpG3PxN2c3k3mZIiE9l9cdLtFqb6bev6qjKAcGtx3_G2JdPJuN1S_HdKJ5MDe_QpTS3qNPedRgUlKq6O0SMAfOjUI0O8vQTz47s";
 
 const stats = [
-  { value: "7",    label: "Markets served" },
-  { value: "15+",  label: "African ports served" },
-  { value: "100%", label: "VIN tracked deals" },
-  { value: "0",    label: "Unverified sellers" },
+  { value: "Global", label: "Markets served" },
+  { value: "100%",   label: "Verified sellers" },
+  { value: "100%",   label: "VIN tracked deals" },
+  { value: "0",      label: "Anonymous listings" },
 ];
 
 export function HeroSection() {
@@ -61,7 +61,7 @@ export function HeroSection() {
           </h1>
 
           <p style={{ color: "rgba(255,255,255,0.65)" }} className="text-lg leading-relaxed mb-8 max-w-lg">
-            Connect with verified exporters across Africa and the Middle East. Every vehicle is inspected, documented,
+            Connect with verified exporters worldwide. Every vehicle is inspected, documented,
             and tracked in real time — straight to your port.
           </p>
 

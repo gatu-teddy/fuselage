@@ -1,12 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const PLAN_STYLES: Record<string, { color: string; bg: string; border: string }> = {
-  free:       { color: "#334155", bg: "#F1F5F9", border: "#CBD5E1" },
-  growth:     { color: "#1D4ED8", bg: "#DBEAFE", border: "#BFDBFE" },
-  enterprise: { color: "#6D28D9", bg: "#EDE9FE", border: "#DDD6FE" },
-};
+import { getPlan } from "@/lib/plans";
 
 interface Props {
   sellerId: string;
@@ -19,7 +14,8 @@ export function PlanChanger({ sellerId, currentPlan }: Props) {
   const [saving,  setSaving]  = useState(false);
   const [open,    setOpen]    = useState(false);
 
-  const s = PLAN_STYLES[plan] ?? PLAN_STYLES.free;
+  // Derive styles directly from the plan definitions — no local duplicate map needed
+  const s = getPlan(plan);
 
   async function changePlan(next: string) {
     if (next === plan) { setOpen(false); return; }
@@ -42,7 +38,7 @@ export function PlanChanger({ sellerId, currentPlan }: Props) {
         disabled={saving}
         style={{
           backgroundColor: s.bg,
-          color: s.color,
+          color: s.textColor,
           border: `1px solid ${s.border}`,
           borderRadius: "99px",
           fontSize: "11px",
@@ -78,21 +74,21 @@ export function PlanChanger({ sellerId, currentPlan }: Props) {
               fontFamily: "Inter, sans-serif",
             }}
           >
-            {(["free", "growth", "enterprise"] as const).map((p) => {
-              const ps = PLAN_STYLES[p];
+            {(["free", "growth", "enterprise"] as const).map((pk) => {
+              const ps = getPlan(pk);
               return (
                 <button
-                  key={p}
-                  onClick={() => changePlan(p)}
+                  key={pk}
+                  onClick={() => changePlan(pk)}
                   style={{
                     display: "block",
                     width: "100%",
                     textAlign: "left",
                     padding: "9px 14px",
                     fontSize: "13px",
-                    fontWeight: p === plan ? 700 : 400,
-                    color: ps.color,
-                    backgroundColor: p === plan ? ps.bg : "transparent",
+                    fontWeight: pk === plan ? 700 : 400,
+                    color: ps.textColor,
+                    backgroundColor: pk === plan ? ps.bg : "transparent",
                     border: "none",
                     cursor: "pointer",
                     fontFamily: "Inter, sans-serif",
@@ -100,7 +96,7 @@ export function PlanChanger({ sellerId, currentPlan }: Props) {
                   }}
                   className="hover:bg-[#F8FAFC] transition-colors"
                 >
-                  {p === plan ? `✓ ${p}` : p}
+                  {pk === plan ? `✓ ${pk}` : pk}
                 </button>
               );
             })}

@@ -1,12 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
-const c = {
-  primary: "#0F172A",
-  muted:   "#64748B",
-  blue:    "#2563EB",
-  blueBg:  "#EFF6FF",
-};
+import { c } from "@/lib/tokens";
 
 interface TocItem {
   id: string;

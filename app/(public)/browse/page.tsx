@@ -25,7 +25,6 @@ export default async function BrowsePage({
 }) {
   const params = await searchParams;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let listings: any[] | null = null;
 
   if (

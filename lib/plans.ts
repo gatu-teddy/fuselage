@@ -108,12 +108,3 @@ export function getPlan(key: string | null | undefined): Plan {
   return PLANS[(key ?? "free") as PlanKey] ?? PLANS.free;
 }
 
-/** Returns true if the seller's active listing count is within their plan limit. */
-export function withinListingLimit(plan: Plan, activeCount: number): boolean {
-  return activeCount < plan.listingLimit;
-}
-
-/** Returns true if the image count is within the plan's per-listing image limit. */
-export function withinImageLimit(plan: Plan, imageCount: number): boolean {
-  return imageCount < plan.imageLimit;
-}

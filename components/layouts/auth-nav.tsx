@@ -44,6 +44,238 @@ function Avatar({ name, size = 32 }: { name: string; size?: number }) {
   );
 }
 
+// ── ProfileDropdown ────────────────────────────────────────────────────────
+interface ProfileDropdownProps {
+  dropRef: React.RefObject<HTMLDivElement | null>;
+  profileOpen: boolean;
+  setProfileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  fullName: string;
+  role: string | null;
+  signOut: () => Promise<void>;
+}
+
+function ProfileDropdown({ dropRef, profileOpen, setProfileOpen, fullName, role, signOut }: ProfileDropdownProps) {
+  return (
+    <div ref={dropRef} style={{ position: "relative" }}>
+      <button
+        onClick={() => setProfileOpen((o) => !o)}
+        style={{
+          display: "flex", alignItems: "center", gap: "6px",
+          background: "none", border: "none", cursor: "pointer", padding: "4px",
+        }}
+      >
+        <Avatar name={fullName} size={30} />
+        <ChevronDown style={{ color: c.muted, width: "14px", height: "14px" }} />
+      </button>
+
+      {profileOpen && (
+        <div
+          style={{
+            position: "absolute", right: 0, top: "calc(100% + 8px)",
+            backgroundColor: c.surface, border: `1px solid ${c.border}`,
+            borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
+            minWidth: "200px", zIndex: 60, overflow: "hidden",
+            fontFamily: "Inter, sans-serif",
+          }}
+        >
+          {/* User info */}
+          <div style={{ padding: "14px 16px", borderBottom: `1px solid ${c.border}` }}>
+            <p style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>{fullName}</p>
+            <p style={{ color: c.muted, fontSize: "11px", marginTop: "2px", textTransform: "capitalize" }}>
+              {role ?? "member"}
+            </p>
+          </div>
+
+          {/* Role-based links */}
+          {role === "seller" && (
+            <Link
+              href="/seller/dashboard"
+              onClick={() => setProfileOpen(false)}
+              style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 16px", textDecoration: "none", borderBottom: `1px solid ${c.border}` }}
+              className="hover:bg-[#F8FAFC] transition-colors"
+            >
+              <LayoutDashboard style={{ color: c.muted, width: "14px", height: "14px" }} />
+              <span style={{ color: c.body, fontSize: "13px", fontWeight: 500 }}>Seller Portal</span>
+            </Link>
+          )}
+          {role === "buyer" && buyerLinks.map(({ label, href, icon: Icon }) => (
+            <Link
+              key={label}
+              href={href}
+              onClick={() => setProfileOpen(false)}
+              style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 16px", textDecoration: "none", borderBottom: `1px solid ${c.border}` }}
+              className="hover:bg-[#F8FAFC] transition-colors"
+            >
+              <Icon style={{ color: c.muted, width: "14px", height: "14px" }} />
+              <span style={{ color: c.body, fontSize: "13px", fontWeight: 500 }}>{label}</span>
+            </Link>
+          ))}
+
+          {/* Sign out */}
+          <button
+            onClick={signOut}
+            style={{
+              display: "flex", alignItems: "center", gap: "10px",
+              padding: "11px 16px", width: "100%", background: "none",
+              border: "none", cursor: "pointer", textAlign: "left",
+            }}
+            className="hover:bg-[#FEF2F2] transition-colors"
+          >
+            <LogOut style={{ color: "#EF4444", width: "14px", height: "14px" }} />
+            <span style={{ color: "#EF4444", fontSize: "13px", fontWeight: 500 }}>Sign out</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── DesktopItems ──────────────────────────────────────────────────────────
+interface DesktopItemsProps {
+  loading: boolean;
+  user: User | null | undefined;
+  role: string | null;
+  dropRef: React.RefObject<HTMLDivElement | null>;
+  profileOpen: boolean;
+  setProfileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  fullName: string;
+  signOut: () => Promise<void>;
+}
+
+function DesktopItems({ loading, user, role, dropRef, profileOpen, setProfileOpen, fullName, signOut }: DesktopItemsProps) {
+  if (loading) return <div style={{ width: "140px" }} />;
+
+  if (!user) {
+    return (
+      <div className="hidden md:flex items-center gap-3">
+        <Link href="/login" style={{ color: c.body }}
+          className="text-sm font-medium px-4 py-2 hover:opacity-70 transition-opacity">
+          Sign In
+        </Link>
+        <Link href="/register" style={{ backgroundColor: c.primary, color: "#fff" }}
+          className="text-sm font-semibold px-5 py-2 rounded hover:opacity-90 transition-opacity">
+          Get Started
+        </Link>
+      </div>
+    );
+  }
+
+  if (role === "seller") {
+    return (
+      <div className="hidden md:flex items-center gap-3">
+        <Link
+          href="/seller/dashboard"
+          style={{ backgroundColor: c.greenBg, color: c.greenText }}
+          className="text-xs font-semibold px-4 py-2 rounded-full hover:opacity-90 transition-opacity"
+        >
+          Seller Portal
+        </Link>
+        <ProfileDropdown
+          dropRef={dropRef} profileOpen={profileOpen} setProfileOpen={setProfileOpen}
+          fullName={fullName} role={role} signOut={signOut}
+        />
+      </div>
+    );
+  }
+
+  // Buyer
+  return (
+    <div className="hidden md:flex items-center gap-1">
+      {buyerLinks.map(({ label, href, icon: Icon }) => (
+        <Link
+          key={label}
+          href={href}
+          title={label}
+          style={{ color: c.muted }}
+          className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-[#F1F5F9] transition-colors"
+        >
+          <Icon style={{ width: "18px", height: "18px" }} />
+        </Link>
+      ))}
+      <div style={{ width: "1px", height: "24px", backgroundColor: c.border, margin: "0 6px" }} />
+      <ProfileDropdown
+        dropRef={dropRef} profileOpen={profileOpen} setProfileOpen={setProfileOpen}
+        fullName={fullName} role={role} signOut={signOut}
+      />
+    </div>
+  );
+}
+
+// ── MobileMenuContent ─────────────────────────────────────────────────────
+interface MobileMenuContentProps {
+  user: User | null | undefined;
+  fullName: string;
+  role: string | null;
+  setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  signOut: () => Promise<void>;
+}
+
+function MobileMenuContent({ user, fullName, role, setMobileOpen, signOut }: MobileMenuContentProps) {
+  return (
+    <nav style={{ padding: "12px 0", fontFamily: "Inter, sans-serif" }}>
+      {/* Public nav links */}
+      {publicNavLinks.map(({ label, href }) => (
+        <Link
+          key={label} href={href}
+          onClick={() => setMobileOpen(false)}
+          style={{ display: "block", padding: "12px 20px", fontSize: "15px", fontWeight: 500, color: c.body, textDecoration: "none" }}
+        >
+          {label}
+        </Link>
+      ))}
+
+      <div style={{ borderTop: `1px solid ${c.border}`, margin: "8px 0" }} />
+
+      {!user ? (
+        <>
+          <Link href="/login" onClick={() => setMobileOpen(false)}
+            style={{ display: "block", padding: "12px 20px", fontSize: "15px", fontWeight: 500, color: c.body, textDecoration: "none" }}>
+            Sign In
+          </Link>
+          <div style={{ padding: "8px 20px 16px" }}>
+            <Link href="/register" onClick={() => setMobileOpen(false)}
+              style={{ display: "block", textAlign: "center", backgroundColor: c.primary, color: "#fff", padding: "10px 0", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>
+              Get Started
+            </Link>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Signed-in user info */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 20px" }}>
+            <Avatar name={fullName} size={34} />
+            <div>
+              <p style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>{fullName}</p>
+              <p style={{ color: c.muted, fontSize: "11px", textTransform: "capitalize" }}>{role ?? "member"}</p>
+            </div>
+          </div>
+
+          {role === "seller" && (
+            <Link href="/seller/dashboard" onClick={() => setMobileOpen(false)}
+              style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 20px", fontSize: "14px", fontWeight: 500, color: c.body, textDecoration: "none" }}>
+              <LayoutDashboard style={{ width: "16px", height: "16px", color: c.muted }} /> Seller Portal
+            </Link>
+          )}
+
+          {role === "buyer" && buyerLinks.map(({ label, href, icon: Icon }) => (
+            <Link key={label} href={href} onClick={() => setMobileOpen(false)}
+              style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 20px", fontSize: "14px", fontWeight: 500, color: c.body, textDecoration: "none" }}>
+              <Icon style={{ width: "16px", height: "16px", color: c.muted }} /> {label}
+            </Link>
+          ))}
+
+          <div style={{ padding: "8px 20px 16px", marginTop: "4px" }}>
+            <button onClick={signOut}
+              style={{ width: "100%", padding: "10px 0", border: `1px solid #FECACA`, borderRadius: "8px", backgroundColor: "#FEF2F2", color: "#EF4444", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "Inter, sans-serif" }}>
+              Sign out
+            </button>
+          </div>
+        </>
+      )}
+    </nav>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────
 export function AuthNav() {
   const router  = useRouter();
@@ -96,6 +328,7 @@ export function AuthNav() {
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    localStorage.removeItem("last-active-chat");
     setProfileOpen(false);
     setMobileOpen(false);
     router.push("/");
@@ -104,209 +337,14 @@ export function AuthNav() {
 
   const loading = user === undefined;
 
-  // ── Profile dropdown ─────────────────────────────────────────────────────
-  function ProfileDropdown() {
-    return (
-      <div ref={dropRef} style={{ position: "relative" }}>
-        <button
-          onClick={() => setProfileOpen((o) => !o)}
-          style={{
-            display: "flex", alignItems: "center", gap: "6px",
-            background: "none", border: "none", cursor: "pointer", padding: "4px",
-          }}
-        >
-          <Avatar name={fullName} size={30} />
-          <ChevronDown style={{ color: c.muted, width: "14px", height: "14px" }} />
-        </button>
-
-        {profileOpen && (
-          <div
-            style={{
-              position: "absolute", right: 0, top: "calc(100% + 8px)",
-              backgroundColor: c.surface, border: `1px solid ${c.border}`,
-              borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
-              minWidth: "200px", zIndex: 60, overflow: "hidden",
-              fontFamily: "Inter, sans-serif",
-            }}
-          >
-            {/* User info */}
-            <div style={{ padding: "14px 16px", borderBottom: `1px solid ${c.border}` }}>
-              <p style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>{fullName}</p>
-              <p style={{ color: c.muted, fontSize: "11px", marginTop: "2px", textTransform: "capitalize" }}>
-                {role ?? "member"}
-              </p>
-            </div>
-
-            {/* Role-based links */}
-            {role === "seller" && (
-              <Link
-                href="/seller/dashboard"
-                onClick={() => setProfileOpen(false)}
-                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 16px", textDecoration: "none", borderBottom: `1px solid ${c.border}` }}
-                className="hover:bg-[#F8FAFC] transition-colors"
-              >
-                <LayoutDashboard style={{ color: c.muted, width: "14px", height: "14px" }} />
-                <span style={{ color: c.body, fontSize: "13px", fontWeight: 500 }}>Seller Portal</span>
-              </Link>
-            )}
-            {role === "buyer" && buyerLinks.map(({ label, href, icon: Icon }) => (
-              <Link
-                key={label}
-                href={href}
-                onClick={() => setProfileOpen(false)}
-                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 16px", textDecoration: "none", borderBottom: `1px solid ${c.border}` }}
-                className="hover:bg-[#F8FAFC] transition-colors"
-              >
-                <Icon style={{ color: c.muted, width: "14px", height: "14px" }} />
-                <span style={{ color: c.body, fontSize: "13px", fontWeight: 500 }}>{label}</span>
-              </Link>
-            ))}
-
-            {/* Sign out */}
-            <button
-              onClick={signOut}
-              style={{
-                display: "flex", alignItems: "center", gap: "10px",
-                padding: "11px 16px", width: "100%", background: "none",
-                border: "none", cursor: "pointer", textAlign: "left",
-              }}
-              className="hover:bg-[#FEF2F2] transition-colors"
-            >
-              <LogOut style={{ color: "#EF4444", width: "14px", height: "14px" }} />
-              <span style={{ color: "#EF4444", fontSize: "13px", fontWeight: 500 }}>Sign out</span>
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // ── Desktop render ────────────────────────────────────────────────────────
-  function DesktopItems() {
-    if (loading) return <div style={{ width: "140px" }} />;
-
-    if (!user) {
-      return (
-        <div className="hidden md:flex items-center gap-3">
-          <Link href="/login" style={{ color: c.body }}
-            className="text-sm font-medium px-4 py-2 hover:opacity-70 transition-opacity">
-            Sign In
-          </Link>
-          <Link href="/register" style={{ backgroundColor: c.primary, color: "#fff" }}
-            className="text-sm font-semibold px-5 py-2 rounded hover:opacity-90 transition-opacity">
-            Get Started
-          </Link>
-        </div>
-      );
-    }
-
-    if (role === "seller") {
-      return (
-        <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/seller/dashboard"
-            style={{ backgroundColor: c.greenBg, color: c.greenText }}
-            className="text-xs font-semibold px-4 py-2 rounded-full hover:opacity-90 transition-opacity"
-          >
-            Seller Portal
-          </Link>
-          <ProfileDropdown />
-        </div>
-      );
-    }
-
-    // Buyer
-    return (
-      <div className="hidden md:flex items-center gap-1">
-        {buyerLinks.map(({ label, href, icon: Icon }) => (
-          <Link
-            key={label}
-            href={href}
-            title={label}
-            style={{ color: c.muted }}
-            className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-[#F1F5F9] transition-colors"
-          >
-            <Icon style={{ width: "18px", height: "18px" }} />
-          </Link>
-        ))}
-        <div style={{ width: "1px", height: "24px", backgroundColor: c.border, margin: "0 6px" }} />
-        <ProfileDropdown />
-      </div>
-    );
-  }
-
-  // ── Mobile dropdown content ───────────────────────────────────────────────
-  function MobileMenuContent() {
-    return (
-      <nav style={{ padding: "12px 0", fontFamily: "Inter, sans-serif" }}>
-        {/* Public nav links */}
-        {publicNavLinks.map(({ label, href }) => (
-          <Link
-            key={label} href={href}
-            onClick={() => setMobileOpen(false)}
-            style={{ display: "block", padding: "12px 20px", fontSize: "15px", fontWeight: 500, color: c.body, textDecoration: "none" }}
-          >
-            {label}
-          </Link>
-        ))}
-
-        <div style={{ borderTop: `1px solid ${c.border}`, margin: "8px 0" }} />
-
-        {!user ? (
-          <>
-            <Link href="/login" onClick={() => setMobileOpen(false)}
-              style={{ display: "block", padding: "12px 20px", fontSize: "15px", fontWeight: 500, color: c.body, textDecoration: "none" }}>
-              Sign In
-            </Link>
-            <div style={{ padding: "8px 20px 16px" }}>
-              <Link href="/register" onClick={() => setMobileOpen(false)}
-                style={{ display: "block", textAlign: "center", backgroundColor: c.primary, color: "#fff", padding: "10px 0", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>
-                Get Started
-              </Link>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Signed-in user info */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 20px" }}>
-              <Avatar name={fullName} size={34} />
-              <div>
-                <p style={{ color: c.primary, fontWeight: 700, fontSize: "13px" }}>{fullName}</p>
-                <p style={{ color: c.muted, fontSize: "11px", textTransform: "capitalize" }}>{role ?? "member"}</p>
-              </div>
-            </div>
-
-            {role === "seller" && (
-              <Link href="/seller/dashboard" onClick={() => setMobileOpen(false)}
-                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 20px", fontSize: "14px", fontWeight: 500, color: c.body, textDecoration: "none" }}>
-                <LayoutDashboard style={{ width: "16px", height: "16px", color: c.muted }} /> Seller Portal
-              </Link>
-            )}
-
-            {role === "buyer" && buyerLinks.map(({ label, href, icon: Icon }) => (
-              <Link key={label} href={href} onClick={() => setMobileOpen(false)}
-                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 20px", fontSize: "14px", fontWeight: 500, color: c.body, textDecoration: "none" }}>
-                <Icon style={{ width: "16px", height: "16px", color: c.muted }} /> {label}
-              </Link>
-            ))}
-
-            <div style={{ padding: "8px 20px 16px", marginTop: "4px" }}>
-              <button onClick={signOut}
-                style={{ width: "100%", padding: "10px 0", border: `1px solid #FECACA`, borderRadius: "8px", backgroundColor: "#FEF2F2", color: "#EF4444", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "Inter, sans-serif" }}>
-                Sign out
-              </button>
-            </div>
-          </>
-        )}
-      </nav>
-    );
-  }
-
-  // ── Combined render ───────────────────────────────────────────────────────
   return (
     <>
       {/* Desktop items */}
-      <DesktopItems />
+      <DesktopItems
+        loading={loading} user={user} role={role}
+        dropRef={dropRef} profileOpen={profileOpen} setProfileOpen={setProfileOpen}
+        fullName={fullName} signOut={signOut}
+      />
 
       {/* Mobile hamburger */}
       <button
@@ -332,7 +370,10 @@ export function AuthNav() {
             className="md:hidden absolute top-16 left-0 right-0 z-50"
             style={{ backgroundColor: "#fff", borderBottom: `1px solid ${c.border}`, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
           >
-            <MobileMenuContent />
+            <MobileMenuContent
+              user={user} fullName={fullName} role={role}
+              setMobileOpen={setMobileOpen} signOut={signOut}
+            />
           </div>
         </>
       )}

@@ -3,38 +3,8 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { X, Trash2, Upload, Star, ImageIcon } from "lucide-react";
-
-const c = {
-  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5", greenText: "#065F46",
-  bg: "#F8FAFC", bgDim: "#F1F5F9", surface: "#FFFFFF", border: "#E2E8F0", muted: "#64748B",
-  body: "#334155", error: "#EF4444", errorBg: "#FEF2F2",
-};
-
-const fieldStyle: React.CSSProperties = {
-  width: "100%", height: "42px", border: `1px solid ${c.border}`, borderRadius: "8px",
-  padding: "0 12px", fontSize: "14px", outline: "none",
-  color: c.primary, backgroundColor: c.surface, boxSizing: "border-box",
-  fontFamily: "Inter, sans-serif",
-};
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "24px", marginBottom: "20px" }}>
-      <p style={{ color: c.muted, fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "18px" }}>{title}</p>
-      {children}
-    </div>
-  );
-}
-
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label style={{ color: c.primary, fontSize: "13px", fontWeight: 600, display: "block", marginBottom: "6px" }}>{label}</label>
-      {children}
-      {hint && <p style={{ color: c.muted, fontSize: "11px", marginTop: "5px" }}>{hint}</p>}
-    </div>
-  );
-}
+import { c } from "@/lib/tokens";
+import { Section, Field, fieldStyle } from "@/components/listings/form-helpers";
 
 type ExistingImage = { id: string; url: string; is_primary: boolean; position: number };
 type NewImage = { file: File; preview: string };

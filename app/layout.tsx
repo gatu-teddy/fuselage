@@ -6,9 +6,9 @@ import { GlobalChatBubble } from "@/components/layouts/global-chat-bubble";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TrueWagon — Premium Vehicle Import Marketplace",
+  title: "TrueWagon — Global Vehicle Trade Marketplace",
   description:
-    "Connect with verified exporters from Nigeria, UAE, Ghana, Kenya and more. Browse luxury cars and high-end vehicles shipped directly to Africa.",
+    "Connect with verified vehicle exporters worldwide. Browse cars and bikes with full VIN transparency — tracked from origin to your port.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

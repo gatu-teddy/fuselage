@@ -1,14 +1,15 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, Users, LayoutDashboard, LogOut } from "lucide-react";
+import { Shield, Users, LayoutDashboard, ShieldCheck, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
 const nav = [
-  { href: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/applications", label: "Applications", icon: Shield },
-  { href: "/admin/sellers", label: "Sellers", icon: Users },
+  { href: "/admin/dashboard",    label: "Overview",     icon: LayoutDashboard },
+  { href: "/admin/applications", label: "Applications", icon: Shield          },
+  { href: "/admin/sellers",      label: "Sellers",      icon: Users           },
+  { href: "/admin/kyc",          label: "KYC Review",   icon: ShieldCheck     },
 ];
 
 export function AdminNav() {

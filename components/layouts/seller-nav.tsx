@@ -19,6 +19,7 @@ export function SellerNav() {
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    localStorage.removeItem("last-active-chat");
     router.push("/login");
   }
 

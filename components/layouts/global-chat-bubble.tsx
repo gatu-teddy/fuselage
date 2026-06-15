@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { MessageSquare } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { c } from "@/lib/tokens";
 
 interface ChatInfo {
   dealId: string;
@@ -9,13 +11,8 @@ interface ChatInfo {
   dealStatus: string;
   isClosed: boolean;
   role: "buyer" | "seller";
+  userId?: string;
 }
-
-const c = {
-  primary: "#0F172A",
-  green:   "#10B981",
-  amber:   "#D97706",
-};
 
 export function GlobalChatBubble() {
   const pathname = usePathname();
@@ -23,17 +20,48 @@ export function GlobalChatBubble() {
   const [info, setInfo] = useState<ChatInfo | null>(null);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("last-active-chat");
-      if (stored) setInfo(JSON.parse(stored));
-    } catch { /* ignore */ }
+    const supabase = createClient();
+
+    async function loadAndVerify() {
+      try {
+        const stored = localStorage.getItem("last-active-chat");
+        if (!stored) return;
+
+        const parsed: ChatInfo = JSON.parse(stored);
+
+        // Verify the stored session belongs to the currently logged-in user
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          // Nobody logged in — clear stale data and hide bubble
+          localStorage.removeItem("last-active-chat");
+          setInfo(null);
+          return;
+        }
+
+        if (parsed.userId && parsed.userId !== user.id) {
+          // Different user logged in — clear previous user's data
+          localStorage.removeItem("last-active-chat");
+          setInfo(null);
+          return;
+        }
+
+        setInfo(parsed);
+      } catch { /* ignore */ }
+    }
+
+    loadAndVerify();
   }, [pathname]);
 
   // Don't show if already on the deal page
   if (!info || pathname.includes(info.dealId)) return null;
 
   const statusDot = info.isClosed ? "#94A3B8" : info.dealStatus === "inquired" ? c.amber : c.green;
-  const dealPath  = `/${info.role === "buyer" ? "buyer" : "seller"}/deals/${info.dealId}`;
+
+  // Sellers use /seller/sales/, buyers use /buyer/deals/
+  const dealPath = info.role === "buyer"
+    ? `/buyer/deals/${info.dealId}`
+    : `/seller/sales/${info.dealId}`;
 
   return (
     <button

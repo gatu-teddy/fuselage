@@ -15,7 +15,7 @@ const pillars = [
   {
     icon: Globe,
     title: "Global Reach",
-    body: "Operating across 15+ African ports with established logistics hubs in key markets.",
+    body: "Connecting buyers and sellers across ports worldwide, with verified exporters on every continent.",
   },
   {
     icon: Truck,

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PLANS, type Plan } from "@/lib/plans";
-import { Check, X, Minus, Zap, Shield, Truck } from "lucide-react";
+import { Check, Minus, Zap, Shield, Truck } from "lucide-react";
 import { c } from "@/lib/tokens";
 
 // ─── Feature row definitions ──────────────────────────────────────────────────
@@ -181,7 +181,7 @@ function PlanCard({ plan, popular }: { plan: Plan; popular?: boolean }) {
 
         {/* CTA */}
         <Link
-          href={isFree ? "/register?role=seller" : `/register?role=seller&plan=${plan.id}`}
+          href={isFree ? "/register?role=seller" : `/api/stripe/create-checkout?plan=${plan.id}`}
           style={{
             display:         "block",
             textAlign:       "center",

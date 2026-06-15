@@ -90,7 +90,7 @@ function FileCard({
   );
 }
 
-function DropZone({ onFile, compact = false }: { onFile: (f: File) => void; compact?: boolean }) {
+function DropZone({ onFile, compact = false }: { onFile: (_file: File) => void; compact?: boolean }) {
   const ref = useRef<HTMLInputElement>(null);
   function tryFile(file: File | undefined) {
     if (!file) return;
@@ -141,7 +141,7 @@ export default function SellerOnboardingPage() {
 
   const [form, setForm] = useState({
     company_name: "", trade_license_number: "",
-    country: "UAE", city: "", website: "", description: "",
+    country: "", city: "", website: "", description: "",
   });
 
   // Primary document (required)

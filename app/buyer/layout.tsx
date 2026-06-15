@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
 import { SiteNav } from "@/components/layouts/site-nav";
 import { SiteFooter } from "@/components/layouts/site-footer";
 
 export default async function BuyerLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
+  // Middleware already verifies auth for /buyer/* and forwards x-user-id.
+  // Reading the header avoids a redundant Supabase getUser() network call.
+  const userId = (await headers()).get("x-user-id");
+  if (!userId) redirect("/login");
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#F8FAFC" }}>

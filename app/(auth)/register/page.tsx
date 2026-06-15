@@ -13,9 +13,9 @@ const SIDE_IMG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAuHkVfg0VUaZSNsKiLEIeD8yMNnSVXcjBYGPiPukKpxmqQbVFWB3tN9Qw0FRmp-5djgbBqTie2C91uZ9a01MtI5aeMbn3nhGlZ1SM2Dg33HGEcKR1V2kcVRWnH1lJIzIAjcBbNj_IeYZSf2U_T60hzHfdEERIEKwk0TCdQU8OaBjB842ts4fHX0pGtwFqHUrGHtysQq1SmnUNn_zeRu2-63nx4UsO99BISyyzrOTItMYMALTN0PF90gMUnnX-Cz2Mjmdo7cruBAiY";
 
 const TRUST_POINTS = [
-  "2,400+ vehicles exported to Africa",
-  "Verified exporters across 6 countries",
-  "15+ destination ports covered",
+  "Verified exporters across every continent",
+  "Every listing includes a full VIN",
+  "Deals tracked end-to-end to your port",
   "24/7 logistics support",
 ];
 
@@ -86,7 +86,7 @@ function RegisterForm() {
             Create your account
           </h1>
           <p style={{ color: c.muted, fontSize: "14px", marginBottom: "28px" }}>
-            Join Africa's leading vehicle import marketplace
+            Join the world's most trusted vehicle trade platform
           </p>
 
           {/* Role picker */}
@@ -257,10 +257,10 @@ function RegisterForm() {
             <span style={{ color: "#fff", fontSize: "12px", fontWeight: 700 }}>TRUSTED PLATFORM</span>
           </div>
           <h2 style={{ color: "#fff", fontSize: "26px", fontWeight: 800, lineHeight: 1.25, marginBottom: "14px", letterSpacing: "-0.5px" }}>
-            Every vehicle. Vetted. Shipped. Delivered.
+            Every vehicle. Verified. Tracked. Delivered.
           </h2>
           <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", lineHeight: 1.6, marginBottom: "28px" }}>
-            TrueWagon is the only marketplace where every listing passes a 200-point inspection before it ever reaches a buyer.
+            TrueWagon connects serious buyers with verified exporters worldwide — every listing backed by a full inspection standard and VIN tracking.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {TRUST_POINTS.map((point) => (

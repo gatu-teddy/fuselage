@@ -9,16 +9,7 @@ const destinations = [
     demandColor: "#DC2626",
     demandBg: "#FEF2F2",
     port: "Apapa & Tin Can Island",
-    note: "Insatiable demand for Toyota, Lexus, Mercedes",
-  },
-  {
-    country: "Ghana",
-    flag: "🇬🇭",
-    demand: "Very High",
-    demandColor: "#DC2626",
-    demandBg: "#FEF2F2",
-    port: "Tema (Accra)",
-    note: "Strong middle class growth",
+    note: "High demand for Toyota, Lexus and Mercedes-Benz",
   },
   {
     country: "Kenya",
@@ -27,34 +18,16 @@ const destinations = [
     demandColor: "#DC2626",
     demandBg: "#FEF2F2",
     port: "Mombasa",
-    note: "East Africa gateway — re-exports to Uganda, Rwanda, Ethiopia",
+    note: "Gateway port with strong re-export activity",
   },
   {
-    country: "Tanzania",
-    flag: "🇹🇿",
+    country: "United Kingdom",
+    flag: "🇬🇧",
     demand: "High",
     demandColor: "#EA580C",
     demandBg: "#FFF7ED",
-    port: "Dar es Salaam",
-    note: "Fast growing market",
-  },
-  {
-    country: "Libya",
-    flag: "🇱🇾",
-    demand: "High",
-    demandColor: "#EA580C",
-    demandBg: "#FFF7ED",
-    port: "Tripoli & Misrata",
-    note: "LHD market, post-conflict reconstruction demand",
-  },
-  {
-    country: "Ethiopia",
-    flag: "🇪🇹",
-    demand: "High",
-    demandColor: "#EA580C",
-    demandBg: "#FFF7ED",
-    port: "Djibouti (landlocked)",
-    note: "Large population, rapidly growing middle class",
+    port: "Southampton & Tilbury",
+    note: "Strong demand for Japanese and European imports",
   },
   {
     country: "Pakistan",
@@ -64,6 +37,33 @@ const destinations = [
     demandBg: "#FFF7ED",
     port: "Karachi",
     note: "Growing market for Japanese & Korean used vehicles",
+  },
+  {
+    country: "Australia",
+    flag: "🇦🇺",
+    demand: "High",
+    demandColor: "#EA580C",
+    demandBg: "#FFF7ED",
+    port: "Sydney & Melbourne",
+    note: "Active market for RHD Japanese imports",
+  },
+  {
+    country: "New Zealand",
+    flag: "🇳🇿",
+    demand: "High",
+    demandColor: "#EA580C",
+    demandBg: "#FFF7ED",
+    port: "Auckland",
+    note: "One of the highest per-capita import rates globally",
+  },
+  {
+    country: "Ghana",
+    flag: "🇬🇭",
+    demand: "Very High",
+    demandColor: "#DC2626",
+    demandBg: "#FEF2F2",
+    port: "Tema (Accra)",
+    note: "Growing middle class with rising vehicle demand",
   },
 ];
 
@@ -80,10 +80,10 @@ export function DestinationsSection() {
             Destinations
           </p>
           <h2 style={{ color: c.primary, letterSpacing: "-0.01em" }} className="text-3xl font-bold mb-2">
-            Shipping Across Africa
+            Shipping Worldwide
           </h2>
           <p style={{ color: c.muted }} className="text-base">
-            Our exporters ship to major ports continent-wide.
+            Our verified exporters ship to ports across every continent.
           </p>
         </div>
 

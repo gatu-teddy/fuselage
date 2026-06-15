@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, ClipboardList, LogOut } from "lucide-react";
+import { Search, ClipboardList, ShieldCheck, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
 const nav = [
-  { href: "/browse",       label: "Browse",   icon: Search       },
-  { href: "/buyer/deals",  label: "My deals", icon: ClipboardList },
+  { href: "/browse",       label: "Browse",          icon: Search       },
+  { href: "/buyer/deals",  label: "My deals",        icon: ClipboardList },
+  { href: "/buyer/kyc",    label: "Verify Identity", icon: ShieldCheck  },
 ];
 
 export function BuyerNav() {

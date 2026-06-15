@@ -5,7 +5,7 @@ const steps = [
   {
     n: "01",
     title: "Discovery",
-    body: "Browse export-ready inventory from verified sellers across 14+ countries. Filter by make, model, price, and destination port. Every listing shows the full VIN.",
+    body: "Browse inventory from verified sellers worldwide. Filter by make, model, price, and destination port. Every listing shows the full VIN.",
     badge: "Vetted Sellers Only",
   },
   {

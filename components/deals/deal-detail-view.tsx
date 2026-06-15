@@ -10,33 +10,12 @@ import {
 } from "@/lib/types";
 import { formatUSD, formatDate, getInitials } from "@/lib/utils";
 import { DealChatWidget } from "@/components/deals/deal-chat-widget";
+import { c } from "@/lib/tokens";
 import {
   Upload, CheckCircle2, Clock, MapPin, FileCheck,
   Ship, Package, FileText, AlertTriangle, ExternalLink,
-  ChevronDown, PenLine, FileBadge, Info,
+  ChevronDown, PenLine, FileBadge, Info, ShieldCheck,
 } from "lucide-react";
-
-// ─── Design tokens ─────────────────────────────────────────────────────────
-const c = {
-  primary:   "#0F172A",
-  green:     "#10B981",
-  greenBg:   "#D1FAE5",
-  greenText: "#065F46",
-  body:      "#334155",
-  bg:        "#F8FAFC",
-  bgDim:     "#F1F5F9",
-  surface:   "#FFFFFF",
-  border:    "#E2E8F0",
-  muted:     "#64748B",
-  amber:     "#D97706",
-  amberBg:   "#FEF3C7",
-  amberBorder:"#FCD34D",
-  red:       "#DC2626",
-  redBg:     "#FEE2E2",
-  redBorder: "#FECACA",
-  blue:      "#2563EB",
-  blueBg:    "#DBEAFE",
-};
 
 // ─── Stitch transit map ─────────────────────────────────────────────────────
 const TRANSIT_MAP =
@@ -221,6 +200,12 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
   // ── seller confirm payment disclaimer
   const [confirmChecked, setConfirmChecked] = useState(false);
 
+  // ── GDPR document consent
+  const [gdprConsented, setGdprConsented]           = useState<boolean | null>(null); // null = unchecked
+  const [showGdprModal, setShowGdprModal]           = useState(false);
+  const [gdprChecked, setGdprChecked]               = useState(false);
+  const [savingConsent, setSavingConsent]            = useState(false);
+
   // ── deal documents
   const [docFile, setDocFile]                       = useState<File | null>(null);
   const [docType, setDocType]                       = useState<DocType | "">("");
@@ -243,7 +228,7 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
   const listing      = deal.listing as Deal["listing"] & { images?: { url: string; is_primary: boolean }[] };
-  const buyer        = deal.buyer  as { full_name: string; country: string; email: string; phone?: string };
+  const buyer        = deal.buyer  as { full_name: string; country: string; email: string; phone?: string; kyc_status?: string };
   const seller       = deal.seller as { company_name: string; city: string; profile: { full_name: string; email?: string } };
   const primaryImage = listing?.images?.find((i) => i.is_primary)?.url ?? listing?.images?.[0]?.url;
 
@@ -285,6 +270,44 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
   async function openFile(storagePath: string, bucket: string) {
     const url = await getSignedUrl(storagePath, bucket);
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  // ── GDPR consent check — lazy, cached after first DB read ───────────────
+  async function ensureGdprConsent(): Promise<boolean> {
+    if (gdprConsented === true) return true;
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("profiles")
+      .select("gdpr_doc_consent_at")
+      .eq("id", currentUserId)
+      .single();
+    const already = !!data?.gdpr_doc_consent_at;
+    setGdprConsented(already);
+    return already;
+  }
+
+  async function handleAddDocumentClick() {
+    const consented = await ensureGdprConsent();
+    if (consented) {
+      setShowDocForm(true);
+    } else {
+      setShowGdprModal(true);
+    }
+  }
+
+  async function confirmGdprConsent() {
+    if (!gdprChecked) return;
+    setSavingConsent(true);
+    const supabase = createClient();
+    await supabase
+      .from("profiles")
+      .update({ gdpr_doc_consent_at: new Date().toISOString() })
+      .eq("id", currentUserId);
+    setGdprConsented(true);
+    setSavingConsent(false);
+    setShowGdprModal(false);
+    setGdprChecked(false);
+    setShowDocForm(true);
   }
 
   async function notifyBackend(event: string, meta?: Record<string, string | number | null>) {
@@ -643,7 +666,7 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
                 <p style={{ color: c.muted }} className="text-xs font-semibold uppercase tracking-widest">Transaction Documents</p>
                 {!isClosed && (
                   <button
-                    onClick={() => setShowDocForm((v) => !v)}
+                    onClick={handleAddDocumentClick}
                     style={{ backgroundColor: c.primary, color: "#fff", fontSize: "12px", fontWeight: 600, padding: "5px 12px", borderRadius: "6px", border: "none", cursor: "pointer" }}
                     className="flex items-center gap-1.5 hover:opacity-90 transition-opacity"
                   >
@@ -981,7 +1004,14 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
             <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "0.5rem" }} className="p-4 space-y-4">
               <div>
                 <p style={{ color: c.muted }} className="text-xs font-semibold uppercase tracking-widest mb-1.5">Buyer</p>
-                <p style={{ color: c.primary }} className="text-sm font-medium">{buyer?.full_name}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                  <p style={{ color: c.primary }} className="text-sm font-medium">{buyer?.full_name}</p>
+                  {buyer?.kyc_status === "verified" && (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "3px", backgroundColor: c.greenBg, color: c.greenText, fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "99px", letterSpacing: "0.03em" }}>
+                      <ShieldCheck style={{ width: "9px", height: "9px" }} /> Verified
+                    </span>
+                  )}
+                </div>
                 <p style={{ color: c.muted }} className="text-xs flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{buyer?.country}</p>
                 {role === "seller" && buyer?.email && <p style={{ color: c.muted }} className="text-xs mt-0.5">{buyer.email}</p>}
               </div>
@@ -1164,6 +1194,111 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
 
         </div>
       </div>
+
+      {/* ── GDPR Document Consent Modal ───────────────────────────────── */}
+      {showGdprModal && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 50,
+            backgroundColor: "rgba(15,23,42,0.6)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "24px",
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowGdprModal(false); }}
+        >
+          <div
+            style={{
+              backgroundColor: c.surface,
+              borderRadius: "12px",
+              padding: "32px",
+              maxWidth: "500px",
+              width: "100%",
+              boxShadow: "0 24px 48px rgba(0,0,0,0.2)",
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+              <div style={{ backgroundColor: c.blueBg, width: "40px", height: "40px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <FileCheck style={{ color: c.blue, width: "20px", height: "20px" }} />
+              </div>
+              <div>
+                <p style={{ color: c.primary, fontWeight: 800, fontSize: "16px", lineHeight: 1.2 }}>
+                  Document Registry Consent
+                </p>
+                <p style={{ color: c.muted, fontSize: "12px", marginTop: "2px" }}>
+                  Required before your first upload
+                </p>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div style={{ backgroundColor: c.bgDim, borderRadius: "8px", padding: "16px", marginBottom: "20px" }}>
+              <p style={{ color: c.primary, fontSize: "13px", fontWeight: 700, marginBottom: "10px" }}>
+                How Fuselage handles your documents
+              </p>
+              {[
+                ["Neutral custodian", "Fuselage acts as a neutral third-party custodian. We are not a party to this deal and will not share your documents with anyone except as required by law."],
+                ["7-year retention", "Documents are retained for 7 years from the date of upload in line with international trade document standards and GDPR Article 17(3)(b)."],
+                ["Legal cooperation", "In the event of a valid legal request, Fuselage will cooperate with recognised authorities and provide certified document exports upon proper authority."],
+                ["Your rights", "You may request a copy of your stored documents or raise a data subject request at any time by contacting logistics@fuselage.io."],
+              ].map(([title, body]) => (
+                <div key={title} style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                  <CheckCircle2 style={{ color: c.green, width: "14px", height: "14px", flexShrink: 0, marginTop: "2px" }} />
+                  <div>
+                    <p style={{ color: c.primary, fontSize: "12px", fontWeight: 600 }}>{title}</p>
+                    <p style={{ color: c.muted, fontSize: "12px", lineHeight: 1.6 }}>{body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Consent checkbox */}
+            <label
+              style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer", marginBottom: "20px" }}
+            >
+              <input
+                type="checkbox"
+                checked={gdprChecked}
+                onChange={(e) => setGdprChecked(e.target.checked)}
+                style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: c.primary, flexShrink: 0 }}
+              />
+              <span style={{ color: c.body, fontSize: "13px", lineHeight: 1.6 }}>
+                I have read and understood how Fuselage stores and handles transaction documents.
+                I consent to my uploaded documents being held in the Fuselage secure registry
+                for up to <strong>7 years</strong> and used as described above.
+              </span>
+            </label>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={confirmGdprConsent}
+                disabled={!gdprChecked || savingConsent}
+                style={{
+                  flex: 1, height: "42px", backgroundColor: gdprChecked ? c.primary : c.border,
+                  color: "#fff", border: "none", borderRadius: "8px",
+                  fontSize: "14px", fontWeight: 600,
+                  cursor: gdprChecked && !savingConsent ? "pointer" : "not-allowed",
+                  transition: "background-color 0.15s",
+                }}
+              >
+                {savingConsent ? "Saving…" : "Confirm & upload document"}
+              </button>
+              <button
+                onClick={() => { setShowGdprModal(false); setGdprChecked(false); }}
+                style={{ height: "42px", padding: "0 20px", backgroundColor: c.bgDim, color: c.muted, border: `1px solid ${c.border}`, borderRadius: "8px", fontSize: "14px", cursor: "pointer" }}
+              >
+                Cancel
+              </button>
+            </div>
+
+            <p style={{ color: c.muted, fontSize: "11px", textAlign: "center", marginTop: "14px", lineHeight: 1.5 }}>
+              This consent is stored against your account and applies to all future uploads on this platform.
+              It will not be shown again.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── Floating chat widget (LinkedIn-style) ─────────────────────── */}
       <DealChatWidget

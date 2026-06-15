@@ -1,20 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
-import { DEAL_STATUS_LABELS, DEAL_STATUS_COLORS, type DealStatus } from "@/lib/types";
+import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
 import { formatUSD, formatDate } from "@/lib/utils";
 
 import { c } from "@/lib/tokens";
 
 export default async function SellerSalesPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const userId = (await headers()).get("x-user-id");
+  if (!userId) redirect("/login");
 
+  const supabase = await createClient();
   const { data: deals } = await supabase
     .from("deals")
     .select("*, listing:listings(make, model, year), buyer:profiles(full_name, country, email)")
-    .eq("seller_id", user.id)
+    .eq("seller_id", userId)
     .order("updated_at", { ascending: false });
 
   const active = deals?.filter((d) => !["completed", "cancelled"].includes(d.status)) ?? [];

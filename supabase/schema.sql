@@ -12,15 +12,16 @@ create extension if not exists "uuid-ossp";
 create type user_role as enum ('buyer', 'seller', 'admin');
 
 create table profiles (
-  id          uuid primary key references auth.users(id) on delete cascade,
-  role        user_role not null default 'buyer',
-  full_name   text not null,
-  email       text not null,
-  phone       text,
-  country     text,
-  avatar_url  text,
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
+  id                   uuid primary key references auth.users(id) on delete cascade,
+  role                 user_role not null default 'buyer',
+  full_name            text not null,
+  email                text not null,
+  phone                text,
+  country              text,
+  avatar_url           text,
+  gdpr_doc_consent_at  timestamptz,   -- set once on first document upload consent
+  created_at           timestamptz not null default now(),
+  updated_at           timestamptz not null default now()
 );
 
 alter table profiles enable row level security;
@@ -236,6 +237,8 @@ create table payment_proofs (
   deal_id         uuid not null references deals(id) on delete cascade,
   uploaded_by     uuid not null references profiles(id),
   file_url        text not null,
+  file_name       text,
+  file_type       text check (file_type in ('pdf', 'image')),
   amount_usd      numeric(12, 2),
   wire_reference  text,
   notes           text,
@@ -324,3 +327,100 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function handle_new_user();
+
+-- ============================================================
+-- DEAL DOCUMENTS (transaction document registry)
+-- ============================================================
+create table deal_documents (
+  id                           uuid primary key default uuid_generate_v4(),
+  deal_id                      uuid not null references deals(id) on delete cascade,
+  uploaded_by                  uuid not null references profiles(id),
+  uploader_role                text not null check (uploader_role in ('buyer', 'seller')),
+  doc_type                     text not null,
+  doc_label                    text,
+  file_url                     text not null,
+  file_name                    text not null,
+  file_type                    text check (file_type in ('pdf', 'image')),
+  notes                        text,
+  requires_counter_sign        boolean not null default false,
+  counter_sign_file_url        text,
+  counter_sign_file_name       text,
+  counter_signed_by            uuid references profiles(id),
+  counter_signed_at            timestamptz,
+  requires_counterpart_upload  boolean not null default false,
+  counterpart_upload_label     text,
+  counterpart_upload_fulfilled boolean not null default false,
+  counterpart_upload_file_url  text,
+  counterpart_upload_file_name text,
+  counterpart_uploaded_at      timestamptz,
+  counterpart_uploaded_by      uuid references profiles(id),
+  created_at                   timestamptz not null default now()
+);
+
+alter table deal_documents enable row level security;
+
+create policy "Deal parties can view documents"
+  on deal_documents for select using (
+    exists (
+      select 1 from deals d
+      where d.id = deal_id
+        and (d.buyer_id = auth.uid() or d.seller_id = auth.uid())
+    )
+  );
+
+create policy "Deal parties can upload documents"
+  on deal_documents for insert with check (
+    auth.uid() = uploaded_by and
+    exists (
+      select 1 from deals d
+      where d.id = deal_id
+        and (d.buyer_id = auth.uid() or d.seller_id = auth.uid())
+    )
+  );
+
+create policy "Uploaders can update own documents"
+  on deal_documents for update using (
+    auth.uid() = uploaded_by or auth.uid() = counter_signed_by
+  );
+
+create policy "Admins can view all documents"
+  on deal_documents for all using (
+    exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  );
+
+-- ============================================================
+-- LEGAL HOLD REQUESTS (formal dispute / legal cooperation log)
+-- ============================================================
+create table legal_hold_requests (
+  id               uuid primary key default uuid_generate_v4(),
+  deal_id          uuid not null references deals(id) on delete cascade,
+  requested_by     uuid not null references profiles(id),
+  requester_role   text not null check (requester_role in ('buyer', 'seller', 'admin', 'legal')),
+  reason           text not null,
+  reference_number text,
+  status           text not null default 'pending'
+                     check (status in ('pending', 'acknowledged', 'exported', 'closed')),
+  acknowledged_at  timestamptz,
+  export_url       text,
+  created_at       timestamptz not null default now()
+);
+
+alter table legal_hold_requests enable row level security;
+
+create policy "Requesters can view own legal holds"
+  on legal_hold_requests for select using (auth.uid() = requested_by);
+
+create policy "Deal parties can submit legal holds"
+  on legal_hold_requests for insert with check (
+    auth.uid() = requested_by and
+    exists (
+      select 1 from deals d
+      where d.id = deal_id
+        and (d.buyer_id = auth.uid() or d.seller_id = auth.uid())
+    )
+  );
+
+create policy "Admins can manage legal holds"
+  on legal_hold_requests for all using (
+    exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  );

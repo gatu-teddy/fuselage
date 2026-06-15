@@ -3,13 +3,7 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Upload, Download, CheckCircle, AlertTriangle, X, FileText } from "lucide-react";
-
-const c = {
-  primary: "#0F172A", green: "#10B981", greenBg: "#D1FAE5", greenText: "#065F46",
-  bg: "#F8FAFC", bgDim: "#F1F5F9", surface: "#FFFFFF", border: "#E2E8F0",
-  muted: "#64748B", body: "#334155", error: "#EF4444", errorBg: "#FEF2F2",
-  amber: "#F59E0B", amberBg: "#FEF3C7",
-};
+import { c } from "@/lib/tokens";
 
 // ─── CSV template columns (order matters — matches parse logic below) ──────────
 const COLUMNS = [

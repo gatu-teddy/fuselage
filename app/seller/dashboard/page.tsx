@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Car, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight, Zap, Globe, Bell } from "lucide-react";
-import { formatUSD, formatDate } from "@/lib/utils";
+import { formatUSD } from "@/lib/utils";
 import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
 import { getPlan } from "@/lib/plans";
 

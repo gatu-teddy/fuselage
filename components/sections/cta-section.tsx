@@ -25,7 +25,7 @@ export function CtaSection() {
           Import the right way.
         </h2>
         <p style={{ color: "rgba(255,255,255,0.6)" }} className="text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-          Join the platform built for serious buyers and verified exporters from across Africa and the Middle East.
+          The platform built for serious buyers and verified exporters — wherever you are in the world.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link

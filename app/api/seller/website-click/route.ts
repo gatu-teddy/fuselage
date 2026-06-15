@@ -22,6 +22,11 @@ export async function GET(req: NextRequest) {
 
   const supabase = await createClient();
 
+  // ── Auth gate — must be a logged-in buyer (task #9) ──────────────────────
+  // We still redirect the visitor to the seller's site (good UX), but we do
+  // NOT record the click so unauthenticated bots/scrapers can't inflate stats.
+  const { data: { user } } = await supabase.auth.getUser();
+
   // Fetch seller profile + plan + website URL
   const { data: seller } = await supabase
     .from("seller_profiles")
@@ -39,7 +44,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Website links not available on this plan" }, { status: 403 });
   }
 
-  // Record the click
+  // Ensure URL is absolute (needed for both authenticated and guest redirects)
+  let url = seller.website as string;
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = `https://${url}`;
+  }
+
+  // Redirect unauthenticated visitors without recording a click
+  if (!user) {
+    return NextResponse.redirect(url, { status: 302 });
+  }
+
+  // Record the click (authenticated buyers only)
   await supabase.from("seller_website_clicks").insert({
     seller_id:   sellerId,
     plan_at_click: seller.plan ?? "free",
@@ -61,12 +77,6 @@ export async function GET(req: NextRequest) {
     console.log(
       `[website-click] MOCK CHARGE $${plan.websiteClickCostUsd} to seller ${sellerId} (${seller.company_name})`
     );
-  }
-
-  // Ensure URL is absolute
-  let url = seller.website as string;
-  if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    url = `https://${url}`;
   }
 
   return NextResponse.redirect(url, { status: 302 });

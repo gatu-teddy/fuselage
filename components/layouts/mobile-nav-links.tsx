@@ -2,14 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-
-const c = {
-  primary: "#0F172A",
-  green:   "#10B981",
-  body:    "#334155",
-  border:  "#E2E8F0",
-  muted:   "#64748B",
-};
+import { c } from "@/lib/tokens";
 
 const navLinks = [
   { label: "Browse",          href: "/browse"       },

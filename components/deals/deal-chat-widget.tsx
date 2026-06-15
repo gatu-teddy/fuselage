@@ -1,36 +1,33 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { getInitials, formatDateTime } from "@/lib/utils";
-import { Send, MessageSquare, ChevronDown, Lock, ExternalLink } from "lucide-react";
-
-// ─── Design tokens ──────────────────────────────────────────────────────────
-const c = {
-  primary:    "#0F172A",
-  green:      "#10B981",
-  greenBg:    "#D1FAE5",
-  greenText:  "#065F46",
-  bg:         "#F8FAFC",
-  bgDim:      "#F1F5F9",
-  surface:    "#FFFFFF",
-  border:     "#E2E8F0",
-  muted:      "#64748B",
-  body:       "#334155",
-  amber:      "#D97706",
-  amberBg:    "#FEF3C7",
-  amberBorder:"#FCD34D",
-  wa:         "#25D366",
-  waBg:       "#DCFCE7",
-  waText:     "#15803D",
-  waBorder:   "#86EFAC",
-};
+import { Send, MessageSquare, ChevronDown, Lock, ExternalLink, ChevronUp } from "lucide-react";
+import { c } from "@/lib/tokens";
 
 // ── Deal stages where WhatsApp is not yet relevant ───────────────────────────
 const WA_LOCKED_STATUSES = ["inquired"];
 // ── Cost to unlock WhatsApp contact (USD) ────────────────────────────────────
 const WA_UNLOCK_COST = 5;
+
+// ─── Static style constants — extracted from render loop hot path (#16) ──────
+const AVATAR_STYLE: React.CSSProperties = {
+  width: "24px", height: "24px", borderRadius: "50%",
+  backgroundColor: c.bgDim, display: "flex", alignItems: "center",
+  justifyContent: "center", fontSize: "9px", fontWeight: 700,
+  color: c.muted, flexShrink: 0,
+};
+
+const TIMESTAMP_STYLE: React.CSSProperties = {
+  fontSize: "10px", opacity: 0.55, textAlign: "right" as const,
+};
+
+const SYSTEM_PILL_STYLE: React.CSSProperties = {
+  backgroundColor: c.bgDim, color: c.muted, fontSize: "10px",
+  fontWeight: 600, padding: "3px 10px", borderRadius: "99px",
+  border: `1px solid ${c.border}`,
+};
 
 function WhatsAppIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
@@ -82,17 +79,27 @@ export function DealChatWidget({
   isClosed, dealStatus, whatsappUnlocked, role,
   listing, buyerNotes, buyerName,
 }: Props) {
-  const router     = useRouter();
   const bodyRef    = useRef<HTMLDivElement>(null);
   const widgetRef  = useRef<HTMLDivElement>(null);
 
-  const [isOpen,       setIsOpen]       = useState(false);
-  const [message,      setMessage]      = useState("");
-  const [sending,      setSending]      = useState(false);
-  const [lastSeen,     setLastSeen]     = useState<number>(0);
-  const [waPanel,      setWaPanel]      = useState<"closed" | "gate" | "unlocked">("closed");
-  const [unlocking,    setUnlocking]    = useState(false);
-  const [unlockDone,   setUnlockDone]   = useState(whatsappUnlocked);
+  const [isOpen,        setIsOpen]        = useState(false);
+  const [message,       setMessage]       = useState("");
+  const [sending,       setSending]       = useState(false);
+  const [lastSeen,      setLastSeen]      = useState<number>(() => {
+    // Read localStorage once at mount — avoids a useEffect + setState cascade
+    if (typeof window === "undefined") return 0;
+    const stored = localStorage.getItem(`chat-seen-${dealId}`);
+    return stored ? parseInt(stored, 10) : 0;
+  });
+  const [waPanel,       setWaPanel]       = useState<"closed" | "gate" | "unlocked">("closed");
+  // unlockDone mirrors the server prop; setter wired up when Stripe integration lands
+  const unlockDone = whatsappUnlocked;
+
+  // ── Live messages state — seeded from SSR prop, updated via Realtime (#12) ─
+  const [liveMessages,   setLiveMessages]   = useState<Message[]>(messages);
+  // ── Pagination state (#13) ────────────────────────────────────────────────
+  const [hasEarlier,     setHasEarlier]     = useState(true);
+  const [loadingEarlier, setLoadingEarlier] = useState(false);
 
   const lsKey = `chat-seen-${dealId}`;
 
@@ -100,8 +107,38 @@ export function DealChatWidget({
   useEffect(() => {
     localStorage.setItem("last-active-chat", JSON.stringify({
       dealId, otherPartyName, dealStatus, isClosed, role,
+      userId: currentUserId,
     }));
-  }, [dealId, otherPartyName, dealStatus, isClosed, role]);
+  }, [dealId, otherPartyName, dealStatus, isClosed, role, currentUserId]);
+
+  // ── Supabase Realtime subscription — append new messages without reload ───
+  // (#12) — replaces the router.refresh() pattern for live updates
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`deal-messages-${dealId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "deal_messages", filter: `deal_id=eq.${dealId}` },
+        async (payload) => {
+          // Fetch the full row including the sender join (realtime payload lacks joins)
+          const { data: fullMsg } = await supabase
+            .from("deal_messages")
+            .select("*, sender:profiles(full_name, avatar_url)")
+            .eq("id", payload.new.id)
+            .single();
+          if (!fullMsg) return;
+          setLiveMessages((prev) => {
+            // Deduplicate by id in case of any double-delivery
+            if (prev.some((m) => m.id === fullMsg.id)) return prev;
+            return [...prev, fullMsg as Message];
+          });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [dealId]);
 
   // ── Click outside to minimize ────────────────────────────────────────────
   useEffect(() => {
@@ -115,12 +152,9 @@ export function DealChatWidget({
   }, [isOpen]);
 
   // ── Unread count ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    const stored = localStorage.getItem(lsKey);
-    setLastSeen(stored ? parseInt(stored, 10) : 0);
-  }, [lsKey]);
+  // lastSeen is initialized from localStorage in useState() above — no effect needed
 
-  const unread = messages.filter(
+  const unread = liveMessages.filter(
     (m) => m.sender_id !== currentUserId &&
            new Date(m.created_at).getTime() > lastSeen,
   ).length;
@@ -135,13 +169,16 @@ export function DealChatWidget({
     }, 60);
   }
 
+  // Auto-scroll when new live messages arrive or widget opens
   useEffect(() => {
     if (isOpen && bodyRef.current) {
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
-  }, [messages.length, isOpen]);
+  }, [liveMessages.length, isOpen]);
 
   // ── Send message ─────────────────────────────────────────────────────────
+  // Realtime subscription handles appending the new message to liveMessages,
+  // so router.refresh() is no longer needed here.
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!message.trim()) return;
@@ -154,7 +191,6 @@ export function DealChatWidget({
     const now = Date.now();
     setLastSeen(now);
     localStorage.setItem(lsKey, String(now));
-    router.refresh();
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -164,29 +200,34 @@ export function DealChatWidget({
     }
   }
 
+  // ── Load earlier messages (pagination — #13) ──────────────────────────────
+  async function loadEarlierMessages() {
+    if (!liveMessages.length || loadingEarlier) return;
+    setLoadingEarlier(true);
+    const oldest = liveMessages[0];
+    const supabase = createClient();
+    const { data: earlier } = await supabase
+      .from("deal_messages")
+      .select("*, sender:profiles(full_name, avatar_url)")
+      .eq("deal_id", dealId)
+      .lt("created_at", oldest.created_at)
+      .order("created_at", { ascending: true })
+      .limit(50);
+    if (!earlier || earlier.length === 0) {
+      setHasEarlier(false);
+    } else {
+      setLiveMessages((prev) => [...(earlier as Message[]), ...prev]);
+    }
+    setLoadingEarlier(false);
+  }
+
   // ── WhatsApp unlock ──────────────────────────────────────────────────────
   const waIsLockedByStatus = WA_LOCKED_STATUSES.includes(dealStatus);
 
   function handleWaClick() {
-    if (waIsLockedByStatus) return; // button disabled
+    if (waIsLockedByStatus) return;
     if (unlockDone) { setWaPanel((p) => p === "unlocked" ? "closed" : "unlocked"); return; }
     setWaPanel((p) => p === "gate" ? "closed" : "gate");
-  }
-
-  async function handleUnlock() {
-    setUnlocking(true);
-    const supabase = createClient();
-    // TODO: wire to Stripe payment before setting unlocked = true
-    // For now: mock unlock — in prod this must be server-side after payment confirmation
-    await supabase.from("deals").update({
-      whatsapp_unlocked:      true,
-      whatsapp_unlocked_at:   new Date().toISOString(),
-      whatsapp_unlock_cost_usd: WA_UNLOCK_COST,
-    }).eq("id", dealId);
-    setUnlockDone(true);
-    setWaPanel("unlocked");
-    setUnlocking(false);
-    router.refresh();
   }
 
   // ── Status dot colour ────────────────────────────────────────────────────
@@ -270,33 +311,17 @@ export function DealChatWidget({
           {waPanel === "gate" && (
             <div style={{ backgroundColor: c.amberBg, borderBottom: `1px solid ${c.amberBorder}`, padding: "14px 16px", flexShrink: 0 }}>
               <p style={{ color: "#92400E", fontSize: "13px", fontWeight: 700, marginBottom: "6px" }}>
-                Unlock direct WhatsApp contact
+                Direct contact — coming soon
               </p>
               <p style={{ color: "#92400E", fontSize: "12px", lineHeight: 1.55, marginBottom: "12px" }}>
-                Pay a one-time <strong>${WA_UNLOCK_COST}</strong> fee to exchange WhatsApp numbers with the {role === "buyer" ? "exporter" : "buyer"} for this deal.
-                All formal steps — price agreement, payment confirmation, and shipping — must remain on-platform to retain dispute protection.
+                The ability to unlock direct WhatsApp contact for a one-time fee will be available shortly. All formal steps — price agreement, payment confirmation, and shipping — must remain on-platform to retain dispute protection.
               </p>
-
-              {/* Disclaimer */}
-              <div style={{ backgroundColor: "#fff", border: `1px solid ${c.amberBorder}`, borderRadius: "6px", padding: "10px 12px", marginBottom: "12px" }}>
-                <p style={{ color: "#92400E", fontSize: "11px", lineHeight: 1.55 }}>
-                  ⚠️ <strong>Important:</strong> By unlocking direct contact you acknowledge that any negotiation conducted outside this platform is not covered by TrueWagon&apos;s protections. TrueWagon cannot mediate disputes, verify agreements, or enforce outcomes from off-platform conversations. Your on-platform deal record remains the only legally recognised record.
-                </p>
-              </div>
-
-              <div style={{ display: "flex", gap: "8px" }}>
-                <button
-                  onClick={handleUnlock}
-                  disabled={unlocking}
-                  style={{ flex: 1, backgroundColor: c.wa, color: "#fff", border: "none", borderRadius: "6px", height: "36px", fontSize: "13px", fontWeight: 600, cursor: unlocking ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
-                >
-                  <WhatsAppIcon size={13} />
-                  {unlocking ? "Processing…" : `Pay $${WA_UNLOCK_COST} & unlock`}
-                </button>
-                <button onClick={() => setWaPanel("closed")} style={{ backgroundColor: "#fff", color: c.muted, border: `1px solid ${c.border}`, borderRadius: "6px", height: "36px", padding: "0 14px", fontSize: "13px", cursor: "pointer" }}>
-                  Cancel
-                </button>
-              </div>
+              <button
+                onClick={() => setWaPanel("closed")}
+                style={{ backgroundColor: "#fff", color: c.muted, border: `1px solid ${c.amberBorder}`, borderRadius: "6px", height: "34px", padding: "0 16px", fontSize: "13px", cursor: "pointer", width: "100%" }}
+              >
+                Got it
+              </button>
             </div>
           )}
 
@@ -304,7 +329,7 @@ export function DealChatWidget({
           {waPanel === "unlocked" && unlockDone && (
             <div style={{ backgroundColor: c.waBg, borderBottom: `1px solid ${c.waBorder}`, padding: "14px 16px", flexShrink: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                <WhatsAppIcon size={14} className="" />
+                <WhatsAppIcon size={14} />
                 <p style={{ color: c.waText, fontSize: "13px", fontWeight: 700 }}>Direct contact unlocked</p>
               </div>
               <p style={{ color: "#166534", fontSize: "12px", lineHeight: 1.55, marginBottom: "10px" }}>
@@ -333,6 +358,26 @@ export function DealChatWidget({
             ref={bodyRef}
             style={{ flex: 1, overflowY: "auto", padding: "10px 12px 8px", display: "flex", flexDirection: "column", gap: "10px", minHeight: "260px", maxHeight: "320px" }}
           >
+            {/* ── Load earlier button (#13) ────────────────────────────── */}
+            {liveMessages.length > 0 && hasEarlier && (
+              <div style={{ display: "flex", justifyContent: "center", flexShrink: 0 }}>
+                <button
+                  onClick={loadEarlierMessages}
+                  disabled={loadingEarlier}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "4px",
+                    backgroundColor: "transparent", border: `1px solid ${c.border}`,
+                    borderRadius: "99px", padding: "3px 12px",
+                    fontSize: "11px", color: c.muted, cursor: "pointer",
+                    opacity: loadingEarlier ? 0.5 : 1,
+                  }}
+                >
+                  <ChevronUp className="h-3 w-3" />
+                  {loadingEarlier ? "Loading…" : "Load earlier"}
+                </button>
+              </div>
+            )}
+
             {/* ── Pinned listing card ──────────────────────────────────── */}
             {listing && (
               <div style={{ backgroundColor: c.bgDim, border: `1px solid ${c.border}`, borderRadius: "10px", overflow: "hidden", flexShrink: 0, marginBottom: "4px" }}>
@@ -362,7 +407,7 @@ export function DealChatWidget({
             {/* ── Buyer notes as first message ─────────────────────────── */}
             {buyerNotes && (
               <div style={{ display: "flex", flexDirection: role === "buyer" ? "row-reverse" : "row", alignItems: "flex-end", gap: "6px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: c.bgDim, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 700, color: c.muted, flexShrink: 0 }}>
+                <div style={AVATAR_STYLE}>
                   {getInitials(buyerName ?? "B")}
                 </div>
                 <div style={{ maxWidth: "220px", backgroundColor: role === "buyer" ? c.primary : c.bgDim, color: role === "buyer" ? "#fff" : c.body, borderRadius: role === "buyer" ? "12px 12px 2px 12px" : "12px 12px 12px 2px", padding: "8px 11px", fontSize: "12px", lineHeight: 1.55 }}>
@@ -372,20 +417,22 @@ export function DealChatWidget({
               </div>
             )}
 
-            {messages.length === 0 && !buyerNotes && (
+            {liveMessages.length === 0 && !buyerNotes && (
               <div style={{ textAlign: "center", marginTop: "24px" }}>
                 <MessageSquare style={{ color: c.border, margin: "0 auto 10px" }} className="h-8 w-8" />
                 <p style={{ color: c.muted, fontSize: "13px" }}>No messages yet.</p>
                 <p style={{ color: c.muted, fontSize: "11px", marginTop: "4px" }}>Start the conversation below.</p>
               </div>
             )}
-            {messages.map((msg) => {
+
+            {/* ── Message list ─────────────────────────────────────────── */}
+            {liveMessages.map((msg) => {
               // System events render as centred status pills
               if ((msg as { message_type?: string }).message_type === "system_event") {
                 const meta = (msg as { metadata?: { to_status?: string } }).metadata;
                 return (
                   <div key={msg.id} style={{ display: "flex", justifyContent: "center", margin: "4px 0" }}>
-                    <span style={{ backgroundColor: c.bgDim, color: c.muted, fontSize: "10px", fontWeight: 600, padding: "3px 10px", borderRadius: "99px", border: `1px solid ${c.border}` }}>
+                    <span style={SYSTEM_PILL_STYLE}>
                       {meta?.to_status ? `Status → ${meta.to_status.replace(/_/g, " ")}` : msg.message}
                     </span>
                   </div>
@@ -394,12 +441,12 @@ export function DealChatWidget({
               const isMine = msg.sender_id === currentUserId;
               return (
                 <div key={msg.id} style={{ display: "flex", flexDirection: isMine ? "row-reverse" : "row", alignItems: "flex-end", gap: "6px" }}>
-                  <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: c.bgDim, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 700, color: c.muted, flexShrink: 0 }}>
+                  <div style={AVATAR_STYLE}>
                     {getInitials(msg.sender?.full_name ?? "?")}
                   </div>
                   <div style={{ maxWidth: "220px", backgroundColor: isMine ? c.primary : c.bgDim, color: isMine ? "#fff" : c.body, borderRadius: isMine ? "12px 12px 2px 12px" : "12px 12px 12px 2px", padding: "8px 11px", fontSize: "12px", lineHeight: 1.55 }}>
                     <p style={{ marginBottom: "3px" }}>{msg.message}</p>
-                    <p style={{ fontSize: "10px", opacity: 0.55, textAlign: "right" }}>{formatDateTime(msg.created_at)}</p>
+                    <p style={TIMESTAMP_STYLE}>{formatDateTime(msg.created_at)}</p>
                   </div>
                 </div>
               );

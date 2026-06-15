@@ -1,5 +1,15 @@
 export type UserRole = "buyer" | "seller" | "admin";
 
+export type KycStatus  = "unverified" | "pending" | "verified" | "rejected";
+export type KycDocType = "passport" | "national_id" | "drivers_licence" | "business_reg";
+
+export const KYC_DOC_LABELS: Record<KycDocType, string> = {
+  passport:        "Passport",
+  national_id:     "National ID Card",
+  drivers_licence: "Driver's Licence",
+  business_reg:    "Company Registration Certificate",
+};
+
 export type SellerStatus = "pending" | "verified" | "rejected" | "suspended";
 
 export type VehicleType = "car" | "bike";
@@ -27,6 +37,15 @@ export interface Profile {
   phone?: string;
   country?: string;
   avatar_url?: string;
+  // KYC
+  kyc_status:            KycStatus;
+  kyc_doc_type?:         KycDocType;
+  kyc_doc_url?:          string;
+  kyc_submitted_at?:     string;
+  kyc_verified_at?:      string;
+  kyc_rejection_reason?: string;
+  // GDPR
+  gdpr_doc_consent_at?:  string;
   created_at: string;
   updated_at: string;
 }

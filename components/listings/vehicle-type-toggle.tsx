@@ -1,15 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-
-const c = {
-  primary: "#0F172A",
-  green:   "#10B981",
-  bgDim:   "#F1F5F9",
-  border:  "#E2E8F0",
-  muted:   "#64748B",
-  surface: "#FFFFFF",
-};
+import { c } from "@/lib/tokens";
 
 // ── Inner component uses useSearchParams (must be wrapped in Suspense) ────────
 function Toggle({ currentType }: { currentType?: string }) {

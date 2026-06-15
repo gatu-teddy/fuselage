@@ -1,21 +1,13 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
 import { SellerNav } from "@/components/layouts/seller-nav";
 import { SiteFooter } from "@/components/layouts/site-footer";
 
 export default async function SellerLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "seller") redirect("/");
+  // Middleware already verifies auth + seller role + verified status for
+  // /seller/* routes and forwards x-user-id.  No extra DB call needed here.
+  const userId = (await headers()).get("x-user-id");
+  if (!userId) redirect("/login");
 
   return (
     <div className="flex min-h-screen">

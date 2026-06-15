@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -19,8 +18,7 @@ interface Props {
   currentUser: User | null;
 }
 
-export function InquiryForm({ listingId, sellerId, listingTitle, currentUser }: Props) {
-  const router = useRouter();
+export function InquiryForm({ listingId, sellerId, listingTitle: _listingTitle, currentUser }: Props) {
   const [country, setCountry] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);

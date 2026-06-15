@@ -147,7 +147,7 @@ export default function PrivacyPage() {
               ⚠️ <strong>Draft — pending legal review.</strong> This Privacy Policy has been prepared as a starting
               point and has not yet been reviewed by a qualified solicitor or data protection specialist.
               Before going live with EU, UK, or any regulated-jurisdiction users, have this reviewed by a
-              lawyer familiar with GDPR, UAE PDPL, and the data protection laws of your target markets.
+              lawyer familiar with GDPR and the data protection laws of your operating jurisdictions.
             </Callout>
 
             {/* Title block */}
@@ -185,7 +185,7 @@ export default function PrivacyPage() {
               { label: "Company name",    value: `${COMPANY_NAME}` },
               { label: "Registered address", value: "[COMPANY REGISTERED ADDRESS — TO BE ADDED]" },
               { label: "Privacy contact", value: CONTACT_EMAIL },
-              { label: "Jurisdiction",    value: "[UAE / TO BE CONFIRMED]" },
+              { label: "Jurisdiction",    value: "[TO BE CONFIRMED — pending legal review]" },
             ]} />
             <P>
               Where required by applicable law (e.g. GDPR Art. 27), we will designate a representative in
@@ -213,7 +213,7 @@ export default function PrivacyPage() {
             <UL items={[
               "Company name and trade licence number",
               "Copies of trade licences, business registration certificates",
-              "Government-issued identity documents (passport, Emirates ID, etc.)",
+              "Government-issued identity documents (passport, national ID, etc.)",
               "Company address and city",
               "Website URL",
               "Business description",
@@ -305,7 +305,7 @@ export default function PrivacyPage() {
               },
               {
                 label: "Legal obligation (Art. 6(1)(c))",
-                value: "Retaining transaction records, identity verification documents, and financial records as required by applicable UAE, EU, or destination-country law.",
+                value: "Retaining transaction records, identity verification documents, and financial records as required by applicable law in your jurisdiction or ours.",
               },
               {
                 label: "Legitimate interests (Art. 6(1)(f))",
@@ -364,9 +364,9 @@ export default function PrivacyPage() {
             {/* ── 7. International transfers ────────────────────────────── */}
             <H2 id="7-international">7. International Data Transfers</H2>
             <P>
-              {COMPANY_NAME} operates primarily from the UAE and uses cloud infrastructure that may process
-              data in multiple jurisdictions. When personal data of EU or UK residents is transferred outside
-              the EEA or UK to a country without an adequacy decision, we rely on one or more of the following:
+              {COMPANY_NAME} uses cloud infrastructure that may process data in multiple jurisdictions. When
+              personal data of EU or UK residents is transferred outside the EEA or UK to a country without
+              an adequacy decision, we rely on one or more of the following:
             </P>
             <UL items={[
               <>Standard Contractual Clauses (SCCs) adopted by the European Commission — in place with Supabase and Stripe;</>,
@@ -374,9 +374,8 @@ export default function PrivacyPage() {
               <>Adequacy decisions where applicable.</>,
             ]} />
             <P>
-              For transfers to or from African partner countries (Kenya, Nigeria, South Africa, Ghana, etc.),
-              we apply data minimisation and ensure contractual protections are in place with any local
-              service providers.
+              For transfers involving other jurisdictions, we apply data minimisation and ensure contractual
+              protections are in place with any local service providers.
             </P>
 
             {/* ── 8. Retention ──────────────────────────────────────────── */}
@@ -449,8 +448,7 @@ export default function PrivacyPage() {
             <H2 id="11-your-rights">11. Your Rights</H2>
             <Callout variant="gdpr">
               The rights below apply in full to EU and UK residents under GDPR / UK GDPR. Users in other
-              jurisdictions have equivalent rights under local law (UAE PDPL, Kenya DPA, Nigeria NDPR,
-              South Africa POPIA — see Section 14).
+              jurisdictions have equivalent rights under applicable local law — see Section 14.
             </Callout>
 
             <H3>11.1 Right of access (Art. 15 GDPR)</H3>
@@ -547,24 +545,24 @@ export default function PrivacyPage() {
             </P>
             <DataTable rows={[
               {
-                label: "UAE — PDPL",
-                value: "Federal Decree-Law No. 45/2021 on Personal Data Protection. Requires a Privacy Policy, data subject rights, and data transfer controls. Applies to data processed in or from the UAE.",
+                label: "EU / EEA — GDPR",
+                value: "Regulation (EU) 2016/679. Applies when processing personal data of EU residents. Requires a lawful basis, data subject rights, and transfer controls for data leaving the EEA.",
               },
               {
-                label: "Kenya — DPA 2019",
-                value: "Kenya Data Protection Act 2019. Requires registration with the Data Commissioner, a privacy notice, and data subject rights including access and objection.",
+                label: "UK — UK GDPR / DPA 2018",
+                value: "The retained UK version of GDPR. Applies when processing personal data of UK residents. Rights and obligations are substantially equivalent to EU GDPR.",
               },
               {
-                label: "Nigeria — NDPR",
-                value: "Nigeria Data Protection Regulation 2019 (and the NDPA 2023). Requires a Privacy Policy, lawful basis, and annual data protection audit for organisations above a threshold.",
+                label: "California — CCPA / CPRA",
+                value: "California Consumer Privacy Act and its amendment. Applies to residents of California. Grants rights to know, delete, correct and opt-out of sale of personal information.",
               },
               {
-                label: "South Africa — POPIA",
-                value: "Protection of Personal Information Act. Applies when processing personal data of South African residents. Requires eight conditions for lawful processing.",
+                label: "Australia — Privacy Act 1988",
+                value: "Applies to organisations with annual turnover above AUD 3 million, or handling health or sensitive information. Governs collection, use, and disclosure of personal information.",
               },
               {
-                label: "Ghana — DPA 2012",
-                value: "Data Protection Act 843. Requires registration with the Data Protection Commission and a published Privacy Statement.",
+                label: "Other jurisdictions",
+                value: "Where local data protection law applies to our processing of your personal data, we will honour rights equivalent to or broader than those described in this policy. Contact us to exercise any applicable rights.",
               },
             ]} />
             <P>
