@@ -7,7 +7,6 @@ import { c } from "@/lib/tokens";
 
 interface Props {
   currentParams: {
-    type?: string;
     make?: string;
     availability?: string;
     port?: string;
@@ -50,57 +49,7 @@ function Checkbox({ checked, onClick }: { checked: boolean; onClick: () => void 
   );
 }
 
-// ─── TypeToggle ───────────────────────────────────────────────────────────────
-interface TypeToggleProps {
-  type: string;
-  setType: (v: string) => void;
-  setMake: (v: string) => void;
-  setMakeSearch: (v: string) => void;
-  apply: ApplyFn;
-  onApply?: () => void;
-}
-
-function TypeToggle({ type, setType, setMake, setMakeSearch, apply, onApply }: TypeToggleProps) {
-  return (
-    <div
-      style={{
-        display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3px",
-        padding: "3px", backgroundColor: c.bgDim,
-        borderRadius: "8px", marginBottom: "14px",
-        border: `1px solid ${c.border}`,
-      }}
-    >
-      {([
-        { value: "car",  label: "Cars" },
-        { value: "bike", label: "Motorbikes" },
-      ] as const).map(({ value, label }) => {
-        const isActive = type === value;
-        return (
-          <button
-            key={value}
-            type="button"
-            onClick={() => {
-              const next = isActive ? "" : value;
-              setType(next); setMake(""); setMakeSearch("");
-              apply({ type: next, make: "" });
-              onApply?.();
-            }}
-            style={{
-              height: "34px", border: "none", borderRadius: "6px",
-              fontSize: "13px", fontWeight: isActive ? 700 : 500,
-              cursor: "pointer", transition: "all 0.12s ease",
-              backgroundColor: isActive ? c.primary : "transparent",
-              color: isActive ? "#ffffff" : c.muted,
-              fontFamily: "Inter, sans-serif",
-            }}
-          >
-            {label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+// ─── TypeToggle removed — MVP is bikes only ───────────────────────────────────
 
 // ─── SearchBar ────────────────────────────────────────────────────────────────
 interface SearchBarProps {
@@ -343,7 +292,6 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
   const router = useRouter();
 
   const [mobileOpen,   setMobileOpen]   = useState(false);
-  const [type,         setType]         = useState(currentParams.type ?? "");
   const [make,         setMake]         = useState(currentParams.make ?? "");
   const [makeSearch,   setMakeSearch]   = useState(currentParams.make ?? "");
   const [availability, setAvailability] = useState(currentParams.availability ?? "");
@@ -353,15 +301,15 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
   const [steering,     setSteering]     = useState(currentParams.steering ?? "");
   const [q,            setQ]            = useState(currentParams.q ?? "");
 
-  const makes = type === "bike" ? VEHICLE_MAKES.bike : VEHICLE_MAKES.car;
-  const filteredMakes = makes.filter((m) =>
+  // MVP: bikes only — always filter by type=bike
+  const filteredMakes = VEHICLE_MAKES.bike.filter((m) =>
     m.toLowerCase().includes(makeSearch.toLowerCase())
   );
 
   function apply(overrides?: Record<string, string>) {
     const params = new URLSearchParams();
-    const vals = { type, make, availability, port, min, max, steering, q, ...overrides };
-    if (vals.type)         params.set("type",         vals.type);
+    const vals = { make, availability, port, min, max, steering, q, ...overrides };
+    params.set("type", "bike"); // always bikes
     if (vals.make)         params.set("make",         vals.make);
     if (vals.availability) params.set("availability", vals.availability);
     if (vals.port)         params.set("port",         vals.port);
@@ -373,16 +321,14 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
   }
 
   function clear() {
-    setType(""); setMake(""); setMakeSearch(""); setAvailability("");
+    setMake(""); setMakeSearch(""); setAvailability("");
     setPort(""); setMin(""); setMax(""); setSteering(""); setQ("");
     router.push("/browse");
   }
 
-  const hasFilters  = type || make || availability || port || min || max || steering || q;
-  const activeCount = [type, make, availability, port, min, max, steering, q].filter(Boolean).length;
+  const hasFilters  = make || availability || port || min || max || steering || q;
+  const activeCount = [make, availability, port, min, max, steering, q].filter(Boolean).length;
 
-  // Shared props bundles — avoids repetition at call sites
-  const typeToggleProps: TypeToggleProps = { type, setType, setMake, setMakeSearch, apply };
   const searchBarProps:  SearchBarProps  = { q, setQ, apply };
   const filterBodyProps: FilterBodyProps = {
     steering, setSteering,
@@ -430,7 +376,6 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
                 maxHeight: "90vh", overflowY: "auto", padding: "20px",
               }}
             >
-              {/* Sheet header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
                 <span style={{ color: c.primary, fontWeight: 700, fontSize: "16px", fontFamily: "Inter, sans-serif" }}>Filters</span>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -450,11 +395,8 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
                   </button>
                 </div>
               </div>
-
-              {/* Toggle + search + filters inside sheet */}
-              <TypeToggle  {...typeToggleProps} onApply={() => setMobileOpen(false)} />
-              <SearchBar   {...searchBarProps}  onApply={() => setMobileOpen(false)} />
-              <FilterBody  {...filterBodyProps} onApply={() => setMobileOpen(false)} />
+              <SearchBar  {...searchBarProps}  onApply={() => setMobileOpen(false)} />
+              <FilterBody {...filterBodyProps} onApply={() => setMobileOpen(false)} />
             </div>
           </div>
         )}
@@ -465,14 +407,7 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
   // ── Desktop sidebar mode ──────────────────────────────────────────────────
   return (
     <div style={{ fontFamily: "Inter, sans-serif" }}>
-
-      {/* Toggle — above "Filters" title */}
-      <TypeToggle {...typeToggleProps} />
-
-      {/* Search bar */}
       <SearchBar {...searchBarProps} />
-
-      {/* Filters header */}
       <div className="flex items-center justify-between mb-5">
         <span style={{ color: c.primary }} className="text-sm font-bold">Filters</span>
         {hasFilters && (
@@ -485,7 +420,6 @@ export function BrowseFilters({ currentParams, mobileOnly }: Props) {
           </button>
         )}
       </div>
-
       <FilterBody {...filterBodyProps} />
     </div>
   );

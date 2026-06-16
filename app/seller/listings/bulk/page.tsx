@@ -56,10 +56,10 @@ export default async function BulkImportPage() {
           </div>
 
           <Link
-            href="/seller/upgrade"
+            href="/pricing"
             style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: c.primary, color: "#fff", fontSize: "14px", fontWeight: 700, padding: "12px 28px", borderRadius: "8px", textDecoration: "none" }}
           >
-            <Zap style={{ width: "15px", height: "15px" }} /> View upgrade options
+            <Zap style={{ width: "15px", height: "15px" }} /> View pricing plans
           </Link>
 
           <div style={{ marginTop: "16px" }}>

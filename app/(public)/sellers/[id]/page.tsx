@@ -4,11 +4,10 @@ import Image from "next/image";
 import { createPublicClient } from "@/lib/supabase/public";
 import { c } from "@/lib/tokens";
 import { formatUSD } from "@/lib/utils";
-import { CheckCircle2, MapPin, Globe, Calendar, Car, ShieldCheck, Clock, Star } from "lucide-react";
+import { CheckCircle2, MapPin, Globe, Calendar, Car, ShieldCheck, Clock } from "lucide-react";
 
 function TrustScore({ score }: { score: number }) {
   const colour = score >= 80 ? c.green : score >= 50 ? c.amber : c.red;
-  const bg     = score >= 80 ? c.greenBg : score >= 50 ? c.amberBg : c.redBg;
   const label  = score >= 80 ? "High trust" : score >= 50 ? "Building trust" : "New";
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>

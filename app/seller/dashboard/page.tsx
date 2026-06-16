@@ -82,15 +82,6 @@ export default async function SellerDashboardPage() {
           >
             {plan.label}
           </span>
-          {/* Upgrade CTA if not enterprise */}
-          {sellerProfile.plan !== "enterprise" && (
-            <Link
-              href="/seller/upgrade"
-              style={{ color: c.muted, fontSize: "12px", fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}
-            >
-              <Zap style={{ width: "11px", height: "11px" }} /> Upgrade
-            </Link>
-          )}
           <span style={{ backgroundColor: statusInfo.bg, color: statusInfo.color, fontSize: "12px", fontWeight: 700, padding: "6px 14px", borderRadius: "20px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <StatusIcon style={{ width: "12px", height: "12px" }} />
             {statusInfo.label}

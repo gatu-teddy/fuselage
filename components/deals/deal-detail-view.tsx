@@ -1437,7 +1437,6 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
         }
         isClosed={isClosed}
         dealStatus={deal.status}
-        whatsappUnlocked={!!(deal as unknown as Record<string, unknown>).whatsapp_unlocked}
         role={role}
         listing={listing ? {
           year:      listing.year as number,

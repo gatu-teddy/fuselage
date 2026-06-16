@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Edit, Eye, Zap } from "lucide-react";
+import { Plus, Edit, Eye } from "lucide-react";
 import { formatUSD, formatDate } from "@/lib/utils";
 import { getPlan } from "@/lib/plans";
 
@@ -47,11 +47,6 @@ export default async function SellerListingsPage() {
           </p>
         </div>
         <div className="flex gap-3 shrink-0">
-          {plan.bulkImport && (
-            <Button asChild variant="outline">
-              <Link href="/seller/listings/bulk">Bulk import CSV</Link>
-            </Button>
-          )}
           <Button asChild disabled={atLimit}>
             <Link href={atLimit ? "#" : "/seller/listings/new"}>
               <Plus className="h-4 w-4 mr-1" /> Add listing
@@ -110,42 +105,7 @@ export default async function SellerListingsPage() {
           <span style={{ color: c.muted, fontSize: "13px" }}>Unlimited listings</span>
         )}
 
-        {/* Upgrade CTA */}
-        {(atLimit || nearLimit) && profile?.plan !== "enterprise" && (
-          <Link
-            href="/seller/upgrade"
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "5px",
-              backgroundColor: c.primary, color: "#fff", fontSize: "12px",
-              fontWeight: 700, padding: "7px 14px", borderRadius: "6px",
-              textDecoration: "none", flexShrink: 0,
-            }}
-          >
-            <Zap style={{ width: "12px", height: "12px" }} /> Upgrade
-          </Link>
-        )}
       </div>
-
-      {/* ── Bulk import CTA for free plan ─────────────────────────────────── */}
-      {!plan.bulkImport && (
-        <div
-          style={{
-            backgroundColor: "#EFF6FF", border: "1px solid #BFDBFE",
-            borderRadius: "8px", padding: "10px 16px", marginBottom: "16px",
-            display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
-          }}
-        >
-          <p style={{ color: "#1D4ED8", fontSize: "13px" }}>
-            💡 <strong>Growth plan</strong> unlocks bulk CSV import — add 50+ vehicles in seconds.
-          </p>
-          <Link
-            href="/seller/upgrade"
-            style={{ color: "#1D4ED8", fontSize: "12px", fontWeight: 700, textDecoration: "none", flexShrink: 0 }}
-          >
-            Upgrade →
-          </Link>
-        </div>
-      )}
 
       {/* ── Empty state ───────────────────────────────────────────────────── */}
       {listings?.length === 0 && (

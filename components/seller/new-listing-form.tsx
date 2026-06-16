@@ -3,7 +3,7 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { VEHICLE_MAKES } from "@/lib/types";
-import { X, Car, Bike, Upload, ImageIcon, Star } from "lucide-react";
+import { X, Upload, ImageIcon, Star } from "lucide-react";
 import { c } from "@/lib/tokens";
 import { Section, Field, fieldStyle } from "@/components/listings/form-helpers";
 
@@ -14,7 +14,8 @@ export function NewListingForm() {
   const [loading, setLoading] = useState(false);
   const [uploadStep, setUploadStep] = useState(""); // status text while saving
   const [error, setError] = useState("");
-  const [type, setType] = useState<"car" | "bike">("car");
+  // MVP: bikes only
+  const type = "bike" as const;
   const [steering, setSteering] = useState<"LHD" | "RHD">("RHD");
   const [form, setForm] = useState({
     make: "", model: "", year: new Date().getFullYear().toString(),
@@ -120,7 +121,7 @@ export function NewListingForm() {
     router.push("/seller/listings");
   }
 
-  const makes = VEHICLE_MAKES[type];
+  const makes = VEHICLE_MAKES.bike;
 
   return (
     <div style={{ backgroundColor: c.bg, minHeight: "100vh", fontFamily: "Inter, sans-serif" }} className="p-8 max-w-3xl">
@@ -135,28 +136,6 @@ export function NewListingForm() {
             <p style={{ color: c.error, fontSize: "13px", margin: 0 }}>{error}</p>
           </div>
         )}
-
-        {/* ── Vehicle type ───────────────────────────────────────────────── */}
-        <Section title="Vehicle type *">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            {([["car", "Car", Car], ["bike", "Bike", Bike]] as const).map(([t, label, Icon]) => (
-              <button
-                key={t} type="button"
-                onClick={() => { setType(t); update("make", ""); }}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                  border: `2px solid ${type === t ? c.green : c.border}`,
-                  borderRadius: "10px", padding: "14px",
-                  backgroundColor: type === t ? c.greenBg : c.surface,
-                  cursor: "pointer", fontSize: "14px", fontWeight: 600,
-                  color: type === t ? c.greenText : c.muted,
-                }}
-              >
-                <Icon style={{ width: "18px", height: "18px" }} /> {label}
-              </button>
-            ))}
-          </div>
-        </Section>
 
         {/* ── Photos ────────────────────────────────────────────────────────── */}
         <Section title="Photos">
