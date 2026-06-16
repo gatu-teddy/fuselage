@@ -1,5 +1,22 @@
 export type UserRole = "buyer" | "seller" | "admin";
 
+export type DisputeStatus = "open" | "under_review" | "resolved" | "closed";
+
+export interface Dispute {
+  id:             string;
+  deal_id:        string;
+  raised_by:      string;
+  raised_by_role: "buyer" | "seller";
+  reason:         string;
+  status:         DisputeStatus;
+  admin_notes?:   string;
+  resolved_by?:   string;
+  resolved_at?:   string;
+  created_at:     string;
+  updated_at:     string;
+  raiser?:        Profile;
+}
+
 export type KycStatus  = "unverified" | "pending" | "verified" | "rejected";
 export type KycDocType = "passport" | "national_id" | "drivers_licence" | "business_reg";
 
@@ -118,6 +135,9 @@ export interface Deal {
   bill_of_lading_url?: string;
   created_at: string;
   updated_at: string;
+  // Freeze / dispute
+  is_frozen?:     boolean;
+  frozen_reason?: string;
   // Legal hold
   legal_hold?: boolean;
   legal_hold_requested_at?: string;
@@ -231,77 +251,54 @@ export interface DealEvent {
 
 // ---- Constants ----
 
+/** Global buyer destination countries — alphabetical */
 export const AFRICAN_COUNTRIES = [
-  "Nigeria",
-  "Kenya",
-  "Ghana",
-  "South Africa",
-  "Ethiopia",
-  "Tanzania",
-  "Uganda",
-  "Rwanda",
-  "Egypt",
-  "Morocco",
-  "Senegal",
-  "Ivory Coast",
-  "Cameroon",
-  "Zambia",
-  "Zimbabwe",
+  // Africa
+  "Cameroon", "Egypt", "Ethiopia", "Ghana", "Ivory Coast",
+  "Kenya", "Morocco", "Nigeria", "Rwanda", "Senegal",
+  "South Africa", "Tanzania", "Uganda", "Zambia", "Zimbabwe",
+  // Americas
+  "Brazil", "Canada", "Chile", "Colombia", "Jamaica",
+  "Mexico", "Peru", "Trinidad & Tobago", "United States",
+  // Asia-Pacific
+  "Australia", "Bangladesh", "India", "Indonesia", "Japan",
+  "Malaysia", "New Zealand", "Pakistan", "Philippines",
+  "Singapore", "Sri Lanka", "Thailand", "Vietnam",
+  // Europe
+  "France", "Germany", "Italy", "Netherlands", "Spain",
+  "Sweden", "Switzerland", "United Kingdom",
+  // Middle East
+  "Bahrain", "Jordan", "Kuwait", "Oman",
+  "Qatar", "Saudi Arabia", "UAE",
 ];
 
-export const AFRICAN_PORTS = {
-  Nigeria: ["Lagos (Apapa)", "Lagos (Tin Can)", "Port Harcourt"],
-  Kenya: ["Mombasa"],
-  Ghana: ["Tema"],
-  "South Africa": ["Durban", "Cape Town"],
-  Ethiopia: ["Djibouti (Land)"],
-  Tanzania: ["Dar es Salaam"],
-  Uganda: ["Mombasa (Land)"],
-  Rwanda: ["Mombasa (Land)"],
-  Egypt: ["Alexandria", "Port Said"],
-  Morocco: ["Casablanca", "Tanger Med"],
-  Senegal: ["Dakar"],
-  "Ivory Coast": ["Abidjan"],
-  Cameroon: ["Douala"],
-  Zambia: ["Durban (Land)"],
-  Zimbabwe: ["Beira (Land)", "Durban (Land)"],
-};
+// Keep alias for any legacy imports
+export const AFRICAN_PORTS: Record<string, string[]> = {};
 
 export const VEHICLE_MAKES = {
-  car: [
-    "Mercedes-Benz",
-    "BMW",
-    "Porsche",
-    "Audi",
-    "Land Rover",
-    "Range Rover",
-    "Lamborghini",
-    "Ferrari",
-    "Bentley",
-    "Rolls-Royce",
-    "Aston Martin",
-    "McLaren",
-    "Maserati",
-    "Lexus",
-    "Toyota",
-    "Chevrolet",
-    "Ford",
-    "Dodge",
-    "Cadillac",
-    "Genesis",
-  ],
+  // Cars kept in data layer for future expansion — UI is bikes-only in MVP
+  car: [],
   bike: [
+    "Aprilia",
+    "Benelli",
+    "BMW Motorrad",
+    "BSA",
+    "CFMoto",
     "Ducati",
     "Harley-Davidson",
-    "BMW Motorrad",
-    "Triumph",
-    "Kawasaki",
-    "Yamaha",
     "Honda",
-    "Aprilia",
-    "MV Agusta",
+    "Husqvarna",
     "Indian",
+    "Kawasaki",
     "KTM",
+    "Moto Guzzi",
+    "MV Agusta",
+    "Norton",
+    "Royal Enfield",
+    "Suzuki",
+    "Triumph",
+    "Yamaha",
+    "Zero Motorcycles",
   ],
 };
 

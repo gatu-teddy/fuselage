@@ -60,6 +60,89 @@ function fileTypeFromMime(file: File): "pdf" | "image" {
 }
 
 // ─── Legal hold panel ───────────────────────────────────────────────────────
+// ─── Dispute panel ─────────────────────────────────────────────────────────
+function DisputePanel({ dealId, currentUserId, role }: { dealId: string; currentUserId: string; role: "buyer" | "seller" }) {
+  const [open,       setOpen]       = useState(false);
+  const [reason,     setReason]     = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted,  setSubmitted]  = useState(false);
+  const [error,      setError]      = useState("");
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reason.trim()) { setError("Please describe your dispute."); return; }
+    setSubmitting(true); setError("");
+    const supabase = createClient();
+    const { error: err } = await supabase.from("disputes").insert({
+      deal_id:        dealId,
+      raised_by:      currentUserId,
+      raised_by_role: role,
+      reason:         reason.trim(),
+    });
+    if (err) { setError(err.message); setSubmitting(false); return; }
+    setSubmitted(true); setSubmitting(false);
+  }
+
+  return (
+    <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "0.5rem", marginTop: "16px" }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", background: "none", border: "none", cursor: "pointer" }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <AlertTriangle className="h-4 w-4" style={{ color: c.amber }} />
+          <p style={{ color: c.primary, fontSize: "13px", fontWeight: 700 }}>Raise a dispute</p>
+        </div>
+        <ChevronDown className="h-4 w-4" style={{ color: c.muted, transform: open ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }} />
+      </button>
+
+      {open && (
+        <div style={{ borderTop: `1px solid ${c.border}`, padding: "18px 20px" }}>
+          <div style={{ backgroundColor: c.amberBg, border: `1px solid ${c.amberBorder}`, borderRadius: "8px", padding: "12px 16px", marginBottom: "16px" }}>
+            <p style={{ color: "#92400E", fontSize: "12px", fontWeight: 700, marginBottom: "4px" }}>Before raising a dispute</p>
+            <p style={{ color: "#92400E", fontSize: "12px", lineHeight: 1.65 }}>
+              Try to resolve the issue through the deal chat first. If you cannot reach an agreement, raising a dispute will flag this deal for Fuselage admin review. The deal may be frozen while the dispute is investigated.
+            </p>
+          </div>
+
+          {submitted ? (
+            <div style={{ backgroundColor: c.greenBg, border: `1px solid #6EE7B7`, borderRadius: "8px", padding: "14px 16px", textAlign: "center" }}>
+              <p style={{ color: c.greenText, fontWeight: 700, fontSize: "13px" }}>Dispute raised</p>
+              <p style={{ color: c.greenText, fontSize: "12px", marginTop: "4px" }}>A Fuselage admin will review your case and be in touch within 2 business days.</p>
+            </div>
+          ) : (
+            <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {error && <p style={{ color: c.red, fontSize: "12px" }}>{error}</p>}
+              <div>
+                <label style={{ color: c.body, fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "5px" }}>
+                  Describe your dispute <span style={{ color: c.red }}>*</span>
+                </label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  rows={4}
+                  placeholder="What went wrong? What outcome are you seeking?"
+                  style={{ width: "100%", border: `1px solid ${c.border}`, borderRadius: "6px", padding: "9px 12px", fontSize: "13px", color: c.body, resize: "vertical", fontFamily: "Inter, sans-serif", outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+              <p style={{ color: c.muted, fontSize: "11px", lineHeight: 1.6 }}>
+                By submitting you confirm that the information is accurate. False disputes may result in account suspension.
+              </p>
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{ backgroundColor: c.amber, color: "#fff", border: "none", borderRadius: "6px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: submitting ? "not-allowed" : "pointer", alignSelf: "flex-start", opacity: submitting ? 0.6 : 1 }}
+              >
+                {submitting ? "Submitting…" : "Raise dispute"}
+              </button>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function LegalPanel({ dealId, currentUserId, role }: { dealId: string; currentUserId: string; role: "buyer" | "seller" }) {
   const [open,       setOpen]       = useState(false);
   const [reason,     setReason]     = useState("");
@@ -513,6 +596,25 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
   return (
     <div style={{ backgroundColor: c.bg, fontFamily: "Inter, sans-serif" }} className="min-h-screen">
       <div className="max-w-[1280px] mx-auto px-8 md:px-16 py-10">
+
+        {/* ── Frozen deal banner ────────────────────────────────────────── */}
+        {deal.is_frozen && (
+          <div style={{
+            backgroundColor: c.redBg, border: `1px solid ${c.redBorder}`,
+            borderRadius: "10px", padding: "14px 18px", marginBottom: "16px",
+            display: "flex", alignItems: "flex-start", gap: "12px",
+          }}>
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: c.red }} />
+            <div>
+              <p style={{ color: c.red, fontSize: "13px", fontWeight: 700, marginBottom: "2px" }}>This deal has been frozen</p>
+              <p style={{ color: c.red, fontSize: "12px", lineHeight: 1.6 }}>
+                {deal.frozen_reason
+                  ? deal.frozen_reason
+                  : "A dispute or admin action has frozen this deal. No status changes can be made until the matter is resolved. A Fuselage admin will be in touch."}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* ── Contact disclaimer banner ──────────────────────────────────── */}
         {contactShared && !disclaimerDismissed && (
@@ -980,6 +1082,28 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
           {/* ── RIGHT SIDEBAR ───────────────────────────────────────────── */}
           <div className="space-y-5">
 
+            {/* Deal Certificate — shown only when completed */}
+            {deal.status === "completed" && (
+              <a
+                href={`/api/deals/${deal.id}/certificate`}
+                download
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                  backgroundColor: c.greenBg, border: `1px solid #6EE7B7`,
+                  borderRadius: "10px", padding: "14px 20px",
+                  textDecoration: "none",
+                  transition: "opacity 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              >
+                <FileBadge style={{ color: c.greenText, width: "18px", height: "18px" }} />
+                <span style={{ color: c.greenText, fontSize: "13px", fontWeight: 700 }}>
+                  Download Deal Certificate
+                </span>
+              </a>
+            )}
+
             {/* Vehicle card */}
             <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "0.5rem", overflow: "hidden" }}>
               {primaryImage ? (
@@ -1189,7 +1313,8 @@ export function DealDetailView({ deal, currentUserId, role }: Props) {
 
           </div>
 
-          {/* ── Legal / Dispute section ───────────────────────────────────── */}
+          {/* ── Dispute + Legal section ───────────────────────────────────── */}
+          {!isClosed && <DisputePanel dealId={deal.id} currentUserId={currentUserId} role={role} />}
           <LegalPanel dealId={deal.id} currentUserId={currentUserId} role={role} />
 
         </div>

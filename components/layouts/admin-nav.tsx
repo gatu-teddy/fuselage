@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, Users, LayoutDashboard, ShieldCheck, LogOut } from "lucide-react";
+import { Shield, Users, LayoutDashboard, ShieldCheck, AlertTriangle, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
@@ -10,6 +10,7 @@ const nav = [
   { href: "/admin/applications", label: "Applications", icon: Shield          },
   { href: "/admin/sellers",      label: "Sellers",      icon: Users           },
   { href: "/admin/kyc",          label: "KYC Review",   icon: ShieldCheck     },
+  { href: "/admin/disputes",     label: "Disputes",     icon: AlertTriangle   },
 ];
 
 export function AdminNav() {

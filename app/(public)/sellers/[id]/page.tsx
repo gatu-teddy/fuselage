@@ -4,7 +4,33 @@ import Image from "next/image";
 import { createPublicClient } from "@/lib/supabase/public";
 import { c } from "@/lib/tokens";
 import { formatUSD } from "@/lib/utils";
-import { CheckCircle2, MapPin, Globe, Calendar, Car, ShieldCheck, Clock } from "lucide-react";
+import { CheckCircle2, MapPin, Globe, Calendar, Car, ShieldCheck, Clock, Star } from "lucide-react";
+
+function TrustScore({ score }: { score: number }) {
+  const colour = score >= 80 ? c.green : score >= 50 ? c.amber : c.red;
+  const bg     = score >= 80 ? c.greenBg : score >= 50 ? c.amberBg : c.redBg;
+  const label  = score >= 80 ? "High trust" : score >= 50 ? "Building trust" : "New";
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <div style={{ position: "relative", width: "48px", height: "48px" }}>
+        <svg viewBox="0 0 48 48" style={{ width: "48px", height: "48px", transform: "rotate(-90deg)" }}>
+          <circle cx="24" cy="24" r="20" fill="none" stroke={c.border} strokeWidth="4" />
+          <circle cx="24" cy="24" r="20" fill="none" stroke={colour} strokeWidth="4"
+            strokeDasharray={`${2 * Math.PI * 20}`}
+            strokeDashoffset={`${2 * Math.PI * 20 * (1 - score / 100)}`}
+            strokeLinecap="round" />
+        </svg>
+        <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800, color: colour }}>
+          {score}
+        </span>
+      </div>
+      <div>
+        <p style={{ color: colour, fontSize: "13px", fontWeight: 700 }}>{label}</p>
+        <p style={{ color: c.muted, fontSize: "11px" }}>Trust score / 100</p>
+      </div>
+    </div>
+  );
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
@@ -33,7 +59,7 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
   // Fetch seller profile (no private fields)
   const { data: seller } = await supabase
     .from("seller_profiles")
-    .select("id, company_name, city, country, description, status, verified_at, website, created_at, plan")
+    .select("id, company_name, city, country, description, status, verified_at, website, created_at, plan, trust_score")
     .eq("id", id)
     .single();
 
@@ -140,11 +166,11 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
         </div>
 
         {/* ── Stats row ──────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { icon: <Car className="h-5 w-5" />,         label: "Active listings",    value: activeListingCount ?? 0 },
-            { icon: <CheckCircle2 className="h-5 w-5" />, label: "Completed deals",    value: completedDeals ?? 0 },
-            { icon: <ShieldCheck className="h-5 w-5" />,  label: "Verification",        value: seller.status === "verified" ? "Verified" : "Pending" },
+            { icon: <Car className="h-5 w-5" />,         label: "Active listings", value: activeListingCount ?? 0 },
+            { icon: <CheckCircle2 className="h-5 w-5" />, label: "Completed deals", value: completedDeals ?? 0 },
+            { icon: <ShieldCheck className="h-5 w-5" />,  label: "Verification",    value: seller.status === "verified" ? "Verified" : "Pending" },
           ].map(({ icon, label, value }) => (
             <div key={label} style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "18px 20px", textAlign: "center" }}>
               <div style={{ color: c.green, display: "flex", justifyContent: "center", marginBottom: "8px" }}>{icon}</div>
@@ -152,6 +178,9 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
               <p style={{ color: c.muted, fontSize: "12px", marginTop: "2px" }}>{label}</p>
             </div>
           ))}
+          <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "10px", padding: "18px 20px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <TrustScore score={seller.trust_score as number ?? 0} />
+          </div>
         </div>
 
         {/* ── Active listings ─────────────────────────────────────────────── */}
