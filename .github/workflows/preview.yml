@@ -24,15 +24,24 @@ jobs:
 
       - name: Pull Vercel environment info
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Build project
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Vercel
         id: deploy
         run: |
           URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           echo "preview_url=$URL" >> $GITHUB_OUTPUT
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Comment preview URL on PR
         uses: actions/github-script@v7
@@ -46,5 +55,6 @@ jobs:
             })
 
 # ─── Required GitHub secrets ──────────────────────────────────────────────────
-# VERCEL_TOKEN       — from vercel.com → Settings → Tokens
-# Add via: GitHub repo → Settings → Secrets and variables → Actions → New secret
+# VERCEL_TOKEN      — vercel.com → Account Settings → Tokens
+# VERCEL_ORG_ID     — vercel.com → Account Settings → scroll to "Your ID"
+# VERCEL_PROJECT_ID — vercel.com → Project → Settings → General → Project ID
