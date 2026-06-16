@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { InquiryForm } from "@/components/listings/inquiry-form";
+import { VinVerifyButton } from "@/components/listings/vin-verify-button";
 import {
   Shield, MapPin, Calendar, Hash, Gauge, Clock,
   CheckCircle2, ChevronRight, Car, ArrowRight,
@@ -240,6 +241,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                       {vinRevealed ? (
                         <dd style={{ color: c.primary, fontSize: "13px", fontWeight: 600, marginTop: "2px", fontFamily: "monospace" }}>
                           {listing.chassis_number}
+                          <VinVerifyButton chassisNumber={listing.chassis_number as string} listingId={listing.id as string} />
                         </dd>
                       ) : (
                         <dd style={{ marginTop: "2px" }}>
