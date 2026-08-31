@@ -5,7 +5,6 @@ import { c } from "@/lib/tokens";
 export function CtaSection() {
   return (
     <section style={{ backgroundColor: c.primary }} className="py-24 relative overflow-hidden">
-      {/* Subtle grid overlay */}
       <div
         className="absolute inset-0 opacity-[0.04]"
         style={{
@@ -16,16 +15,17 @@ export function CtaSection() {
       />
       <div className="relative max-w-3xl mx-auto px-8 text-center">
         <p style={{ color: c.green }} className="text-xs font-semibold uppercase tracking-widest mb-5">
-          Ready to start?
+          Ready to import?
         </p>
         <h2
           className="text-4xl md:text-5xl font-bold text-white mb-5"
           style={{ letterSpacing: "-0.02em" }}
         >
-          Import the right way.
+          Find your next motorbike.
         </h2>
         <p style={{ color: "rgba(255,255,255,0.6)" }} className="text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-          The platform built for serious buyers and verified exporters — wherever you are in the world.
+          Verified exporters, live Japanese inventory, and freight partners ready to move your
+          bike from source to port — wherever you are in Africa or beyond.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
@@ -33,7 +33,7 @@ export function CtaSection() {
             style={{ backgroundColor: c.green, color: "#fff" }}
             className="inline-flex items-center justify-center gap-2 text-sm font-semibold px-10 h-12 rounded hover:opacity-90 transition-opacity"
           >
-            Browse Vehicles <ArrowRight className="h-4 w-4" />
+            Browse Motorbikes <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/register?role=seller"

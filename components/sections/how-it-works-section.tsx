@@ -4,26 +4,26 @@ import { c } from "@/lib/tokens";
 const steps = [
   {
     n: "01",
-    title: "Discovery",
-    body: "Browse inventory from verified sellers worldwide. Filter by make, model, price, and destination port. Every listing shows the full VIN.",
-    badge: "Vetted Sellers Only",
+    title: "Browse Inventory",
+    body: "Filter live motorbike listings from verified Japanese exporters by make, model, price, and destination port. Every listing shows the full chassis number.",
+    badge: "Live Inventory",
   },
   {
     n: "02",
-    title: "Exporter Vetting",
-    body: "Every seller submits a trade or business licence. Our team manually reviews and approves each exporter before a single vehicle goes live. No anonymous listings.",
+    title: "Verify the Seller",
+    body: "Every exporter has submitted a trade or business licence. Our team manually approves each account — only verified sellers can publish listings.",
     badge: "Manual Review",
   },
   {
     n: "03",
-    title: "Document Registry",
-    body: "Both parties upload transaction documents — invoices, title deeds, shipping confirmations — to our secure registry. We act as neutral custodian for the full audit trail.",
-    badge: "Neutral Custodian",
+    title: "Check the Chassis",
+    body: "Run a live chassis verification directly from the listing. Flagged units are held automatically. Upload deal documents to our neutral registry for a full audit trail.",
+    badge: "Chassis Verified",
   },
   {
     n: "04",
-    title: "Deal Completion",
-    body: "Confirm terms on-platform, upload payment and shipping confirmations, and track your deal to the destination port. Every step is permanently logged.",
+    title: "Port Delivery",
+    body: "Confirm terms on-platform, coordinate freight through our certified partner network, and track the shipment to your destination port. Every step permanently logged.",
     badge: "Full Audit Trail",
   },
 ];
@@ -41,11 +41,11 @@ export function HowItWorksSection() {
             Process
           </p>
           <h2 style={{ color: c.primary, letterSpacing: "-0.01em" }} className="text-4xl font-bold mb-2">
-            Cross-Border Trust
+            Japan to Your Port in 4 Steps
           </h2>
           <p style={{ color: c.muted }} className="text-lg max-w-lg">
-            A transparent 4-step process — from discovery to deal completion — built around verified sellers and
-            document-backed transactions.
+            A transparent process built around verified exporters, chassis checks, and
+            document-backed deals — from Osaka to Mombasa.
           </p>
         </div>
 

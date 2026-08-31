@@ -4,35 +4,35 @@ import { c } from "@/lib/tokens";
 const services = [
   {
     icon: Shield,
-    title: "Seller Vetting",
+    title: "Verified Exporters",
     description:
-      "Every exporter submits a trade or business licence. Our team manually reviews and approves each account before they can list a single vehicle. No anonymous sellers.",
+      "Every seller submits a trade or business licence before listing. Our team manually reviews each exporter — no anonymous dealers, no ghost listings from unknown sources.",
     features: [
       "Trade licence required to list",
-      "Manual account review process",
+      "Manual account approval process",
       "Zero unverified sellers on platform",
     ],
   },
   {
     icon: FileCheck,
-    title: "Document Registry",
+    title: "Chassis Verification",
     description:
-      "Both parties upload transaction documents to our secure registry. We act as a neutral custodian — not a party to the deal — cooperating with legal proceedings if required.",
+      "Every listed motorbike includes a chassis number. Buyers can trigger a live NHTSA/JDM check from the listing page. Flagged VINs are held for manual review before the deal can proceed.",
     features: [
-      "Neutral document custodian role",
-      "7-year GDPR-compliant retention",
-      "Full audit trail for every deal",
+      "Chassis number on every listing",
+      "Live verification check for buyers",
+      "Flagged units blocked from sale",
     ],
   },
   {
     icon: Truck,
     title: "Deal Transparency",
     description:
-      "All negotiation, payment confirmations, and shipping updates happen on-platform. Every message and document upload is permanently logged. Nothing happens off the record.",
+      "All negotiation, payment confirmations, and shipping updates happen on-platform. Every message and document upload is permanently logged — nothing goes off the record.",
     features: [
-      "On-platform negotiation & messaging",
-      "VIN visible on every listing",
-      "Immutable deal history log",
+      "On-platform messaging & documents",
+      "Full audit trail per deal",
+      "Certified freight partner network",
     ],
   },
 ];
@@ -53,10 +53,11 @@ export function ServicesSection() {
             style={{ color: c.primary, letterSpacing: "-0.01em" }}
             className="text-4xl font-bold mb-3"
           >
-            End-to-End Vehicle Protection
+            Built for Cross-Border Bike Imports
           </h2>
           <p style={{ color: c.muted }} className="text-lg max-w-xl mx-auto leading-relaxed">
-            Every transaction is backed by rigorous standards — from the inspection bay to your driveway.
+            Every transaction is backed by verified sellers, document custody, and a freight partner
+            network — from Japan to your destination port.
           </p>
         </div>
 
