@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Car, ClipboardList, Shield } from "lucide-react";
+import { Users, Bike, ClipboardList, Shield } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
@@ -34,7 +34,7 @@ export default async function AdminDashboardPage() {
     { label: "Registered buyers", value: totalBuyers ?? 0, icon: Users },
     { label: "Verified exporters", value: totalSellers ?? 0, icon: Shield },
     { label: "Pending applications", value: pendingApps ?? 0, icon: Shield, highlight: true },
-    { label: "Active listings", value: activeListings ?? 0, icon: Car },
+    { label: "Active listings", value: activeListings ?? 0, icon: Bike },
     { label: "Active deals", value: activeDeals ?? 0, icon: ClipboardList },
   ];
 

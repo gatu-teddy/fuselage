@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
 import { formatUSD, formatDate } from "@/lib/utils";
-import { ShieldCheck, CheckCircle2, MapPin, Car, ClipboardList } from "lucide-react";
+import { ShieldCheck, CheckCircle2, MapPin, Bike, ClipboardList } from "lucide-react";
 import { c } from "@/lib/tokens";
 
 // ── Status chip colours (inline, no Tailwind colour classes) ─────────────────
@@ -90,7 +90,7 @@ export default async function BuyerDealsPage() {
         {deals?.length === 0 && (
           <div style={{ backgroundColor: c.surface, border: `1px solid ${c.border}`, borderRadius: "12px", padding: "64px 40px", textAlign: "center" }}>
             <div style={{ backgroundColor: c.bgDim, width: "56px", height: "56px", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-              <Car style={{ color: c.muted, width: "24px", height: "24px" }} />
+              <Bike style={{ color: c.muted, width: "24px", height: "24px" }} />
             </div>
             <p style={{ color: c.primary, fontSize: "15px", fontWeight: 700, marginBottom: "6px" }}>No deals yet</p>
             <p style={{ color: c.muted, fontSize: "13px", marginBottom: "20px" }}>
@@ -162,7 +162,7 @@ function DealCard({ deal }: { deal: Record<string, unknown> }) {
             <Image src={primaryImage} alt="" fill style={{ objectFit: "cover" }} sizes="80px" />
           ) : (
             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Car style={{ color: c.muted, width: "20px", height: "20px", opacity: 0.4 }} />
+              <Bike style={{ color: c.muted, width: "20px", height: "20px", opacity: 0.4 }} />
             </div>
           )}
         </div>

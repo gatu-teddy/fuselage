@@ -29,7 +29,7 @@ export const KYC_DOC_LABELS: Record<KycDocType, string> = {
 
 export type SellerStatus = "pending" | "verified" | "rejected" | "suspended";
 
-export type VehicleType = "car" | "bike";
+export type VehicleType = "bike";
 
 export type ListingStatus = "draft" | "active" | "reserved" | "sold";
 
@@ -252,7 +252,7 @@ export interface DealEvent {
 // ---- Constants ----
 
 /** Global buyer destination countries — alphabetical */
-export const AFRICAN_COUNTRIES = [
+export const DESTINATION_COUNTRIES = [
   // Africa
   "Cameroon", "Egypt", "Ethiopia", "Ghana", "Ivory Coast",
   "Kenya", "Morocco", "Nigeria", "Rwanda", "Senegal",
@@ -272,12 +272,7 @@ export const AFRICAN_COUNTRIES = [
   "Qatar", "Saudi Arabia", "UAE",
 ];
 
-// Keep alias for any legacy imports
-export const AFRICAN_PORTS: Record<string, string[]> = {};
-
 export const VEHICLE_MAKES = {
-  // Cars kept in data layer for future expansion — UI is bikes-only in MVP
-  car: [],
   bike: [
     "Aprilia",
     "Benelli",

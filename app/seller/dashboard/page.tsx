@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Car, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight, Zap, Globe, Bell } from "lucide-react";
+import { Bike, TrendingUp, Plus, CheckCircle, Clock, AlertTriangle, DollarSign, Eye, BarChart2, ArrowRight, Zap, Globe, Bell } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { DEAL_STATUS_LABELS, type DealStatus } from "@/lib/types";
 import { getPlan } from "@/lib/plans";
@@ -170,7 +170,7 @@ export default async function SellerDashboardPage() {
       {/* ── Stats row ───────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { icon: Car,         label: "Active listings",  value: activeListings.toString(),           color: c.primary, bg: c.bgDim   },
+          { icon: Bike,         label: "Active listings",  value: activeListings.toString(),           color: c.primary, bg: c.bgDim   },
           { icon: TrendingUp,  label: "Active sales",     value: activeSales.length.toString(),       color: c.blue,    bg: c.blueBg  },
           { icon: DollarSign,  label: "Pipeline value",   value: pipelineValue ? formatUSD(pipelineValue) : "—", color: c.amber, bg: c.amberBg },
           { icon: BarChart2,   label: "Total revenue",    value: totalRevenue  ? formatUSD(totalRevenue)  : "—", color: c.green, bg: c.greenBg },

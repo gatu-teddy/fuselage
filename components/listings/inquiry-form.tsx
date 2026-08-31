@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
-import { AFRICAN_COUNTRIES } from "@/lib/types";
+import { DESTINATION_COUNTRIES } from "@/lib/types";
 import { MessageSquare, LogIn } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
@@ -117,7 +117,7 @@ export function InquiryForm({ listingId, sellerId, listingTitle: _listingTitle, 
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
               <SelectContent>
-                {AFRICAN_COUNTRIES.map((c) => (
+                {DESTINATION_COUNTRIES.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>

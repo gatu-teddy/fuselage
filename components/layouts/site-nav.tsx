@@ -5,10 +5,11 @@ import { AuthNav } from "@/components/layouts/auth-nav";
 import { c } from "@/lib/tokens";
 
 const NAV_LINKS = [
-  { label: "Browse",     href: "/browse"   },
-  { label: "Exporters",  href: "/sellers"  },
+  { label: "Browse",       href: "/browse"   },
+  { label: "Exporters",    href: "/sellers"  },
   { label: "How It Works", href: "/#process" },
-  { label: "Pricing",    href: "/pricing"  },
+  { label: "Guides",       href: "/blog"     },
+  { label: "Pricing",      href: "/pricing"  },
 ];
 
 export function SiteNav() {

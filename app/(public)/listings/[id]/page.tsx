@@ -7,7 +7,7 @@ import { InquiryForm } from "@/components/listings/inquiry-form";
 import { VinVerifyButton } from "@/components/listings/vin-verify-button";
 import {
   Shield, MapPin, Calendar, Hash, Gauge, Clock,
-  CheckCircle2, ChevronRight, Car, ArrowRight,
+  CheckCircle2, ChevronRight, Bike, ArrowRight,
 } from "lucide-react";
 import { formatUSD, formatDate } from "@/lib/utils";
 
@@ -219,7 +219,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                   { icon: Calendar, label: "Year",    value: listing.year?.toString() ?? "—" },
                   { icon: Gauge,    label: "Mileage", value: listing.mileage_km != null ? `${Number(listing.mileage_km).toLocaleString()} km` : "—" },
                   { icon: Hash,     label: "Engine",  value: listing.engine_size ?? "—" },
-                  { icon: Car,      label: "Steering",value: listing.steering ?? "—" },
+                  { icon: Bike,      label: "Steering",value: listing.steering ?? "—" },
                   { icon: MapPin,   label: "Origin",  value: seller?.city ? `${seller.city}${seller.country ? `, ${seller.country}` : ""}` : "—" },
                   { icon: Clock,    label: "ETA",     value: listing.eta_date ? formatDate(listing.eta_date) : "—" },
                 ].map(({ icon: Icon, label, value }) => (
@@ -390,7 +390,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                                 <Image src={simThumb} alt="" width={64} height={48} className="object-cover w-full h-full" />
                               ) : (
                                 <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: c.muted }}>
-                                  <Car style={{ width: "18px", height: "18px" }} />
+                                  <Bike style={{ width: "18px", height: "18px" }} />
                                 </div>
                               )}
                             </div>

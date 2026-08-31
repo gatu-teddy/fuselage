@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search, X, SlidersHorizontal } from "lucide-react";
-import { VEHICLE_MAKES, AFRICAN_COUNTRIES } from "@/lib/types";
+import { VEHICLE_MAKES, DESTINATION_COUNTRIES } from "@/lib/types";
 import { c } from "@/lib/tokens";
 
 interface Props {
@@ -241,7 +241,7 @@ function FilterBody({
           }}
         >
           <option value="">All Regions</option>
-          {AFRICAN_COUNTRIES.map((country) => (
+          {DESTINATION_COUNTRIES.map((country) => (
             <option key={country} value={country}>{country}</option>
           ))}
         </select>

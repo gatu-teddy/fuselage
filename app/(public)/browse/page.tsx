@@ -86,19 +86,11 @@ export default async function BrowsePage({
             <div className="flex items-center justify-between mb-4 md:mb-6 gap-3">
               <div className="min-w-0">
                 <h1 style={{ color: c.primary }} className="text-xl md:text-2xl font-bold tracking-tight">
-                  {params.type === "bike"
-                    ? "Motorbikes"
-                    : params.type === "car"
-                    ? "Cars"
-                    : "Vetted Marketplace"}
+                  {"Motorbikes"}
                 </h1>
                 <p style={{ color: c.muted }} className="text-sm mt-0.5">
                   {listings?.length ?? 0}{" "}
-                  {params.type === "bike"
-                    ? `motorbike${(listings?.length ?? 0) !== 1 ? "s" : ""} available`
-                    : params.type === "car"
-                    ? `car${(listings?.length ?? 0) !== 1 ? "s" : ""} available`
-                    : "international listings"}
+                  {`${listings?.length ?? 0} motorbike${(listings?.length ?? 0) !== 1 ? "s" : ""} available`}
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -121,16 +113,10 @@ export default async function BrowsePage({
                 className="text-center py-20"
               >
                 <p style={{ color: c.muted }} className="mb-2">
-                  {params.type === "bike"
-                    ? "No motorbike listings yet."
-                    : params.type === "car"
-                    ? "No car listings match your filters."
-                    : "No listings match your filters."}
+                  {"No motorbike listings match your filters."}
                 </p>
                 <p style={{ color: c.muted, fontSize: "12px" }} className="mb-6">
-                  {params.type === "bike"
-                    ? "Be the first — sellers can list motorbikes from their portal."
-                    : "Try adjusting or clearing your filters."}
+                  {"Be the first — sellers can list motorbikes from their portal."}
                 </p>
                 <Link
                   href={params.type ? `/browse?type=${params.type}` : "/browse"}

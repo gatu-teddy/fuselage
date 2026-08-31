@@ -4,7 +4,7 @@ import Image from "next/image";
 import { createPublicClient } from "@/lib/supabase/public";
 import { c } from "@/lib/tokens";
 import { formatUSD } from "@/lib/utils";
-import { CheckCircle2, MapPin, Globe, Calendar, Car, ShieldCheck, Clock } from "lucide-react";
+import { CheckCircle2, MapPin, Globe, Calendar, Bike, ShieldCheck, Clock } from "lucide-react";
 
 function TrustScore({ score }: { score: number }) {
   const colour = score >= 80 ? c.green : score >= 50 ? c.amber : c.red;
@@ -167,7 +167,7 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
         {/* ── Stats row ──────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { icon: <Car className="h-5 w-5" />,         label: "Active listings", value: activeListingCount ?? 0 },
+            { icon: <Bike className="h-5 w-5" />,         label: "Active listings", value: activeListingCount ?? 0 },
             { icon: <CheckCircle2 className="h-5 w-5" />, label: "Completed deals", value: completedDeals ?? 0 },
             { icon: <ShieldCheck className="h-5 w-5" />,  label: "Verification",    value: seller.status === "verified" ? "Verified" : "Pending" },
           ].map(({ icon, label, value }) => (
@@ -204,7 +204,7 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
                         <Image src={img} alt={`${l.year} ${l.make}`} fill style={{ objectFit: "cover" }} sizes="(max-width: 640px) 100vw, 33vw" className="group-hover:scale-105 transition-transform duration-300" />
                       ) : (
                         <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: c.muted }}>
-                          <Car className="h-8 w-8 opacity-30" />
+                          <Bike className="h-8 w-8 opacity-30" />
                         </div>
                       )}
                     </div>

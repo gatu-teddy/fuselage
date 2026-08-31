@@ -10,7 +10,7 @@ const COLUMNS = [
   { key: "make",              label: "Make",              example: "Toyota",          required: true  },
   { key: "model",             label: "Model",             example: "Land Cruiser",    required: true  },
   { key: "year",              label: "Year",              example: "2023",            required: true  },
-  { key: "type",              label: "Type",              example: "car",             required: true,  note: "car or bike" },
+  { key: "type",              label: "Type",              example: "bike",            required: true,  note: "bike" },
   { key: "steering",          label: "Steering",          example: "RHD",            required: true,  note: "RHD or LHD" },
   { key: "price_usd",         label: "Price USD (FOB)",  example: "42000",           required: true  },
   { key: "mileage_km",        label: "Mileage (km)",     example: "18000",           required: false },
@@ -76,8 +76,8 @@ function parseCSV(text: string): ParsedRow[] {
       errors.push("Price must be a number");
     if (data.steering && !["RHD", "LHD"].includes(data.steering.toUpperCase()))
       errors.push('Steering must be RHD or LHD');
-    if (data.type && !["car", "bike"].includes(data.type.toLowerCase()))
-      errors.push('Type must be car or bike');
+    if (data.type && data.type.toLowerCase() !== "bike")
+      errors.push('Type must be bike');
     if (data.availability && !["in_stock", "en_route", "pre_order"].includes(data.availability))
       errors.push('Availability must be in_stock, en_route, or pre_order');
 
@@ -132,7 +132,7 @@ export function BulkImportForm() {
       const { data: d } = row;
       const { error } = await supabase.from("listings").insert({
         seller_id:        user.id,
-        type:             d.type.toLowerCase() || "car",
+        type:             "bike",
         make:             d.make,
         model:            d.model,
         year:             parseInt(d.year),

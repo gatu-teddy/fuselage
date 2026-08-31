@@ -66,7 +66,6 @@ export function VinVerifyButton({ chassisNumber, listingId }: Props) {
   // ── Done state ───────────────────────────────────────────────────────────
   const isValid   = result === "valid";
   const isPending = result === "pending";
-  const isInvalid = result === "flagged" || result === "invalid";
 
   const chipBg   = isValid ? c.greenBg   : isPending ? c.amberBg  : c.redBg;
   const chipText = isValid ? c.greenText  : isPending ? "#92400E"  : c.red;

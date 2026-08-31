@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
 import { c } from "@/lib/tokens";
-import { CheckCircle2, MapPin, Car, Search, Star } from "lucide-react";
+import { CheckCircle2, MapPin, Bike, Search, Star } from "lucide-react";
 
 export const metadata = {
   title: "Verified Exporters · Fuselage",
@@ -141,7 +141,7 @@ export default async function ExporterDirectoryPage({
                   {/* Footer */}
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                      <Car style={{ color: c.muted, width: "11px", height: "11px" }} />
+                      <Bike style={{ color: c.muted, width: "11px", height: "11px" }} />
                       <span style={{ color: c.muted, fontSize: "11px" }}>
                         {s.verified_at
                           ? `Verified ${new Date(s.verified_at as string).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}`
