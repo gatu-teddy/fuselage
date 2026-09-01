@@ -4,8 +4,12 @@ import { c } from "@/lib/tokens";
 import { CheckCircle2, MapPin, Bike, Search, Star } from "lucide-react";
 
 export const metadata = {
-  title: "Verified Exporters · Fuselage",
-  description: "Browse verified vehicle exporters on Fuselage. Every seller has passed our manual vetting process.",
+  title: "Verified Exporters | TrueWagon",
+  description: "Browse verified Japanese motorbike exporters on TrueWagon. Every seller has passed manual licence vetting before listing a single bike.",
+  openGraph: {
+    title: "Verified Exporters | TrueWagon",
+    description: "Every exporter on TrueWagon has submitted a trade licence and passed manual review. No anonymous sellers.",
+  },
 };
 
 export default async function ExporterDirectoryPage({
