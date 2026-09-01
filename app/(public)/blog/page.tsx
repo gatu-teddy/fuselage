@@ -12,6 +12,11 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   return (
     <main style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px" }}>
+      <style>{`
+        .blog-card { transition: border-color 0.15s, box-shadow 0.15s; }
+        .blog-card:hover { border-color: #0F172A !important; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+      `}</style>
+
       <h1 style={{ color: c.primary, fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "8px" }}>
         Import Guides
       </h1>
@@ -21,26 +26,14 @@ export default function BlogPage() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
         {BLOG_POSTS.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            style={{ textDecoration: "none" }}
-          >
+          <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
             <article
+              className="blog-card"
               style={{
                 backgroundColor: "#fff",
                 border: `1px solid ${c.border}`,
                 borderRadius: "12px",
                 padding: "28px 32px",
-                transition: "border-color 0.15s, box-shadow 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = c.primary;
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.06)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = c.border;
-                (e.currentTarget as HTMLElement).style.boxShadow = "none";
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
