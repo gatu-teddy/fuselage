@@ -19,14 +19,15 @@ export const metadata: Metadata = {
   },
 };
 
-import { HeroSection }            from "@/components/sections/hero-section";
-import { ServicesSection }         from "@/components/sections/services-section";
-import { FeaturedVehicleSection }  from "@/components/sections/featured-vehicle-section";
-import { HowItWorksSection }       from "@/components/sections/how-it-works-section";
-import { ShippingPartnersSection } from "@/components/sections/shipping-partners-section";
-import { DestinationsSection }     from "@/components/sections/destinations-section";
-import { TrustStripSection }       from "@/components/sections/trust-strip-section";
-import { CtaSection }              from "@/components/sections/cta-section";
+import { HeroSection }                  from "@/components/sections/hero-section";
+import { ServicesSection }               from "@/components/sections/services-section";
+import { FeaturedVehicleSection }        from "@/components/sections/featured-vehicle-section";
+import { HowItWorksSection }             from "@/components/sections/how-it-works-section";
+import { ShippingCalculatorSection }     from "@/components/sections/shipping-calculator-section";
+import { ShippingPartnersSection }       from "@/components/sections/shipping-partners-section";
+import { DestinationsSection }           from "@/components/sections/destinations-section";
+import { TrustStripSection }             from "@/components/sections/trust-strip-section";
+import { CtaSection }                    from "@/components/sections/cta-section";
 
 export default function LandingPage() {
   return (
@@ -35,6 +36,7 @@ export default function LandingPage() {
       <ServicesSection />
       <FeaturedVehicleSection />
       <HowItWorksSection />
+      <ShippingCalculatorSection />
       <ShippingPartnersSection />
       <DestinationsSection />
       <TrustStripSection />
