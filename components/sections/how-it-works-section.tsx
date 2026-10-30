@@ -4,27 +4,27 @@ import { c } from "@/lib/tokens";
 const steps = [
   {
     n: "01",
-    title: "Browse Inventory",
-    body: "Filter live motorbike listings from verified Japanese exporters by make, model, price, and destination port. Every listing shows the full chassis number.",
+    title: "Find the model",
+    body: "Search live listings by make, model, year, and displacement. Whether you're after a Kawasaki Z400, a Honda CB400 Super Four, or a Yamaha SR — if it's in Japan, it's here.",
     badge: "Live Inventory",
   },
   {
     n: "02",
-    title: "Verify the Seller",
-    body: "Every exporter has submitted a trade or business licence. Our team manually approves each account — only verified sellers can publish listings.",
-    badge: "Manual Review",
+    title: "Know who you're buying from",
+    body: "Every exporter on the platform has been manually approved — trade licence submitted, identity confirmed. You see their verified profile before you send a single message.",
+    badge: "Seller Verified",
   },
   {
     n: "03",
-    title: "Check the Chassis",
-    body: "Run a live chassis verification directly from the listing. Flagged units are held automatically. Upload deal documents to our neutral registry for a full audit trail.",
-    badge: "Chassis Verified",
+    title: "Check the chassis",
+    body: "Run a live JDM chassis check directly from the listing page. Flagged units are blocked before the deal can proceed. Your documents are held in our neutral registry.",
+    badge: "Chassis Checked",
   },
   {
     n: "04",
-    title: "Port Delivery",
-    body: "Confirm terms on-platform, coordinate freight through our certified partner network, and track the shipment to your destination port. Every step permanently logged.",
-    badge: "Full Audit Trail",
+    title: "Connect to freight",
+    body: "Once you're ready, we connect you to certified freight partners who know this corridor. You manage the relationship — we make sure you're starting with someone credible.",
+    badge: "Freight Matched",
   },
 ];
 
@@ -41,11 +41,11 @@ export function HowItWorksSection() {
             Process
           </p>
           <h2 style={{ color: c.primary, letterSpacing: "-0.01em" }} className="text-4xl font-bold mb-2">
-            Japan to Your Port in 4 Steps
+            From search to shipment
           </h2>
           <p style={{ color: c.muted }} className="text-lg max-w-lg">
-            A transparent process built around verified exporters, chassis checks, and
-            document-backed deals — from Osaka to Mombasa.
+            We don't handle your money or your freight — we make sure the people you deal with are
+            worth trusting, and that everything is documented if they aren't.
           </p>
         </div>
 

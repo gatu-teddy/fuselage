@@ -15,17 +15,17 @@ export function CtaSection() {
       />
       <div className="relative max-w-3xl mx-auto px-8 text-center">
         <p style={{ color: c.green }} className="text-xs font-semibold uppercase tracking-widest mb-5">
-          Ready to import?
+          Start looking
         </p>
         <h2
           className="text-4xl md:text-5xl font-bold text-white mb-5"
           style={{ letterSpacing: "-0.02em" }}
         >
-          Find your next motorbike.
+          The model you want exists.<br />Let&apos;s find it.
         </h2>
         <p style={{ color: "rgba(255,255,255,0.6)" }} className="text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-          Verified exporters, live Japanese inventory, and freight partners ready to move your
-          bike from source to port — wherever you are in Africa or beyond.
+          Live JDM inventory. Exporters who&apos;ve passed manual review. Chassis numbers you can
+          check yourself before you commit. Wherever you&apos;re importing to.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link

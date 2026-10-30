@@ -7,10 +7,10 @@ const HERO_BG =
   "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=1400&q=80";
 
 const stats = [
-  { value: "Japan",  label: "Primary source market" },
-  { value: "100%",   label: "Verified exporters" },
-  { value: "100%",   label: "Chassis tracked" },
-  { value: "0",      label: "Anonymous listings" },
+  { value: "Japan",   label: "Where the bikes are" },
+  { value: "100%",    label: "Sellers verified" },
+  { value: "Every",   label: "Chassis checked" },
+  { value: "Zero",    label: "Anonymous listings" },
 ];
 
 export function HeroSection() {
@@ -45,20 +45,20 @@ export function HeroSection() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
-            Verified Exporters · Live Inventory
+            Verified Exporters · Every Chassis Checked
           </div>
 
           <h1
             className="text-4xl md:text-5xl font-bold text-white leading-tight mb-5"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Import Motorbikes Direct<br />
-            <span style={{ color: c.green }}>From Japan to Your Port</span>
+            The bike you want<br />
+            <span style={{ color: c.green }}>is probably in Japan</span>
           </h1>
 
           <p style={{ color: "rgba(255,255,255,0.65)" }} className="text-lg leading-relaxed mb-8 max-w-lg">
-            Browse verified Japanese exporters with live inventory. Every chassis number checked,
-            every deal documented — from Osaka to Mombasa, Lagos to Dar es Salaam.
+            JDM models that never made it to your market. Verified exporters you can trust.
+            Chassis numbers checked before you commit a single dollar.
           </p>
 
           <div className="flex flex-wrap gap-3 mb-12">
@@ -67,7 +67,7 @@ export function HeroSection() {
               style={{ backgroundColor: c.green, color: "#fff" }}
               className="inline-flex items-center gap-2 text-sm font-semibold px-8 h-12 rounded hover:opacity-90 transition-opacity"
             >
-              Browse Motorbikes <ArrowRight className="h-4 w-4" />
+              Find your model <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/register?role=seller"

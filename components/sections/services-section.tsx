@@ -4,35 +4,35 @@ import { c } from "@/lib/tokens";
 const services = [
   {
     icon: Shield,
-    title: "Verified Exporters",
+    title: "Exporters you can trust",
     description:
-      "Every seller submits a trade or business licence before listing. Our team manually reviews each exporter — no anonymous dealers, no ghost listings from unknown sources.",
+      "Sending money abroad to a seller you've never met is the hardest part of importing. Every exporter on TrueWagon has submitted a trade licence and passed manual review before publishing a single listing.",
     features: [
-      "Trade licence required to list",
-      "Manual account approval process",
-      "Zero unverified sellers on platform",
+      "Trade licence verified before approval",
+      "Manual review — no self-serve accounts",
+      "Zero anonymous sellers",
     ],
   },
   {
     icon: FileCheck,
-    title: "Chassis Verification",
+    title: "Chassis checked upfront",
     description:
-      "Every listed motorbike includes a chassis number. Buyers can trigger a live NHTSA/JDM check from the listing page. Flagged VINs are held for manual review before the deal can proceed.",
+      "Every listing carries the full chassis number. Run a live JDM verification before you commit — flagged units are blocked automatically and held for review. What you see is what ships.",
     features: [
       "Chassis number on every listing",
-      "Live verification check for buyers",
-      "Flagged units blocked from sale",
+      "Live check available to buyers",
+      "Flagged units cannot proceed to sale",
     ],
   },
   {
     icon: Truck,
-    title: "Deal Transparency",
+    title: "A paper trail for everything",
     description:
-      "All negotiation, payment confirmations, and shipping updates happen on-platform. Every message and document upload is permanently logged — nothing goes off the record.",
+      "All communication, documents, and shipping confirmations happen on-platform. Nothing goes off the record — so if something goes wrong, you have everything you need to resolve it.",
     features: [
-      "On-platform messaging & documents",
-      "Full audit trail per deal",
-      "Certified freight partner network",
+      "On-platform messaging and documents",
+      "Full audit trail per transaction",
+      "Certified freight partner connections",
     ],
   },
 ];
@@ -53,11 +53,11 @@ export function ServicesSection() {
             style={{ color: c.primary, letterSpacing: "-0.01em" }}
             className="text-4xl font-bold mb-3"
           >
-            Built for Cross-Border Bike Imports
+            The trust layer between you and Japan
           </h2>
           <p style={{ color: c.muted }} className="text-lg max-w-xl mx-auto leading-relaxed">
-            Every transaction is backed by verified sellers, document custody, and a freight partner
-            network — from Japan to your destination port.
+            Importing a specific model from Japan means dealing with exporters you can't visit
+            and paperwork you can't see in person. We fix that.
           </p>
         </div>
 
